@@ -1,0 +1,14 @@
+name = "azmoon-hedyeh"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# فضای ذخیره‌سازی KV (برای ذخیره سوالات، دانش‌آموزان و پاسخنامه‌ها)
+# پس از ساخت namespace، مقدار id را اینجا قرار دهید:
+#   npx wrangler kv namespace create EXAM_KV
+[[kv_namespaces]]
+binding = "EXAM_KV"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+[vars]
+# رمز ورود پنل معلم
+TEACHER_PASSWORD = "nader0933"
