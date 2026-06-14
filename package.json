@@ -1,0 +1,16 @@
+{
+  "name": "azmoon-hedyeh",
+  "version": "1.0.0",
+  "description": "آزمون آنلاین درس هدیه‌های آسمانی - مدرسه شهید علیرضا دادخدایی سنگبند (Cloudflare Worker)",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "kv:create": "wrangler kv namespace create EXAM_KV"
+  },
+  "keywords": ["cloudflare", "worker", "exam", "quiz"],
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^4.100.0"
+  }
+}
