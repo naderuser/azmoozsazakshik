@@ -175,6 +175,39 @@ async function handleApi(req, env, url, path) {
     return json({ ok: true, auth: await isTeacher(req, env), configured: Boolean(stored) });
   }
 
+  /* --- رتبه‌بندی: دانلود قالب --- */
+  if (path === "/api/ranking/download" && method === "POST") {
+    if (!await isTeacher(req, env)) return json({ error: "Unauthorized" }, 401);
+    const body = await req.json().catch(() => ({}));
+    const { template, name, code, position, year, from, to, skillType, description } = body;
+    
+    const templateMap = {
+      "عضويت": "عضويت.docx",
+      "درس پژوهي اقدام پژوهي": "درس پژوهي اقدام پژوهي.docx",
+      "شركت در جلسات شورا": "شركت در جلسات شورا.docx",
+      "ساخت و توليد": "ساخت و توليد.docx",
+      "يادگيري مستمر": "يادگيري مستمر(كارگاه تخصصي).docx",
+      "نشان دادن تعهد": "نشان دادن تعهد (حرفه اي).docx"
+    };
+    
+    const fileName = templateMap[template];
+    if (!fileName) return json({ error: "قالب یافت نشد" }, 404);
+    
+    // خواندن فایل قالب از R2
+    const templateData = await env.EXAM_BUCKET.get(`templates/${fileName}`);
+    if (!templateData) return json({ error: "فایل قالب یافت نشد" }, 404);
+    
+    const arrayBuffer = await templateData.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    
+    return new Response(uint8Array, {
+      headers: {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "Content-Disposition": `attachment; filename="${name || 'document'}_${template}.docx"`
+      }
+    });
+  }
+
   /* --- آزمون دانش‌آموز (عمومی) --- */
   if (path.startsWith("/api/exam/")) {
     const rest = path.slice("/api/exam/".length);
@@ -652,6 +685,26 @@ const SHARED_CSS = `
   .ratio-btn:hover{border-color:var(--primary-2)}
   .ratio-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
   .crop-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  
+  /* ---- Ranking ---- */
+  .ranking-templates{margin-bottom:20px}
+  .ranking-templates label{font-weight:600;margin-bottom:10px;display:block}
+  .template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+  .template-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;border:2px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;transition:all .2s}
+  .template-btn:hover{border-color:var(--primary-2);transform:translateY(-2px)}
+  .template-btn.active{border-color:var(--primary);background:#eff6ff}
+  .template-icon{font-size:28px}
+  .ranking-form{background:#f8fafc;border-radius:12px;padding:20px;margin-bottom:20px}
+  .ranking-form .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  .ranking-form .form-group{display:flex;flex-direction:column}
+  .ranking-form .form-group.full{grid-column:1/-1}
+  .ranking-form label{font-weight:600;font-size:13px;margin-bottom:6px;color:#475569}
+  .ranking-form input,.ranking-form select,.ranking-form textarea{padding:10px 14px;border:2px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;width:100%;box-sizing:border-box}
+  .ranking-form input:focus,.ranking-form select:focus,.ranking-form textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+  .ranking-form textarea{resize:vertical;min-height:100px}
+  .ranking-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .btn.success{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
+  .btn.success:hover{background:linear-gradient(135deg,#16a34a,#15803d)}
 `;
 
 const FONT_LINK = `<link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">`;
@@ -872,6 +925,7 @@ function teacherPage() {
         <div class="tab" data-tab="scan">📷 اسکنر</div>
         <div class="tab" data-tab="resize">🗜️ کاهش حجم</div>
         <div class="tab" data-tab="crop">✂️ برش عکس</div>
+        <div class="tab" data-tab="ranking">🏆 رتبه‌بندی</div>
         <div class="tab" data-tab="settings">⚙️ تنظیمات</div>
         <div style="flex:1"></div>
         <div class="tab" id="btn-logout" style="background:#fee2e2;color:#991b1b">🚪 خروج</div>
@@ -1112,6 +1166,106 @@ function teacherPage() {
               <span>💾</span> دانلود عکس
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- رتبه‌بندی -->
+      <div class="card tab-content hidden" id="tab-ranking">
+        <div class="section-header">
+          <div>
+            <h3>🏆 گواهی رتبه‌بندی</h3>
+            <p class="muted">قالب مورد نظر را انتخاب کرده و اطلاعات را وارد کنید</p>
+          </div>
+        </div>
+        
+        <div class="ranking-templates">
+          <label>انتخاب قالب:</label>
+          <div class="template-grid">
+            <button class="template-btn active" data-template="عضويت">
+              <span class="template-icon">📋</span>
+              <span>عضویت</span>
+            </button>
+            <button class="template-btn" data-template="درس پژوهي اقدام پژوهي">
+              <span class="template-icon">📚</span>
+              <span>درس پژوهي</span>
+            </button>
+            <button class="template-btn" data-template="شركت در جلسات شورا">
+              <span class="template-icon">🏛️</span>
+              <span>جلسات شورا</span>
+            </button>
+            <button class="template-btn" data-template="ساخت و توليد">
+              <span class="template-icon">🔧</span>
+              <span>ساخت و تولید</span>
+            </button>
+            <button class="template-btn" data-template="يادگيري مستمر">
+              <span class="template-icon">🎓</span>
+              <span>یادگیری مستمر</span>
+            </button>
+            <button class="template-btn" data-template="نشان دادن تعهد">
+              <span class="template-icon">⭐</span>
+              <span>تعهد حرفه‌ای</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="ranking-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>نام و نام خانوادگی</label>
+              <input type="text" id="rank-name" placeholder="نام و نام خانوادگی">
+            </div>
+            <div class="form-group">
+              <label>کد پرسنلی</label>
+              <input type="text" id="rank-code" placeholder="کد پرسنلی">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>سمت</label>
+              <input type="text" id="rank-position" placeholder="سمت">
+            </div>
+            <div class="form-group">
+              <label>سال تحصیلی</label>
+              <input type="text" id="rank-year" placeholder="مثال: 1403-1402">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>از تاریخ</label>
+              <input type="text" id="rank-from" placeholder="مثال: 1403/01/01">
+            </div>
+            <div class="form-group">
+              <label>تا تاریخ</label>
+              <input type="text" id="rank-to" placeholder="مثال: 1403/06/31">
+            </div>
+          </div>
+          <div class="form-group full">
+            <label>نوع شایستگی</label>
+            <select id="rank-skill-type">
+              <option value="مشارکت داوطلبانه و مشتاقانه">مشارکت داوطلبانه و مشتاقانه</option>
+              <option value="درس پژوهي / اقدام پژوهي">درس پژوهي / اقدام پژوهي</option>
+              <option value="شرکت در جلسات شورا">شرکت در جلسات شورا</option>
+              <option value="ساخت و تولید محتوای آموزشی">ساخت و تولید محتوای آموزشی</option>
+              <option value="یادگیری مستمر (کارگاه تخصصی)">یادگیری مستمر (کارگاه تخصصی)</option>
+              <option value="نشان دادن تعهد حرفه‌ای">نشان دادن تعهد حرفه‌ای</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>شرح فعالیت</label>
+            <textarea id="rank-description" rows="4" placeholder="شرح فعالیت‌های انجام شده..."></textarea>
+          </div>
+        </div>
+
+        <div class="ranking-actions">
+          <button class="btn secondary" id="btn-rank-clear">
+            <span>🗑️</span> پاک کردن
+          </button>
+          <button class="btn primary" id="btn-rank-download">
+            <span>📥</span> دانلود Word
+          </button>
+          <button class="btn success" id="btn-rank-pdf">
+            <span>📄</span> دانلود PDF
+          </button>
         </div>
       </div>
 
@@ -1876,6 +2030,70 @@ function teacherScript() {
   });
 
   document.addEventListener('mouseup',()=>{cropState.dragging=false;cropState.resizing=false;});
+
+  // ---- Ranking Tab ----
+  let selectedTemplate='عضويت';
+
+  document.querySelectorAll('.template-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll('.template-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedTemplate=btn.dataset.template;
+    };
+  });
+
+  document.getElementById('btn-rank-clear').onclick=()=>{
+    document.getElementById('rank-name').value='';
+    document.getElementById('rank-code').value='';
+    document.getElementById('rank-position').value='';
+    document.getElementById('rank-year').value='';
+    document.getElementById('rank-from').value='';
+    document.getElementById('rank-to').value='';
+    document.getElementById('rank-skill-type').selectedIndex=0;
+    document.getElementById('rank-description').value='';
+  };
+
+  document.getElementById('btn-rank-download').onclick=async()=>{
+    const name=document.getElementById('rank-name').value.trim();
+    if(!name){toast('لطفاً نام را وارد کنید');return;}
+    
+    toast('در حال آماده‌سازی فایل...');
+    
+    try {
+      const res=await fetch('/api/ranking/download',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          template:selectedTemplate,
+          name,
+          code:document.getElementById('rank-code').value,
+          position:document.getElementById('rank-position').value,
+          year:document.getElementById('rank-year').value,
+          from:document.getElementById('rank-from').value,
+          to:document.getElementById('rank-to').value,
+          skillType:document.getElementById('rank-skill-type').value,
+          description:document.getElementById('rank-description').value
+        })
+      });
+      
+      if(!res.ok){toast('خطا در دریافت فایل');return;}
+      
+      const blob=await res.blob();
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;
+      a.download=`گواهی_${name}.docx`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('فایل Word دانلود شد ✅');
+    }catch(e){
+      toast('خطا: '+e.message);
+    }
+  };
+
+  document.getElementById('btn-rank-pdf').onclick=async()=>{
+    toast('برای دانلود PDF از دکمه Word استفاده کرده و در Word ذخیره PDF کنید');
+  };
 
   checkAuth();
   `;
