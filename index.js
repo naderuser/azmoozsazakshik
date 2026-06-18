@@ -1346,7 +1346,7 @@ function teacherScript() {
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
     const theme=COLOR_THEMES[TABLE_THEME_IDX];
     
-    // ساخت HTML با فرمت اکسل حرفه‌ای
+    // ساخت HTML با فرمت اکسل RTL
     let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
     html+='<head><meta charset="utf-8"><x:ExcelNameList><x:Name>Sheet1</x:Name></x:ExcelNameList>';
     html+='<style>';
@@ -1354,7 +1354,7 @@ function teacherScript() {
     html+='.header{font-size:12pt;font-weight:bold;text-align:center;background:#D9E2F3;color:#000;padding:8px;border:1px solid #B4C6E7}';
     html+='.cell{font-size:11pt;text-align:right;padding:6px;border:1px solid #B4C6E7}';
     html+='.row-even{background:#F2F2F2}';
-    html+='</style></head><body>';
+    html+='</style></head><body dir="rtl">';
 
     TABLES.forEach((t,ti)=>{
       // عنوان
