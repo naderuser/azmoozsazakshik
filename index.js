@@ -203,7 +203,7 @@ async function handleApi(req, env, url, path) {
     return new Response(uint8Array, {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "Content-Disposition": `attachment; filename="${name || 'document'}_${template}.docx"`
+        "Content-Disposition": "attachment; filename=certificate.docx"
       }
     });
   }
@@ -2082,7 +2082,7 @@ function teacherScript() {
       const url=URL.createObjectURL(blob);
       const a=document.createElement('a');
       a.href=url;
-      a.download='gozashti_' + name + '.docx';
+      a.download='certificate.docx';
       a.click();
       URL.revokeObjectURL(url);
       toast('فایل Word دانلود شد ✅');
