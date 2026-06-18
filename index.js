@@ -1102,8 +1102,8 @@ function teacherPage() {
             </div>
           </div>
           <div class="crop-actions">
-            <button class="btn secondary" id="btn-crop-change">
-              <span>🔄</span> تغییر عکس
+            <button class="btn danger" id="btn-crop-delete">
+              <span>🗑️</span> حذف عکس
             </button>
             <button class="btn secondary" id="btn-crop-reset">
               <span>↩️</span> بازنشانی
@@ -1775,7 +1775,13 @@ function teacherScript() {
     box.style.height=cropState.h+'px';
   }
 
-  document.getElementById('btn-crop-change').onclick=()=>cropFileInput.click();
+  document.getElementById('btn-crop-delete').onclick=()=>{
+    cropImg=null;
+    cropFileName='';
+    cropControls.classList.add('hidden');
+    cropDropZone.classList.remove('hidden');
+    document.getElementById('crop-img').src='';
+  };
   document.getElementById('btn-crop-reset').onclick=()=>initCropBox();
 
   document.querySelectorAll('.ratio-btn').forEach(btn=>{
