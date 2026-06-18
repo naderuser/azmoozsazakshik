@@ -194,7 +194,8 @@ async function handleApi(req, env, url, path) {
     if (!fileName) return json({ error: "قالب یافت نشد" }, 404);
     
     // خواندن فایل قالب از R2
-    const templateData = await env.EXAM_BUCKET.get(`templates/${fileName}`);
+    const templateKey = "templates/" + fileName;
+    const templateData = await env.EXAM_BUCKET.get(templateKey);
     if (!templateData) return json({ error: "فایل قالب یافت نشد" }, 404);
     
     const arrayBuffer = await templateData.arrayBuffer();
