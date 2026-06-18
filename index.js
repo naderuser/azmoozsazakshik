@@ -1345,15 +1345,17 @@ function teacherScript() {
   document.getElementById('btn-dl-excel').onclick=()=>{
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
     const theme=COLOR_THEMES[TABLE_THEME_IDX];
-    // ساخت HTML با فرمت اکسل
+    
+    // ساخت HTML با فرمت اکسل حرفه‌ای
     let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">';
-    html+='<head><meta charset="utf-8">';
+    html+='<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>';
+    html+='<xml><x:ExcelWorkbook xmlns:x="urn:schemas-microsoft-com:office:excel"><x:WindowHeight>8535</x:WindowHeight><x:WindowWidth>21555</x:WindowWidth><x:WindowTopX>480</x:WindowTopX><x:WindowTopY>90</x:WindowTopY><x:RefineRectsAwareImport>1</x:RefineRectsAwareImport><x:TabRatio>850</x:TabRatio><x:ActiveSheet>0</x:ActiveSheet></x:ExcelWorkbook></xml>';
     html+='<style>';
-    html+='.tbl{border-collapse:collapse;width:100%;margin-bottom:20px}';
-    html+='.title{font-size:16pt;font-weight:bold;text-align:center;padding:10px;background:#'+theme.header+';color:#fff}';
-    html+='.header{font-size:12pt;font-weight:bold;text-align:center;padding:8px;background:#'+theme.header+';color:#fff;border:1px solid #333}';
-    html+='.cell{font-size:11pt;padding:6px;border:1px solid #333;text-align:right}';
-    html+='.row-even{background:#'+theme.band+'}';
+    html+='table{margin-bottom:20px;border-collapse:collapse;width:100%}';
+    html+='th{background:#'+theme.header+';color:#fff;font-weight:bold;font-family:Tahoma;font-size:12pt;text-align:center;padding:8px;border:1px solid #000}';
+    html+='td{font-family:Tahoma;font-size:11pt;text-align:right;padding:6px;border:1px solid #000}';
+    html+='.even{background:#'+theme.band+'}';
+    html+='.title-cell{background:#'+theme.header+';color:#fff;font-weight:bold;font-family:Tahoma;font-size:16pt;text-align:center;padding:10px;border:1px solid #000}';
     html+='</style></head><body dir="rtl">';
     
     TABLES.forEach((t,ti)=>{
@@ -1361,28 +1363,28 @@ function teacherScript() {
       const headers=cols>=6?['سوال','گزینه ۱','گزینه ۲','گزینه ۳','گزینه ۴','تایم']:
         Array(cols).fill(0).map((_,i)=>i===0?'سوال':i===cols-1?'تایم':'ستون '+(i+1));
       
-      // عنوان
-      html+='<table class="tbl"><tr><td class="title" colspan="'+cols+'">'+(t.title||'بانک سوالات')+'</td></tr></table>';
-      
-      // هدر
-      html+='<table class="tbl"><tr>';
-      headers.forEach(h=>html+='<td class="header">'+esc(h)+'</td>');
-      html+='</tr></table>';
-      
-      // داده‌ها
-      html+='<table class="tbl">';
+      // جدول با عنوان
+      html+='<table>';
+      // ردیف عنوان
+      html+='<tr><td class="title-cell" colspan="'+cols+'">'+(t.title||'بانک سوالات')+'</td></tr>';
+      // ردیف هدر
+      html+='<tr>';
+      headers.forEach(h=>html+='<th>'+esc(h)+'</th>');
+      html+='</tr>';
+      // ردیف‌های داده
       t.data.forEach((row,r)=>{
-        html+='<tr class="'+(r%2===1?'row-even':'')+'">';
-        row.forEach((cell,c)=>{
-          html+='<td class="cell">'+esc(cell||'')+'</td>';
+        html+='<tr class="'+(r%2===1?'even':'')+'">';
+        row.forEach((cell)=>{
+          html+='<td>'+esc(cell||'')+'</td>';
         });
-        for(let c=row.length;c<cols;c++)html+='<td class="cell"></td>';
+        for(let c=row.length;c<cols;c++)html+='<td></td>';
         html+='</tr>';
       });
       html+='</table>';
     });
     
     html+='</body></html>';
+    
     const blob=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='جداول.xls';document.body.appendChild(a);a.click();a.remove();
     toast('فایل اکسل با موفقیت ساخته شد ✅');
