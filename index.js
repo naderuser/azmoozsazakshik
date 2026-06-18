@@ -14,16 +14,6 @@
  * داده‌ها در Cloudflare KV (binding: EXAM_KV) ذخیره می‌شوند.
  */
 
-// TypeScript declarations for ExcelJS
-declare const ExcelJS: {
-  Workbook: new() => {
-    creator: string;
-    created: Date;
-    addWorksheet: (name: string, options?: object) => object;
-    xlsx: { writeBuffer: () => Promise<ArrayBuffer> };
-  };
-};
-
 const APP_TITLE = "پنل آزمون ساز دوره ابتدایی";
 const APP_DESIGNER = "طراح: نادر اکشیک";
 
