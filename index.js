@@ -630,6 +630,28 @@ const SHARED_CSS = `
   .resize-item .size-info{font-size:11px;color:#64748b;margin-top:6px}
   .resize-item .remove-btn{position:absolute;top:4px;left:4px;background:#fee2e2;color:#991b1b;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px}
   .resize-toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  
+  /* ---- Crop ---- */
+  .crop-area{background:#1e293b;border-radius:12px;padding:16px;margin:16px 0;display:flex;justify-content:center;overflow:hidden}
+  #crop-wrapper{position:relative;display:inline-block;max-width:100%}
+  #crop-img{max-width:100%;max-height:50vh;display:block}
+  #crop-box{position:absolute;border:2px dashed #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.5);cursor:move;top:0;left:0}
+  .crop-handle{position:absolute;width:12px;height:12px;background:#fff;border:2px solid #333;border-radius:50%}
+  .crop-nw{top:-6px;left:-6px;cursor:nw-resize}
+  .crop-n{top:-6px;left:50%;transform:translateX(-50%);cursor:n-resize}
+  .crop-ne{top:-6px;right:-6px;cursor:ne-resize}
+  .crop-w{top:50%;left:-6px;transform:translateY(-50%);cursor:w-resize}
+  .crop-e{top:50%;right:-6px;transform:translateY(-50%);cursor:e-resize}
+  .crop-sw{bottom:-6px;left:-6px;cursor:sw-resize}
+  .crop-s{bottom:-6px;left:50%;transform:translateX(-50%);cursor:s-resize}
+  .crop-se{bottom:-6px;right:-6px;cursor:se-resize}
+  .crop-options{margin-bottom:12px}
+  .crop-ratios{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .crop-ratios span{font-weight:600;font-size:14px}
+  .ratio-btn{padding:6px 14px;border:2px solid #e2e8f0;border-radius:6px;background:#fff;cursor:pointer;font-size:13px}
+  .ratio-btn:hover{border-color:var(--primary-2)}
+  .ratio-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .crop-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 `;
 
 const FONT_LINK = `<link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">`;
@@ -849,6 +871,7 @@ function teacherPage() {
         <div class="tab" data-tab="tables">📊 جدول‌ساز</div>
         <div class="tab" data-tab="scan">📷 اسکنر</div>
         <div class="tab" data-tab="resize">🗜️ کاهش حجم</div>
+        <div class="tab" data-tab="crop">✂️ برش عکس</div>
         <div class="tab" data-tab="settings">⚙️ تنظیمات</div>
         <div style="flex:1"></div>
         <div class="tab" id="btn-logout" style="background:#fee2e2;color:#991b1b">🚪 خروج</div>
@@ -1031,6 +1054,62 @@ function teacherPage() {
             </button>
             <button class="btn secondary" id="btn-clear-resize">
               <span>🗑️</span> پاک کردن
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- برش عکس -->
+      <div class="card tab-content hidden" id="tab-crop">
+        <div class="section-header">
+          <div>
+            <h3>✂️ برش عکس</h3>
+            <p class="muted">عکس‌های خود را برش بزنید و دانلود کنید</p>
+          </div>
+        </div>
+        
+        <div class="upload-zone" id="crop-drop-zone">
+          <input type="file" accept="image/*" id="crop-file" class="hidden">
+          <div class="upload-icon">🖼️</div>
+          <p>عکس را اینجا رها کنید یا کلیک کنید</p>
+          <span class="muted">یک عکس برای برش انتخاب کنید</span>
+        </div>
+        
+        <div id="crop-controls" class="hidden">
+          <div class="crop-area">
+            <div id="crop-wrapper">
+              <img id="crop-img" src="" alt="برش">
+              <div id="crop-box">
+                <div class="crop-handle crop-nw"></div>
+                <div class="crop-handle crop-n"></div>
+                <div class="crop-handle crop-ne"></div>
+                <div class="crop-handle crop-w"></div>
+                <div class="crop-handle crop-e"></div>
+                <div class="crop-handle crop-sw"></div>
+                <div class="crop-handle crop-s"></div>
+                <div class="crop-handle crop-se"></div>
+              </div>
+            </div>
+          </div>
+          <div class="crop-options">
+            <div class="crop-ratios">
+              <span>نسبت تصویر:</span>
+              <button class="ratio-btn active" data-ratio="free">آزاد</button>
+              <button class="ratio-btn" data-ratio="16:9">16:9</button>
+              <button class="ratio-btn" data-ratio="4:3">4:3</button>
+              <button class="ratio-btn" data-ratio="1:1">1:1</button>
+              <button class="ratio-btn" data-ratio="3:4">3:4</button>
+            </div>
+          </div>
+          <div class="crop-actions">
+            <button class="btn secondary" id="btn-crop-change">
+              <span>🔄</span> تغییر عکس
+            </button>
+            <button class="btn secondary" id="btn-crop-reset">
+              <span>↩️</span> بازنشانی
+            </button>
+            <button class="btn primary" id="btn-crop-download">
+              <span>💾</span> دانلود عکس
             </button>
           </div>
         </div>
@@ -1641,6 +1720,156 @@ function teacherScript() {
     renderResizePreview();
     document.getElementById('resize-controls').classList.add('hidden');
   };
+
+  // ---- Crop Tab ----
+  let cropImg=null;
+  let cropFileName='';
+  let cropState={x:0,y:0,w:0,h:0,ratio:'free',dragging:false,resizing:false,handle:''};
+
+  const cropDropZone=document.getElementById('crop-drop-zone');
+  const cropFileInput=document.getElementById('crop-file');
+  const cropControls=document.getElementById('crop-controls');
+
+  cropDropZone.addEventListener('click',()=>cropFileInput.click());
+  cropDropZone.addEventListener('dragover',e=>{e.preventDefault();cropDropZone.style.borderColor='var(--primary)';});
+  cropDropZone.addEventListener('dragleave',()=>cropDropZone.style.borderColor='');
+  cropDropZone.addEventListener('drop',e=>{e.preventDefault();cropDropZone.style.borderColor='';if(e.dataTransfer.files[0])loadCropImg(e.dataTransfer.files[0]);});
+  cropFileInput.addEventListener('change',function(){if(this.files[0])loadCropImg(this.files[0]);});
+
+  function loadCropImg(file){
+    if(!file.type.startsWith('image/')){toast('فقط عکس مجاز است');return;}
+    cropFileName=file.name;
+    const rd=new FileReader();
+    rd.onload=ev=>{
+      const img=document.getElementById('crop-img');
+      img.onload=()=>{
+        const maxW=Math.min(img.naturalWidth,800);
+        const scale=maxW/img.naturalWidth;
+        img.style.width=maxW+'px';
+        img.style.height=(img.naturalHeight*scale)+'px';
+        document.getElementById('crop-wrapper').style.width=maxW+'px';
+        document.getElementById('crop-wrapper').style.height=(img.naturalHeight*scale)+'px';
+        cropImg={el:img,natW:img.naturalWidth,natH:img.naturalHeight};
+        initCropBox();
+      };
+      img.src=ev.target.result;
+      cropControls.classList.remove('hidden');
+      cropDropZone.classList.add('hidden');
+    };
+    rd.readAsDataURL(file);
+  }
+
+  function initCropBox(){
+    const img=document.getElementById('crop-img');
+    const w=parseFloat(img.style.width);
+    const h=parseFloat(img.style.height);
+    const box=document.getElementById('crop-box');
+    cropState.x=w*0.1;
+    cropState.y=h*0.1;
+    cropState.w=w*0.8;
+    cropState.h=h*0.8;
+    cropState.ratio='free';
+    box.style.left=cropState.x+'px';
+    box.style.top=cropState.y+'px';
+    box.style.width=cropState.w+'px';
+    box.style.height=cropState.h+'px';
+  }
+
+  document.getElementById('btn-crop-change').onclick=()=>cropFileInput.click();
+  document.getElementById('btn-crop-reset').onclick=()=>initCropBox();
+
+  document.querySelectorAll('.ratio-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll('.ratio-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      cropState.ratio=btn.dataset.ratio;
+      applyRatio();
+    };
+  });
+
+  function applyRatio(){
+    if(cropState.ratio==='free')return;
+    const [rw,rh]=cropState.ratio.split(':').map(Number);
+    const ratio=rw/rh;
+    const curRatio=cropState.w/cropState.h;
+    if(curRatio>ratio){
+      cropState.w=cropState.h*ratio;
+    }else{
+      cropState.h=cropState.w/ratio;
+    }
+    const wrapper=document.getElementById('crop-wrapper');
+    const w=parseFloat(wrapper.style.width);
+    const h=parseFloat(wrapper.style.height);
+    cropState.x=Math.max(0,(w-cropState.w)/2);
+    cropState.y=Math.max(0,(h-cropState.h)/2);
+    updateCropBox();
+  }
+
+  function updateCropBox(){
+    const box=document.getElementById('crop-box');
+    box.style.left=cropState.x+'px';
+    box.style.top=cropState.y+'px';
+    box.style.width=cropState.w+'px';
+    box.style.height=cropState.h+'px';
+  }
+
+  document.getElementById('btn-crop-download').onclick=()=>{
+    if(!cropImg){toast('عکسی انتخاب نشده');return;}
+    const img=cropImg.el;
+    const sx=cropState.x*(img.naturalWidth/parseFloat(img.style.width));
+    const sy=cropState.y*(img.naturalHeight/parseFloat(img.style.height));
+    const sw=cropState.w*(img.naturalWidth/parseFloat(img.style.width));
+    const sh=cropState.h*(img.naturalHeight/parseFloat(img.style.height));
+    const canvas=document.createElement('canvas');
+    canvas.width=sw;
+    canvas.height=sh;
+    const ctx=canvas.getContext('2d');
+    ctx.drawImage(img,sx,sy,sw,sh,0,0,sw,sh);
+    const a=document.createElement('a');
+    a.href=canvas.toDataURL('image/png');
+    a.download=cropFileName.replace(/\.[^.]+$/,'_cropped.png');
+    a.click();
+    toast('عکس برش‌خورده دانلود شد ✅');
+  };
+
+  // Drag & Resize
+  const cropBox=document.getElementById('crop-box');
+  cropBox.addEventListener('mousedown',e=>{
+    if(e.target.classList.contains('crop-handle')){
+      cropState.resizing=true;
+      cropState.handle=e.target.className.replace('crop-handle crop-','');
+    }else{
+      cropState.dragging=true;
+    }
+    cropState.startX=e.clientX;
+    cropState.startY=e.clientY;
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove',e=>{
+    if(!cropState.dragging&&!cropState.resizing)return;
+    const dx=e.clientX-cropState.startX;
+    const dy=e.clientY-cropState.startY;
+    cropState.startX=e.clientX;
+    cropState.startY=e.clientY;
+    const wrapper=document.getElementById('crop-wrapper');
+    const w=parseFloat(wrapper.style.width);
+    const h=parseFloat(wrapper.style.height);
+    if(cropState.dragging){
+      cropState.x=Math.max(0,Math.min(w-cropState.w,cropState.x+dx));
+      cropState.y=Math.max(0,Math.min(h-cropState.h,cropState.y+dy));
+    }else if(cropState.resizing){
+      const rh=cropState.handle;
+      if(rh.includes('e'))cropState.w=Math.max(50,Math.min(w-cropState.x,cropState.w+dx));
+      if(rh.includes('w')){cropState.w=Math.max(50,cropState.w-dx);cropState.x+=dx;}
+      if(rh.includes('s'))cropState.h=Math.max(50,Math.min(h-cropState.y,cropState.h+dy));
+      if(rh.includes('n')){cropState.h=Math.max(50,cropState.h-dy);cropState.y+=dy;}
+      if(cropState.ratio!=='free')applyRatio();
+    }
+    updateCropBox();
+  });
+
+  document.addEventListener('mouseup',()=>{cropState.dragging=false;cropState.resizing=false;});
 
   checkAuth();
   `;
