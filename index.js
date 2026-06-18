@@ -630,6 +630,35 @@ const SHARED_CSS = `
   .resize-item .size-info{font-size:11px;color:#64748b;margin-top:6px}
   .resize-item .remove-btn{position:absolute;top:4px;left:4px;background:#fee2e2;color:#991b1b;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px}
   .resize-toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  
+  /* ---- Modal ---- */
+  .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center}
+  .modal-content{background:#fff;border-radius:16px;max-width:90vw;max-height:90vh;overflow:auto;padding:20px;min-width:300px}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e2e8f0}
+  .modal-header h3{margin:0;font-size:18px}
+  .modal-close{background:none;border:none;font-size:28px;cursor:pointer;color:#64748b}
+  .modal-close:hover{color:#334155}
+  
+  /* ---- Crop ---- */
+  .crop-container{background:#1e293b;border-radius:12px;padding:16px;margin-bottom:16px;display:flex;justify-content:center;overflow:hidden}
+  #crop-wrapper{position:relative;display:inline-block;max-width:100%}
+  #crop-image{max-width:100%;max-height:60vh;display:block}
+  #crop-box{position:absolute;border:2px dashed #fff;box-shadow:0 0 0 9999px rgba(0,0,0,.5);cursor:move;top:0;left:0}
+  .crop-handle{position:absolute;width:12px;height:12px;background:#fff;border:2px solid #333;border-radius:50%}
+  .crop-nw{top:-6px;left:-6px;cursor:nw-resize}
+  .crop-n{top:-6px;left:50%;transform:translateX(-50%);cursor:n-resize}
+  .crop-ne{top:-6px;right:-6px;cursor:ne-resize}
+  .crop-w{top:50%;left:-6px;transform:translateY(-50%);cursor:w-resize}
+  .crop-e{top:50%;right:-6px;transform:translateY(-50%);cursor:e-resize}
+  .crop-sw{bottom:-6px;left:-6px;cursor:sw-resize}
+  .crop-s{bottom:-6px;left:50%;transform:translateX(-50%);cursor:s-resize}
+  .crop-se{bottom:-6px;right:-6px;cursor:se-resize}
+  .crop-aspect{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .crop-aspect label{font-weight:600;font-size:14px}
+  .aspect-btn{padding:6px 12px;border:2px solid #e2e8f0;border-radius:6px;background:#fff;cursor:pointer;font-size:13px}
+  .aspect-btn:hover{border-color:var(--primary-2)}
+  .aspect-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .crop-toolbar{display:flex;gap:10px;justify-content:center}
 `;
 
 const FONT_LINK = `<link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">`;
@@ -1026,6 +1055,9 @@ function teacherPage() {
           <div class="resize-preview" id="resize-preview"></div>
           
           <div class="resize-toolbar">
+            <button class="btn secondary" id="btn-crop">
+              <span>✂️</span> برش (Crop)
+            </button>
             <button class="btn primary" id="btn-resize-all">
               <span>⚡</span> فشرده‌سازی همه
             </button>
@@ -1034,7 +1066,47 @@ function teacherPage() {
             </button>
           </div>
         </div>
-      </div>
+        
+        <!-- Modal برش عکس -->
+        <div id="crop-modal" class="modal hidden">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>✂️ برش عکس</h3>
+              <button class="modal-close" id="crop-close">×</button>
+            </div>
+            <div class="crop-container">
+              <div id="crop-wrapper">
+                <img id="crop-image" src="" alt="برش">
+                <div id="crop-box">
+                  <div class="crop-handle crop-nw"></div>
+                  <div class="crop-handle crop-n"></div>
+                  <div class="crop-handle crop-ne"></div>
+                  <div class="crop-handle crop-w"></div>
+                  <div class="crop-handle crop-e"></div>
+                  <div class="crop-handle crop-sw"></div>
+                  <div class="crop-handle crop-s"></div>
+                  <div class="crop-handle crop-se"></div>
+                </div>
+              </div>
+            </div>
+            <div class="crop-aspect">
+              <label>نسبت تصویر:</label>
+              <button class="aspect-btn active" data-ratio="free">آزاد</button>
+              <button class="aspect-btn" data-ratio="16:9">16:9</button>
+              <button class="aspect-btn" data-ratio="4:3">4:3</button>
+              <button class="aspect-btn" data-ratio="1:1">1:1</button>
+              <button class="aspect-btn" data-ratio="3:4">3:4</button>
+            </div>
+            <div class="crop-toolbar">
+              <button class="btn secondary" id="crop-reset">
+                <span>🔄</span> بازنشانی
+              </button>
+              <button class="btn primary" id="crop-apply">
+                <span>✓</span> اعمال برش
+              </button>
+            </div>
+          </div>
+        </div>
 
       <!-- تنظیمات -->
       <div class="card tab-content hidden" id="tab-settings">
@@ -1641,6 +1713,173 @@ function teacherScript() {
     renderResizePreview();
     document.getElementById('resize-controls').classList.add('hidden');
   };
+
+  // ---- Crop functionality ----
+  let cropData={img:null,startX:0,startY:0,boxX:0,boxY:0,boxW:0,boxH:0,ratio:'free',isDragging:false,isResizing:false,resizeHandle:''};
+
+  function openCropModal(imgIndex){
+    const item=RESIZE_IMAGES[imgIndex];
+    if(!item)return;
+    cropData.img=item;
+    cropData.imgIndex=imgIndex;
+    cropData.ratio='free';
+    
+    const modal=document.getElementById('crop-modal');
+    const img=document.getElementById('crop-image');
+    const wrapper=document.getElementById('crop-wrapper');
+    
+    img.onload=()=>{
+      const maxW=Math.min(img.naturalWidth,600);
+      const scale=maxW/img.naturalWidth;
+      const h=img.naturalHeight*scale;
+      img.style.width=maxW+'px';
+      img.style.height=h+'px';
+      wrapper.style.width=maxW+'px';
+      wrapper.style.height=h+'px';
+      
+      cropData.boxX=maxW*0.1;
+      cropData.boxY=h*0.1;
+      cropData.boxW=maxW*0.8;
+      cropData.boxH=h*0.8;
+      updateCropBox();
+    };
+    img.src=item.preview;
+    modal.classList.remove('hidden');
+  }
+
+  function updateCropBox(){
+    const box=document.getElementById('crop-box');
+    box.style.left=cropData.boxX+'px';
+    box.style.top=cropData.boxY+'px';
+    box.style.width=cropData.boxW+'px';
+    box.style.height=cropData.boxH+'px';
+  }
+
+  function applyAspect(){
+    if(cropData.ratio==='free')return;
+    const [rw,rh]=cropData.ratio.split(':').map(Number);
+    const ratio=rw/rh;
+    const curRatio=cropData.boxW/cropData.boxH;
+    if(curRatio>ratio){
+      cropData.boxW=cropData.boxH*ratio;
+    }else{
+      cropData.boxH=cropData.boxW/ratio;
+    }
+    const wrapper=document.getElementById('crop-wrapper');
+    const w=parseFloat(wrapper.style.width);
+    const h=parseFloat(wrapper.style.height);
+    cropData.boxX=Math.max(0,(w-cropData.boxW)/2);
+    cropData.boxY=Math.max(0,(h-cropData.boxH)/2);
+    updateCropBox();
+  }
+
+  document.getElementById('btn-crop').onclick=()=>{
+    if(RESIZE_IMAGES.length>0)openCropModal(0);
+  };
+
+  document.getElementById('crop-close').onclick=()=>{
+    document.getElementById('crop-modal').classList.add('hidden');
+  };
+
+  document.querySelectorAll('.aspect-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll('.aspect-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      cropData.ratio=btn.dataset.ratio;
+      applyAspect();
+    };
+  });
+
+  document.getElementById('crop-reset').onclick=()=>{
+    const img=document.getElementById('crop-image');
+    const w=parseFloat(img.style.width);
+    const h=parseFloat(img.style.height);
+    cropData.boxX=w*0.1;
+    cropData.boxY=h*0.1;
+    cropData.boxW=w*0.8;
+    cropData.boxH=h*0.8;
+    updateCropBox();
+  };
+
+  document.getElementById('crop-apply').onclick=()=>{
+    const img=cropData.img;
+    if(!img)return;
+    
+    const scaleX=img.original.width/parseFloat(document.getElementById('crop-image').style.width);
+    const scaleY=img.original.height/parseFloat(document.getElementById('crop-image').style.height);
+    
+    const sx=cropData.boxX*scaleX;
+    const sy=cropData.boxY*scaleY;
+    const sw=cropData.boxW*scaleX;
+    const sh=cropData.boxH*scaleY;
+    
+    const canvas=document.createElement('canvas');
+    canvas.width=sw;
+    canvas.height=sh;
+    const ctx=canvas.getContext('2d');
+    ctx.drawImage(img.original,sx,sy,sw,sh,0,0,sw,sh);
+    
+    canvas.toBlob(blob=>{
+      const url=URL.createObjectURL(blob);
+      img.cropped={preview:url,blob,filename:img.filename.replace(/\.[^.]+$/,'_cropped.png')};
+      img.preview=url;
+      img.blob=blob;
+      renderResizePreview();
+      document.getElementById('crop-modal').classList.add('hidden');
+      toast('برش با موفقیت اعمال شد ✅');
+    },'image/png');
+  };
+
+  const cropBox=document.getElementById('crop-box');
+  const cropWrapper=document.getElementById('crop-wrapper');
+
+  cropBox.addEventListener('mousedown',e=>{
+    if(e.target.classList.contains('crop-handle')){
+      cropData.isResizing=true;
+      cropData.resizeHandle=e.target.className.replace('crop-handle crop-','');
+    }else{
+      cropData.isDragging=true;
+    }
+    cropData.startX=e.clientX;
+    cropData.startY=e.clientY;
+    e.preventDefault();
+  });
+
+  cropWrapper.addEventListener('mousedown',e=>{
+    if(e.target===document.getElementById('crop-image')){
+      cropData.isDragging=true;
+      cropData.startX=e.clientX;
+      cropData.startY=e.clientY;
+    }
+  });
+
+  document.addEventListener('mousemove',e=>{
+    if(!cropData.isDragging&&!cropData.isResizing)return;
+    const dx=e.clientX-cropData.startX;
+    const dy=e.clientY-cropData.startY;
+    cropData.startX=e.clientX;
+    cropData.startY=e.clientY;
+    const w=parseFloat(cropWrapper.style.width);
+    const h=parseFloat(cropWrapper.style.height);
+    
+    if(cropData.isDragging){
+      cropData.boxX=Math.max(0,Math.min(w-cropData.boxW,cropData.boxX+dx));
+      cropData.boxY=Math.max(0,Math.min(h-cropData.boxH,cropData.boxY+dy));
+    }else if(cropData.isResizing){
+      const h=cropData.resizeHandle;
+      if(h.includes('e'))cropData.boxW=Math.max(50,Math.min(w-cropData.boxX,cropData.boxW+dx));
+      if(h.includes('w')){cropData.boxW=Math.max(50,cropData.boxW-dx);cropData.boxX+=dx;}
+      if(h.includes('s'))cropData.boxH=Math.max(50,Math.min(h-cropData.boxY,cropData.boxH+dy));
+      if(h.includes('n')){cropData.boxH=Math.max(50,cropData.boxH-dy);cropData.boxY+=dy;}
+      if(cropData.ratio!=='free')applyAspect();
+    }
+    updateCropBox();
+  });
+
+  document.addEventListener('mouseup',()=>{
+    cropData.isDragging=false;
+    cropData.isResizing=false;
+  });
 
   checkAuth();
   `;
