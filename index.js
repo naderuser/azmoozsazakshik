@@ -1346,23 +1346,22 @@ function teacherScript() {
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
     const theme=COLOR_THEMES[TABLE_THEME_IDX];
     
-    // ساخت HTML با فرمت اکسل RTL - جدول از راست
+    // ساخت HTML با فرمت اکسل RTL
     let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
     html+='<head><meta charset="utf-8"><x:ExcelNameList><x:Name>Sheet1</x:Name></x:ExcelNameList>';
     html+='<style>';
-    html+='body{direction:rtl}table{direction:rtl;margin-right:0}';
+    html+='table{direction:rtl}';
     html+='.title{font-size:16pt;font-weight:bold;text-align:center;background:#4472C4;color:#fff;padding:10px}';
     html+='.header{font-size:12pt;font-weight:bold;text-align:center;background:#D9E2F3;color:#000;padding:8px;border:1px solid #B4C6E7}';
-    html+='.cell{font-size:11pt;padding:6px;border:1px solid #B4C6E7}';
-    html+='.cell-rtl{font-size:11pt;padding:6px;border:1px solid #B4C6E7;direction:rtl;text-align:right}';
+    html+='.cell{font-size:11pt;text-align:right;padding:6px;border:1px solid #B4C6E7}';
     html+='.row-even{background:#F2F2F2}';
     html+='</style></head><body>';
 
     TABLES.forEach((t,ti)=>{
       // عنوان
-      html+='<table style="margin-right:0"><tr><td class="title" colspan="'+t.cols+'">'+(t.title||'جدول '+(ti+1))+'</td></tr></table>';
+      html+='<table ss:Direction="RightToLeft"><tr><td class="title" colspan="'+t.cols+'">'+(t.title||'جدول '+(ti+1))+'</td></tr></table>';
       // هدر
-      html+='<table style="direction:rtl">';
+      html+='<table ss:Direction="RightToLeft">';
       html+='<tr>';
       for(let c=0;c<t.cols;c++){
         html+='<td class="header">'+(c===0?'سوال':c===t.cols-1?'تایم':'گزینه '+(c))+'</td>';
@@ -1372,10 +1371,10 @@ function teacherScript() {
       t.data.forEach((row,r)=>{
         html+='<tr'+(r%2===1?' class="row-even"':'')+'>';
         row.forEach((cell,c)=>{
-          html+='<td class="cell-rtl">'+esc(cell||'')+'</td>';
+          html+='<td class="cell">'+esc(cell||'')+'</td>';
         });
         for(let c=row.length;c<t.cols;c++){
-          html+='<td class="cell-rtl"></td>';
+          html+='<td class="cell"></td>';
         }
         html+='</tr>';
       });
