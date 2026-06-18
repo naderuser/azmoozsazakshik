@@ -177,44 +177,35 @@ async function handleApi(req, env, url, path) {
 
   /* --- رتبه‌بندی: دانلود قالب --- */
   if (path === "/api/ranking/download" && method === "POST") {
-    // CORS headers
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
-    };
-    
-    // برای تست، احراز هویت رو برداشتم
-    // if (!await isTeacher(req, env)) return json({ error: "Unauthorized" }, 401, corsHeaders);
     const body = await req.json().catch(() => ({}));
     const { template } = body;
     
     const templateMap = {
-      "عضويت": "عضويت.docx",
-      "درس پژوهي اقدام پژوهي": "درس پژوهي اقدام پژوهي.docx",
-      "شركت در جلسات شورا": "شركت در جلسات شورا.docx",
-      "ساخت و توليد": "ساخت و توليد.docx",
-      "يادگيري مستمر": "يادگيري مستمر(كارگاه تخصصي).docx",
-      "نشان دادن تعهد": "نشان دادن تعهد (حرفه اي).docx"
+      "عضويت": "public/templates/عضويت.docx",
+      "درس پژوهي اقدام پژوهي": "public/templates/درس پژوهي اقدام پژوهي.docx",
+      "شركت در جلسات شورا": "public/templates/شركت در جلسات شورا.docx",
+      "ساخت و توليد": "public/templates/ساخت و توليد.docx",
+      "يادگيري مستمر": "public/templates/يادگيري مستمر(كارگاه تخصصي).docx",
+      "نشان دادن تعهد": "public/templates/نشان دادن تعهد (حرفه اي).docx"
     };
     
-    const fileName = templateMap[template];
-    if (!fileName) return json({ error: "قالب یافت نشد" }, 404);
+    const filePath = templateMap[template];
+    if (!filePath) return json({ error: "قالب یافت نشد" }, 404);
     
-    // خواندن فایل قالب از R2
-    const templateKey = "templates/" + fileName;
-    const templateData = await env.EXAM_BUCKET.get(templateKey);
-    if (!templateData) return json({ error: "فایل قالب یافت نشد" }, 404);
-    
-    const arrayBuffer = await templateData.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-    
-    return new Response(uint8Array, {
-      headers: {
-        "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "Content-Disposition": "attachment; filename=certificate.docx"
-      }
-    });
+    try {
+      const templateRes = await fetch(req.url.origin + "/" + filePath);
+      if (!templateRes.ok) return json({ error: "فایل قالب یافت نشد" }, 404);
+      
+      const arrayBuffer = await templateRes.arrayBuffer();
+      return new Response(arrayBuffer, {
+        headers: {
+          "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "Content-Disposition": "attachment; filename=certificate.docx"
+        }
+      });
+    } catch (e) {
+      return json({ error: "خطا در خواندن فایل: " + e.message }, 500);
+    }
   }
 
   /* --- آزمون دانش‌آموز (عمومی) --- */
