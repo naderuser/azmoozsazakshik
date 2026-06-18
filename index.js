@@ -2082,7 +2082,7 @@ function teacherScript() {
       const url=URL.createObjectURL(blob);
       const a=document.createElement('a');
       a.href=url;
-      a.download=`گواهی_${name}.docx`;
+      a.download='gozashti_' + name + '.docx';
       a.click();
       URL.revokeObjectURL(url);
       toast('فایل Word دانلود شد ✅');
