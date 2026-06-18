@@ -175,39 +175,6 @@ async function handleApi(req, env, url, path) {
     return json({ ok: true, auth: await isTeacher(req, env), configured: Boolean(stored) });
   }
 
-  /* --- رتبه‌بندی: دانلود قالب --- */
-  if (path === "/api/ranking/download" && method === "POST") {
-    const body = await req.json().catch(() => ({}));
-    const { template } = body;
-    
-    const templateMap = {
-      "عضويت": "public/templates/عضويت.docx",
-      "درس پژوهي اقدام پژوهي": "public/templates/درس پژوهي اقدام پژوهي.docx",
-      "شركت در جلسات شورا": "public/templates/شركت در جلسات شورا.docx",
-      "ساخت و توليد": "public/templates/ساخت و توليد.docx",
-      "يادگيري مستمر": "public/templates/يادگيري مستمر(كارگاه تخصصي).docx",
-      "نشان دادن تعهد": "public/templates/نشان دادن تعهد (حرفه اي).docx"
-    };
-    
-    const filePath = templateMap[template];
-    if (!filePath) return json({ error: "قالب یافت نشد" }, 404);
-    
-    try {
-      const templateRes = await fetch(req.url.origin + "/" + filePath);
-      if (!templateRes.ok) return json({ error: "فایل قالب یافت نشد" }, 404);
-      
-      const arrayBuffer = await templateRes.arrayBuffer();
-      return new Response(arrayBuffer, {
-        headers: {
-          "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          "Content-Disposition": "attachment; filename=certificate.docx"
-        }
-      });
-    } catch (e) {
-      return json({ error: "خطا در خواندن فایل: " + e.message }, 500);
-    }
-  }
-
   /* --- آزمون دانش‌آموز (عمومی) --- */
   if (path.startsWith("/api/exam/")) {
     const rest = path.slice("/api/exam/".length);
@@ -1260,13 +1227,12 @@ function teacherPage() {
           <button class="btn secondary" id="btn-rank-clear">
             <span>🗑️</span> پاک کردن
           </button>
-          <button class="btn primary" id="btn-rank-download">
-            <span>📥</span> دانلود Word
-          </button>
           <button class="btn success" id="btn-rank-pdf">
             <span>📄</span> دانلود PDF
           </button>
         </div>
+        
+        <div id="rank-preview" class="hidden"></div>
       </div>
 
       <!-- تنظیمات -->
@@ -2053,46 +2019,82 @@ function teacherScript() {
     document.getElementById('rank-description').value='';
   };
 
-  document.getElementById('btn-rank-download').onclick=async()=>{
+  document.getElementById('btn-rank-pdf').onclick=async()=>{
     const name=document.getElementById('rank-name').value.trim();
     if(!name){toast('لطفاً نام را وارد کنید');return;}
-    
-    toast('در حال آماده‌سازی فایل...');
-    
-    try {
-      const res=await fetch('/api/ranking/download',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          template:selectedTemplate,
-          name,
-          code:document.getElementById('rank-code').value,
-          position:document.getElementById('rank-position').value,
-          year:document.getElementById('rank-year').value,
-          from:document.getElementById('rank-from').value,
-          to:document.getElementById('rank-to').value,
-          skillType:document.getElementById('rank-skill-type').value,
-          description:document.getElementById('rank-description').value
-        })
-      });
-      
-      if(!res.ok){const errData=await res.json().catch(()=>({error:"خطای نامشخص"}));toast("خطا: "+errData.error);return;}
-      
-      const blob=await res.blob();
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url;
-      a.download='certificate.docx';
-      a.click();
-      URL.revokeObjectURL(url);
-      toast('فایل Word دانلود شد ✅');
-    }catch(e){
-      toast('خطا: '+e.message);
-    }
-  };
 
-  document.getElementById('btn-rank-pdf').onclick=async()=>{
-    toast('برای دانلود PDF از دکمه Word استفاده کرده و در Word ذخیره PDF کنید');
+    toast('در حال ساخت PDF...');
+
+    const code=document.getElementById('rank-code').value;
+    const position=document.getElementById('rank-position').value;
+    const year=document.getElementById('rank-year').value;
+    const fromDate=document.getElementById('rank-from').value;
+    const toDate=document.getElementById('rank-to').value;
+    const skillType=document.getElementById('rank-skill-type').value;
+    const description=document.getElementById('rank-description').value;
+
+    // استفاده از jsPDF
+    if(!window.jspdf){toast('کتابخانه PDF لود نشده');return;}
+
+    const{jsPDF}=window.jspdf;
+    const doc=new jsPDF({
+      orientation:'portrait',
+      unit:'mm',
+      format:'a4'
+    });
+
+    const pageW=210;
+    const pageH=297;
+    const margin=20;
+    const contentW=pageW-2*margin;
+
+    // عنوان
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(14);
+    doc.text('گواهی رتبه بندی معلمان',pageW/2,25,{align:'center'});
+
+    // خط
+    doc.setLineWidth(0.5);
+    doc.line(margin,30,pageW-margin,30);
+
+    // متن اصلی
+    doc.setFont('helvetica','');
+    doc.setFontSize(11);
+    
+    const lines=[
+      'در اجرای قانون نظام رتبه بندی و به استناد آیین نامه اجرایی قانون نظام رتبه بندی معلمان،',
+      'مصوبه شماره 177059/ت 64074 مورخه 1404/01/01 بدینوسیله گواهی می شود:',
+      '',
+      'جناب آقای/سرکار خانم: ' + (name || '_______________'),
+      'با کد پرسنلی: ' + (code || '_______________'),
+      'سمت: ' + (position || '_______________'),
+      'در سال تحصیلی: ' + (year || '_______________'),
+      'از تاریخ: ' + (fromDate || '_______________'),
+      'تا تاریخ: ' + (toDate || '_______________'),
+      '',
+      'فعالیت های مرتبط با:',
+      'شایستگی های حرفه ای (' + skillType + ')',
+      '',
+      'به استناد صورتجلسات موجود در دفاتر این آموزشگاه،',
+      (description || '________________________________________________') + ' را داشته است.',
+      '',
+      'این گواهی به درخواست نامبرده و به منظور بهره برداری از مزایای قانونی رتبه بندی صادر شده است',
+      'و فاقد ارزش قانونی دیگری می باشد.'
+    ];
+
+    let y=40;
+    lines.forEach(line=>{
+      doc.text(line,margin,y,{align:'right'});
+      y+=7;
+    });
+
+    // امضا
+    y=pageH-50;
+    doc.text('امضای مدیر آموزشگاه',pageW-margin,y,{align:'center'});
+    doc.line(pageW-margin-30,y+5,pageW-margin+30,y+5);
+
+    doc.save('گواهی_رتبه_بندی.pdf');
+    toast('PDF دانلود شد ✅');
   };
 
   checkAuth();
