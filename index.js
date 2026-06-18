@@ -1346,17 +1346,17 @@ function teacherScript() {
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
     const theme=COLOR_THEMES[TABLE_THEME_IDX];
     
-    // ساخت HTML با فرمت اکسل حرفه‌ای
+    // ساخت HTML با فرمت اکسل حرفه‌ای RTL
     let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">';
     html+='<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>';
     html+='<xml><x:ExcelWorkbook xmlns:x="urn:schemas-microsoft-com:office:excel"><x:WindowHeight>8535</x:WindowHeight><x:WindowWidth>21555</x:WindowWidth><x:WindowTopX>480</x:WindowTopX><x:WindowTopY>90</x:WindowTopY><x:RefineRectsAwareImport>1</x:RefineRectsAwareImport><x:TabRatio>850</x:TabRatio><x:ActiveSheet>0</x:ActiveSheet></x:ExcelWorkbook></xml>';
     html+='<style>';
-    html+='table{margin-bottom:20px;border-collapse:collapse;width:100%}';
+    html+='table{margin-bottom:20px;border-collapse:collapse;width:100%;direction:rtl}';
     html+='th{background:#'+theme.header+';color:#fff;font-weight:bold;font-family:Tahoma;font-size:12pt;text-align:center;padding:8px;border:1px solid #000}';
     html+='td{font-family:Tahoma;font-size:11pt;text-align:right;padding:6px;border:1px solid #000}';
     html+='.even{background:#'+theme.band+'}';
     html+='.title-cell{background:#'+theme.header+';color:#fff;font-weight:bold;font-family:Tahoma;font-size:16pt;text-align:center;padding:10px;border:1px solid #000}';
-    html+='</style></head><body dir="rtl">';
+    html+='</style></head><body style="direction:rtl">';
     
     TABLES.forEach((t,ti)=>{
       const cols=t.cols||6;
