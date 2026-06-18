@@ -7,12 +7,22 @@
  *  - پنل معلم (ساخت دانش‌آموز با UUID اختصاصی، طراحی سوال، تصحیح و بازخورد، مشاهده پاسخنامه‌ها)
  *  - سوال تشریحی با امکان درج عکس، اشکال هندسی و علائم ریاضی
  *  - دانلود خروجی Word با سربرگ و جدول‌کشی
- *  - جدول‌ساز حرفه‌ای با خروجی اکسل RTL
+ *  - جدول‌ساز حرفه‌ای با خروجی اکسل RTL (با ExcelJS)
  *  - اسکنر حرفه‌ای (مشابه CamScanner) با فیلترهای متنوع
  *  - کاهش حجم عکس با تنظیم کیفیت
  *
  * داده‌ها در Cloudflare KV (binding: EXAM_KV) ذخیره می‌شوند.
  */
+
+// TypeScript declarations for ExcelJS
+declare const ExcelJS: {
+  Workbook: new() => {
+    creator: string;
+    created: Date;
+    addWorksheet: (name: string, options?: object) => object;
+    xlsx: { writeBuffer: () => Promise<ArrayBuffer> };
+  };
+};
 
 const APP_TITLE = "پنل آزمون ساز دوره ابتدایی";
 const APP_DESIGNER = "طراح: نادر اکشیک";
@@ -1330,48 +1340,139 @@ function teacherScript() {
   window.updCell=(ti,r,c,v)=>{TABLES[ti].data[r][c]=v;};
   window.delTable=(ti)=>{if(!confirm('این جدول حذف شود؟'))return;TABLES.splice(ti,1);renderTables();};
   window.resizeTable=(ti,k,v)=>{const n=Math.max(1,parseInt(v,10)||1);const t=TABLES[ti];if(k==='rows')t.rows=n;else t.cols=n;t.data=blankRows(t.rows,t.cols,t.data);renderTables();};
-  document.getElementById('btn-add-table').onclick=()=>{TABLES.push({title:'',rows:4,cols:4,data:blankRows(4,4)});renderTables();};
-  document.getElementById('btn-dl-excel').onclick=()=>{
+  document.getElementById('btn-add-table').onclick=()=>{TABLES.push({title:'بانک سوالات',rows:4,cols:6,data:blankRows(4,6)});renderTables();};
+  
+  // رنگ‌بندی‌های جدول
+  const COLOR_THEMES=[
+    {name:'آبی',header:'4F46E5',band:'EEF2FF'},
+    {name:'سبز',header:'059669',band:'ECFDF5'},
+    {name:'نارنجی',header:'EA580C',band:'FFF7ED'},
+    {name:'صورتی',header:'DB2777',band:'FDF2F8'},
+    {name:'خاکستری',header:'334155',band:'F8FAFC'},
+  ];
+  let TABLE_THEME_IDX=0;
+  
+  document.getElementById('btn-dl-excel').onclick=async()=>{
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
-    // ساخت HTML با فرمت اکسل حرفه‌ای
-    let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
-    html+='<head><meta charset="utf-8"><x:ExcelNameList><x:Name>Sheet1</x:Name></x:ExcelNameList>';
-    html+='<style>';
-    html+='.title{font-size:16pt;font-weight:bold;text-align:center;background:#4472C4;color:#fff;padding:10px}';
-    html+='.header{font-size:12pt;font-weight:bold;text-align:center;background:#D9E2F3;color:#000;padding:8px;border:1px solid #B4C6E7}';
-    html+='.cell{font-size:11pt;text-align:right;padding:6px;border:1px solid #B4C6E7}';
-    html+='.row-even{background:#F2F2F2}';
-    html+='</style></head><body>';
+    toast('در حال ساخت فایل اکسل...');
+    
+    // لود ExcelJS
+    if(!window.ExcelJS){
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js';
+      document.head.appendChild(s);
+      await new Promise(r=>s.onload=r);
+    }
+    
+    const ExcelJS=window.ExcelJS;
+    const theme=COLOR_THEMES[TABLE_THEME_IDX];
+    const wb=new ExcelJS.Workbook();
+    wb.creator='پنل آزمون ساز - نادر اکشیک';
+    wb.created=new Date();
     
     TABLES.forEach((t,ti)=>{
-      // عنوان
-      html+='<table><tr><td class="title" colspan="'+t.cols+'">'+(t.title||'جدول '+(ti+1))+'</td></tr></table>';
-      // هدر
-      html+='<table>';
-      html+='<tr>';
-      for(let c=0;c<t.cols;c++){
-        html+='<td class="header">'+(c===0?'سوال':c===t.cols-1?'تایم':'گزینه '+(c))+'</td>';
-      }
-      html+='</tr>';
-      // داده‌ها
-      t.data.forEach((row,r)=>{
-        html+='<tr'+(r%2===1?' class="row-even"':'')+'>';
-        row.forEach((cell,c)=>{
-          html+='<td class="cell">'+esc(cell||'')+'</td>';
-        });
-        // اگر ستون کمتر از حداقل هست، خالی اضافه کن
-        for(let c=row.length;c<t.cols;c++){
-          html+='<td class="cell"></td>';
-        }
-        html+='</tr>';
+      const ws=wb.addWorksheet('جدول '+(ti+1),{
+        views:[{rightToLeft:true,showGridLines:true}],
+        properties:{defaultRowHeight:22}
       });
-      html+='</table><br>';
+      const colCount=t.cols||6;
+      const headers=t.cols>=6?['سوال','گزینه ۱','گزینه ۲','گزینه ۳','گزینه ۴','تایم']:Array(colCount).fill(0).map((_,i)=>i===0?'سوال':i===colCount-1?'تایم':'ستون '+(i+1));
+      
+      // ردیف عنوان (مرج شده)
+      ws.mergeCells(1,1,1,colCount);
+      const titleCell=ws.getCell(1,1);
+      titleCell.value=t.title||'بانک سوالات';
+      titleCell.font={name:'B Nazanin',size:16,bold:true,color:{argb:'FFFFFFFF'}};
+      titleCell.alignment={horizontal:'center',vertical:'middle',readingOrder:'rtl',wrapText:true};
+      titleCell.fill={type:'pattern',pattern:'solid',fgColor:{argb:theme.header}};
+      for(let c=1;c<=colCount;c++){
+        ws.getCell(1,c).border={
+          top:{style:'medium',color:{argb:'FF000000'}},
+          left:{style:'medium',color:{argb:'FF000000'}},
+          right:{style:'medium',color:{argb:'FF000000'}},
+          bottom:{style:'medium',color:{argb:'FF000000'}}
+        };
+      }
+      ws.getRow(1).height=36;
+      
+      // ردیف هدر
+      const headerRow=ws.getRow(2);
+      headers.forEach((h,i)=>{
+        const cell=headerRow.getCell(i+1);
+        cell.value=h;
+        cell.font={name:'B Nazanin',size:12,bold:true,color:{argb:'FFFFFFFF'}};
+        cell.alignment={horizontal:'center',vertical:'middle',readingOrder:'rtl',wrapText:true};
+        cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:theme.header}};
+        cell.border={
+          top:{style:'medium',color:{argb:'FF000000'}},
+          left:{style:'thin',color:{argb:'FF000000'}},
+          right:{style:'thin',color:{argb:'FF000000'}},
+          bottom:{style:'medium',color:{argb:'FF000000'}}
+        };
+      });
+      headerRow.height=28;
+      
+      // ردیف‌های داده
+      t.data.forEach((row,r)=>{
+        const excelRow=ws.getRow(r+3);
+        for(let c=0;c<colCount;c++){
+          const val=row[c]??'';
+          const cell=excelRow.getCell(c+1);
+          cell.value=val;
+          cell.font={name:'B Nazanin',size:11,color:{argb:'FF0F172A'}};
+          cell.alignment={
+            horizontal:c===0?'right':'center',
+            vertical:'middle',
+            readingOrder:'rtl',
+            wrapText:true
+          };
+          if(r%2===1){
+            cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:theme.band}};
+          }
+          cell.border={
+            top:{style:'thin',color:{argb:'FF000000'}},
+            left:{style:'thin',color:{argb:'FF000000'}},
+            right:{style:'thin',color:{argb:'FF000000'}},
+            bottom:{style:'thin',color:{argb:'FF000000'}}
+          };
+        }
+        excelRow.height=24;
+      });
+      
+      // ستون‌های Auto-size
+      headers.forEach((h,i)=>{
+        let maxLen=h.length;
+        t.data.forEach(row=>{
+          const len=(row[i]||'').length;
+          if(len>maxLen)maxLen=len;
+        });
+        ws.getColumn(i+1).width=Math.min(Math.max(maxLen+3,8),50);
+      });
     });
     
-    html+='</body></html>';
-    const blob=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel'});
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='جداول.xls';document.body.appendChild(a);a.click();a.remove();
+    const buffer=await wb.xlsx.writeBuffer();
+    const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='جداول.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
     toast('فایل اکسل با موفقیت ساخته شد ✅');
+  };
+  
+  // دکمه‌های رنگ‌بندی
+  const tableTools=document.querySelector('#tab-tables .table-actions');
+  if(tableTools){
+    tableTools.innerHTML+='<div style="margin-top:12px"><label style="font-size:13px;margin-left:8px">رنگ:</label>'+
+      COLOR_THEMES.map((t,i)=>'<button class="btn sm '+(i===0?'primary':'secondary')+'" style="margin:2px" onclick="setTableTheme('+i+')">'+t.name+'</button>').join('')+
+      '</div>';
+  }
+  window.setTableTheme=(i)=>{
+    TABLE_THEME_IDX=i;
+    document.querySelectorAll('#tab-tables .table-actions button').forEach((b,idx)=>{
+      if(idx>=3&&idx<8)b.className='btn sm '+(idx-3===i?'primary':'secondary');
+    });
   };
 
   // ---- اسکنر عکس حرفه‌ای ----
