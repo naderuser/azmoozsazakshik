@@ -1346,39 +1346,48 @@ function teacherScript() {
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
     const theme=COLOR_THEMES[TABLE_THEME_IDX];
     
-    // ساخت HTML با فرمت اکسل حرفه‌ای RTL
-    let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">';
+    // ساخت HTML با فرمت اکسل حرفه‌ای RTL با جدول واقعی
+    let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
     html+='<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>';
     html+='<xml><x:ExcelWorkbook xmlns:x="urn:schemas-microsoft-com:office:excel"><x:WindowHeight>8535</x:WindowHeight><x:WindowWidth>21555</x:WindowWidth><x:WindowTopX>480</x:WindowTopX><x:WindowTopY>90</x:WindowTopY><x:RefineRectsAwareImport>1</x:RefineRectsAwareImport><x:TabRatio>850</x:TabRatio><x:ActiveSheet>0</x:ActiveSheet></x:ExcelWorkbook></xml>';
-    html+='<style>';
-    html+='table{margin-bottom:20px;border-collapse:collapse;width:100%;direction:rtl}';
-    html+='th{background:#'+theme.header+';color:#fff;font-weight:bold;font-family:Tahoma;font-size:12pt;text-align:center;padding:8px;border:1px solid #000}';
-    html+='td{font-family:Tahoma;font-size:11pt;text-align:right;padding:6px;border:1px solid #000}';
-    html+='.even{background:#'+theme.band+'}';
-    html+='.title-cell{background:#'+theme.header+';color:#fff;font-weight:bold;font-family:Tahoma;font-size:16pt;text-align:center;padding:10px;border:1px solid #000}';
-    html+='</style></head><body style="direction:rtl">';
+    // استایل‌ها
+    html+='<Styles>';
+    html+='<Style ss:ID="s75"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/></Style>';
+    html+='<Style ss:ID="s76"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Size="16" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/></Style>';
+    html+='<Style ss:ID="s77"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/><Interior ss:Color="#'+theme.band+'" ss:Pattern="Solid"/></Style>';
+    html+='<Style ss:ID="s78"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/></Style>';
+    html+='</Styles>';
+    html+='</head><body style="direction:rtl">';
     
     TABLES.forEach((t,ti)=>{
       const cols=t.cols||6;
       const headers=cols>=6?['سوال','گزینه ۱','گزینه ۲','گزینه ۳','گزینه ۴','تایم']:
         Array(cols).fill(0).map((_,i)=>i===0?'سوال':i===cols-1?'تایم':'ستون '+(i+1));
+      const rowCount=t.data.length+2;
       
-      // جدول با عنوان
+      // جدول اکسل واقعی با ss:Table
       html+='<table>';
+      html+='<AutoFilter x:Range="A1:'+String.fromCharCode(64+cols)+rowCount+'" xmlns:x="urn:schemas-microsoft-com:office:excel"/>';
+      
       // ردیف عنوان
-      html+='<tr><td class="title-cell" colspan="'+cols+'">'+(t.title||'بانک سوالات')+'</td></tr>';
+      html+='<Row ss:Height="30"><Cell ss:StyleID="s76" ss:MergeAcross="'+(cols-1)+'"><Data ss:Type="String">'+(t.title||'بانک سوالات')+'</Data></Cell></Row>';
+      
       // ردیف هدر
-      html+='<tr>';
-      headers.forEach(h=>html+='<th>'+esc(h)+'</th>');
-      html+='</tr>';
+      html+='<Row ss:Height="25">';
+      headers.forEach((h,i)=>{
+        html+='<Cell ss:StyleID="s75"><Data ss:Type="String">'+esc(h)+'</Data></Cell>';
+      });
+      html+='</Row>';
+      
       // ردیف‌های داده
       t.data.forEach((row,r)=>{
-        html+='<tr class="'+(r%2===1?'even':'')+'">';
+        const style=r%2===1?'s77':'s78';
+        html+='<Row>';
         row.forEach((cell)=>{
-          html+='<td>'+esc(cell||'')+'</td>';
+          html+='<Cell ss:StyleID="'+style+'"><Data ss:Type="String">'+esc(cell||'')+'</Data></Cell>';
         });
-        for(let c=row.length;c<cols;c++)html+='<td></td>';
-        html+='</tr>';
+        for(let c=row.length;c<cols;c++)html+='<Cell ss:StyleID="'+style+'"><Data ss:Type="String"></Data></Cell>';
+        html+='</Row>';
       });
       html+='</table>';
     });
