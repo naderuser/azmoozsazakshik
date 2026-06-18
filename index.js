@@ -1334,135 +1334,307 @@ function teacherScript() {
   
   // رنگ‌بندی‌های جدول
   const COLOR_THEMES=[
-    {name:'آبی',header:'4F46E5',band:'EEF2FF'},
-    {name:'سبز',header:'059669',band:'ECFDF5'},
-    {name:'نارنجی',header:'EA580C',band:'FFF7ED'},
-    {name:'صورتی',header:'DB2777',band:'FDF2F8'},
-    {name:'خاکستری',header:'334155',band:'F8FAFC'},
+    {name:'آبی',header:'#4F46E5',band:'#EEF2FF',titleBg:'#3730A3'},
+    {name:'سبز',header:'#059669',band:'#ECFDF5',titleBg:'#047857'},
+    {name:'نارنجی',header:'#EA580C',band:'#FFF7ED',titleBg:'#C2410C'},
+    {name:'صورتی',header:'#DB2777',band:'#FDF2F8',titleBg:'#BE185D'},
+    {name:'خاکستری',header:'#334155',band:'#F8FAFC',titleBg:'#1E293B'},
   ];
   let TABLE_THEME_IDX=0;
+  
+  // ساخت فایل XLSX واقعی با ZIP
+  function buildXLSX(tables, themeIdx) {
+    const theme = COLOR_THEMES[themeIdx];
+    const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    
+    // ساخت XML شیت
+    let sheetData = '';
+    let rowNum = 1;
+    
+    tables.forEach((t, ti) => {
+      const cols = t.cols || 6;
+      const headers = cols >= 6 ? ['سوال','گزینه ۱','گزینه ۲','گزینه ۳','گزینه ۴','تایم'] : 
+        Array(cols).fill(0).map((_,i) => i===0?'سوال':i===cols-1?'تایم':'ستون '+(i+1));
+      const title = t.title || 'بانک سوالات';
+      
+      // ردیف عنوان
+      sheetData += `<row r="${rowNum}">`;
+      sheetData += `<c r="A${rowNum}" s="1" t="inlineStr"><is><t>${esc(title)}</t></is></c>`;
+      sheetData += '</row>';
+      rowNum++;
+      
+      // ردیف هدر
+      sheetData += `<row r="${rowNum}">`;
+      headers.forEach((h, i) => {
+        const col = String.fromCharCode(65+i);
+        sheetData += `<c r="${col}${rowNum}" s="2" t="inlineStr"><is><t>${esc(h)}</t></is></c>`;
+      });
+      sheetData += '</row>';
+      rowNum++;
+      
+      // ردیف‌های داده
+      t.data.forEach((row, ri) => {
+        sheetData += `<row r="${rowNum}">`;
+        for(let c=0;c<cols;c++){
+          const col = String.fromCharCode(65+c);
+          const val = row[c] || '';
+          const sIdx = ri%2===1 ? 4 : 3;
+          sheetData += `<c r="${col}${rowNum}" s="${sIdx}" t="inlineStr"><is><t>${esc(val)}</t></is></c>`;
+        }
+        sheetData += '</row>';
+        rowNum++;
+      });
+      rowNum++; // فاصله
+    });
+    
+    const sheetXML = `<?xml version="1.0" encoding="UTF-8"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <sheetView workbookViewId="0"><selection activeCell="A1" sqref="A1"/></sheetView>
+  <sheetData>${sheetData}</sheetData>
+</worksheet>`;
+    
+    // استایل‌ها
+    const stylesXML = `<?xml version="1.0" encoding="UTF-8"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <fonts>
+    <font><sz val="11"/><name val="Tahoma"/></font>
+    <font><b><sz val="16"/><name val="Tahoma"/></b></font>
+    <font><b><sz val="12"/><name val="Tahoma"/></b></font>
+  </fonts>
+  <fills>
+    <fill><patternFill patternType="none"/></fill>
+    <fill><patternFill patternType="gray125"/></fill>
+    <fill><patternFill patternType="solid"><fgColor rgb="FFFFFFFF"/></patternFill></fill>
+    <fill><patternFill patternType="solid"><fgColor rgb="${theme.header.replace('#','')}"/></patternFill></fill>
+    <fill><patternFill patternType="solid"><fgColor rgb="${theme.band.replace('#','')}"/></patternFill></fill>
+  </fills>
+  <borders>
+    <border><left/><right/><top/><bottom/><diagonal/></border>
+    <border>
+      <left style="medium"><color rgb="FF000000"/></left>
+      <right style="medium"><color rgb="FF000000"/></right>
+      <top style="medium"><color rgb="FF000000"/></top>
+      <bottom style="medium"><color rgb="FF000000"/></bottom>
+    </border>
+    <border>
+      <left style="thin"><color rgb="FF000000"/></left>
+      <right style="thin"><color rgb="FF000000"/></right>
+      <top style="medium"><color rgb="FF000000"/></top>
+      <bottom style="medium"><color rgb="FF000000"/></bottom>
+    </border>
+    <border>
+      <left style="thin"><color rgb="FF000000"/></left>
+      <right style="thin"><color rgb="FF000000"/></right>
+      <top style="thin"><color rgb="FF000000"/></top>
+      <bottom style="thin"><color rgb="FF000000"/></bottom>
+    </border>
+    <border>
+      <left style="thin"><color rgb="FF000000"/></left>
+      <right style="thin"><color rgb="FF000000"/></right>
+      <top style="thin"><color rgb="FF000000"/></top>
+      <bottom style="thin"><color rgb="FF000000"/></bottom>
+    </border>
+  </borders>
+  <cellXfs>
+    <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+    <xf numFmtId="0" fontId="1" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1">
+      <alignment horizontal="center" vertical="center" wrapText="1"/>
+    </xf>
+    <xf numFmtId="0" fontId="2" fillId="3" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1">
+      <alignment horizontal="center" vertical="center" wrapText="1"/>
+    </xf>
+    <xf numFmtId="0" fontId="0" fillId="2" borderId="3" xfId="0" applyFont="1" applyFill="1" applyBorder="1">
+      <alignment horizontal="right" vertical="center" wrapText="1"/>
+    </xf>
+    <xf numFmtId="0" fontId="0" fillId="4" borderId="4" xfId="0" applyFont="1" applyFill="1" applyBorder="1">
+      <alignment horizontal="right" vertical="center" wrapText="1"/>
+    </xf>
+  </cellXfs>
+</styleSheet>`;
+    
+    // Content Types
+    const ctXML = `<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+  <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+</Types>`;
+    
+    // Workbook
+    const wbXML = `<?xml version="1.0" encoding="UTF-8"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets><sheet name="گزارش" sheetId="1" r:id="rId1"/></sheets>
+</workbook>`;
+    
+    // Root relations
+    const rootRels = `<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>`;
+    
+    // Sheet relations
+    const sheetRels = `<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>`;
+    
+    // ساخت ZIP
+    const files = {
+      '_rels/.rels': rootRels,
+      'xl/workbook.xml': wbXML,
+      'xl/_rels/workbook.xml.rels': sheetRels,
+      'xl/worksheets/sheet1.xml': sheetXML,
+      'xl/styles.xml': stylesXML,
+      '[Content_Types].xml': ctXML
+    };
+    
+    return files;
+  }
+  
+  // ساخت ZIP و دانلود
+  async function downloadXLSX(tables, themeIdx) {
+    const files = buildXLSX(tables, themeIdx);
+    
+    // پیاده‌سازی ساده ZIP بدون کتابخانه
+    const parts = [];
+    const centralDir = [];
+    let offset = 0;
+    
+    for(const [name, content] of Object.entries(files)) {
+      const nameBytes = new TextEncoder().encode(name);
+      const contentBytes = new TextEncoder().encode(content);
+      
+      // Local file header
+      const header = new ArrayBuffer(30 + nameBytes.length + contentBytes.length);
+      const view = new DataView(header);
+      const bytes = new Uint8Array(header);
+      
+      view.setUint32(0, 0x04034b50, true); // signature
+      view.setUint16(4, 20, true); // version needed
+      view.setUint16(6, 0, true); // flags
+      view.setUint16(8, 0, true); // compression (store)
+      view.setUint16(10, 0, true); // mod time
+      view.setUint16(12, 0, true); // mod date
+      view.setUint32(14, crc32(contentBytes), true); // crc32
+      view.setUint32(18, contentBytes.length, true); // compressed size
+      view.setUint32(22, contentBytes.length, true); // uncompressed size
+      view.setUint16(26, nameBytes.length, true); // name length
+      view.setUint16(28, 0, true); // extra length
+      
+      bytes.set(nameBytes, 30);
+      bytes.set(contentBytes, 30 + nameBytes.length);
+      
+      centralDir.push({name, offset, size: contentBytes.length, crc: crc32(contentBytes)});
+      parts.push(bytes);
+      offset += bytes.length;
+    }
+    
+    // Central directory
+    const cdOffset = offset;
+    for(const entry of centralDir) {
+      const nameBytes = new TextEncoder().encode(entry.name);
+      const cdEntry = new ArrayBuffer(46 + nameBytes.length);
+      const cdView = new DataView(cdEntry);
+      const cdBytes = new Uint8Array(cdEntry);
+      
+      cdView.setUint32(0, 0x02014b50, true); // signature
+      cdView.setUint16(4, 20, true); // version made
+      cdView.setUint16(6, 20, true); // version needed
+      cdView.setUint16(8, 0, true); // flags
+      cdView.setUint16(10, 0, true); // compression
+      cdView.setUint16(12, 0, true); // mod time
+      cdView.setUint16(14, 0, true); // mod date
+      cdView.setUint32(16, entry.crc, true); // crc32
+      cdView.setUint32(20, entry.size, true); // compressed size
+      cdView.setUint32(24, entry.size, true); // uncompressed size
+      cdView.setUint16(28, nameBytes.length, true); // name length
+      cdView.setUint16(30, 0, true); // extra length
+      cdView.setUint16(32, 0, true); // comment length
+      cdView.setUint16(34, 0, true); // disk start
+      cdView.setUint16(36, 0, true); // internal attr
+      cdView.setUint32(38, 0, true); // external attr
+      cdView.setUint32(42, entry.offset, true); // local header offset
+      
+      cdBytes.set(nameBytes, 46);
+      parts.push(cdBytes);
+      offset += cdBytes.length;
+    }
+    
+    // End of central directory
+    const eocd = new ArrayBuffer(22);
+    const eocdView = new DataView(eocd);
+    eocdView.setUint32(0, 0x06054b50, true); // signature
+    eocdView.setUint16(4, 0, true); // disk number
+    eocdView.setUint16(6, 0, true); // disk with cd
+    eocdView.setUint16(8, centralDir.length, true); // entries on disk
+    eocdView.setUint16(10, centralDir.length, true); // total entries
+    eocdView.setUint32(12, offset - cdOffset, true); // cd size
+    eocdView.setUint32(16, cdOffset, true); // cd offset
+    eocdView.setUint16(20, 0, true); // comment length
+    parts.push(new Uint8Array(eocd));
+    
+    // ترکیب همه
+    const totalLen = parts.reduce((s,e) => s + e.length, 0);
+    const result = new Uint8Array(totalLen);
+    let pos = 0;
+    for(const part of parts) {
+      result.set(part, pos);
+      pos += part.length;
+    }
+    
+    return new Blob([result], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  }
+  
+  // CRC32 table
+  const crc32Table = (() => {
+    const t = new Uint32Array(256);
+    for(let i=0; i<256; i++) {
+      let c = i;
+      for(let k=0; k<8; k++) {
+        c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+      }
+      t[i] = c;
+    }
+    return t;
+  })();
+  
+  function crc32(data) {
+    let crc = 0xFFFFFFFF;
+    for(let i=0; i<data.length; i++) {
+      crc = crc32Table[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
+    }
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+  }
   
   document.getElementById('btn-dl-excel').onclick=async()=>{
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
     toast('در حال ساخت فایل اکسل...');
-    
-    // لود ExcelJS
-    if(!window.ExcelJS){
-      const s=document.createElement('script');
-      s.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js';
-      document.head.appendChild(s);
-      await new Promise(r=>s.onload=r);
+    try{
+      const blob = await downloadXLSX(TABLES, TABLE_THEME_IDX);
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'جداول.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast('فایل اکسل با موفقیت ساخته شد ✅');
+    }catch(e){
+      toast('خطا: ' + e.message);
     }
-    
-    const ExcelJS=window.ExcelJS;
-    const theme=COLOR_THEMES[TABLE_THEME_IDX];
-    const wb=new ExcelJS.Workbook();
-    wb.creator='پنل آزمون ساز - نادر اکشیک';
-    wb.created=new Date();
-    
-    TABLES.forEach((t,ti)=>{
-      const ws=wb.addWorksheet('جدول '+(ti+1),{
-        views:[{rightToLeft:true,showGridLines:true}],
-        properties:{defaultRowHeight:22}
-      });
-      const colCount=t.cols||6;
-      const headers=t.cols>=6?['سوال','گزینه ۱','گزینه ۲','گزینه ۳','گزینه ۴','تایم']:Array(colCount).fill(0).map((_,i)=>i===0?'سوال':i===colCount-1?'تایم':'ستون '+(i+1));
-      
-      // ردیف عنوان (مرج شده)
-      ws.mergeCells(1,1,1,colCount);
-      const titleCell=ws.getCell(1,1);
-      titleCell.value=t.title||'بانک سوالات';
-      titleCell.font={name:'B Nazanin',size:16,bold:true,color:{argb:'FFFFFFFF'}};
-      titleCell.alignment={horizontal:'center',vertical:'middle',readingOrder:'rtl',wrapText:true};
-      titleCell.fill={type:'pattern',pattern:'solid',fgColor:{argb:theme.header}};
-      for(let c=1;c<=colCount;c++){
-        ws.getCell(1,c).border={
-          top:{style:'medium',color:{argb:'FF000000'}},
-          left:{style:'medium',color:{argb:'FF000000'}},
-          right:{style:'medium',color:{argb:'FF000000'}},
-          bottom:{style:'medium',color:{argb:'FF000000'}}
-        };
-      }
-      ws.getRow(1).height=36;
-      
-      // ردیف هدر
-      const headerRow=ws.getRow(2);
-      headers.forEach((h,i)=>{
-        const cell=headerRow.getCell(i+1);
-        cell.value=h;
-        cell.font={name:'B Nazanin',size:12,bold:true,color:{argb:'FFFFFFFF'}};
-        cell.alignment={horizontal:'center',vertical:'middle',readingOrder:'rtl',wrapText:true};
-        cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:theme.header}};
-        cell.border={
-          top:{style:'medium',color:{argb:'FF000000'}},
-          left:{style:'thin',color:{argb:'FF000000'}},
-          right:{style:'thin',color:{argb:'FF000000'}},
-          bottom:{style:'medium',color:{argb:'FF000000'}}
-        };
-      });
-      headerRow.height=28;
-      
-      // ردیف‌های داده
-      t.data.forEach((row,r)=>{
-        const excelRow=ws.getRow(r+3);
-        for(let c=0;c<colCount;c++){
-          const val=row[c]??'';
-          const cell=excelRow.getCell(c+1);
-          cell.value=val;
-          cell.font={name:'B Nazanin',size:11,color:{argb:'FF0F172A'}};
-          cell.alignment={
-            horizontal:c===0?'right':'center',
-            vertical:'middle',
-            readingOrder:'rtl',
-            wrapText:true
-          };
-          if(r%2===1){
-            cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:theme.band}};
-          }
-          cell.border={
-            top:{style:'thin',color:{argb:'FF000000'}},
-            left:{style:'thin',color:{argb:'FF000000'}},
-            right:{style:'thin',color:{argb:'FF000000'}},
-            bottom:{style:'thin',color:{argb:'FF000000'}}
-          };
-        }
-        excelRow.height=24;
-      });
-      
-      // ستون‌های Auto-size
-      headers.forEach((h,i)=>{
-        let maxLen=h.length;
-        t.data.forEach(row=>{
-          const len=(row[i]||'').length;
-          if(len>maxLen)maxLen=len;
-        });
-        ws.getColumn(i+1).width=Math.min(Math.max(maxLen+3,8),50);
-      });
-    });
-    
-    const buffer=await wb.xlsx.writeBuffer();
-    const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download='جداول.xlsx';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    toast('فایل اکسل با موفقیت ساخته شد ✅');
   };
   
   // دکمه‌های رنگ‌بندی
-  const tableTools=document.querySelector('#tab-tables .table-actions');
+  const tableTools = document.querySelector('#tab-tables .table-actions');
   if(tableTools){
-    tableTools.innerHTML+='<div style="margin-top:12px"><label style="font-size:13px;margin-left:8px">رنگ:</label>'+
+    tableTools.innerHTML += '<div style="margin-top:12px"><label style="font-size:13px">رنگ:</label>'+
       COLOR_THEMES.map((t,i)=>'<button class="btn sm '+(i===0?'primary':'secondary')+'" style="margin:2px" onclick="setTableTheme('+i+')">'+t.name+'</button>').join('')+
       '</div>';
   }
   window.setTableTheme=(i)=>{
     TABLE_THEME_IDX=i;
-    document.querySelectorAll('#tab-tables .table-actions button').forEach((b,idx)=>{
-      if(idx>=3&&idx<8)b.className='btn sm '+(idx-3===i?'primary':'secondary');
-    });
   };
 
   // ---- اسکنر عکس حرفه‌ای ----
