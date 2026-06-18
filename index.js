@@ -9,8 +9,7 @@
  *  - دانلود خروجی Word با سربرگ و جدول‌کشی
  *  - جدول‌ساز حرفه‌ای با خروجی اکسل RTL
  *  - اسکنر حرفه‌ای (مشابه CamScanner) با فیلترهای متنوع
- *  - کاهش حجم عکس با تنظیم کیفیت و اندازه
- *  - تبدیل PDF به Word/TXT
+ *  - کاهش حجم عکس با تنظیم کیفیت
  *
  * داده‌ها در Cloudflare KV (binding: EXAM_KV) ذخیره می‌شوند.
  */
@@ -571,6 +570,8 @@ const SHARED_CSS = `
   .btn.success:hover{background:linear-gradient(135deg,#059669,#047857)}
   .btn.secondary{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
   .btn.secondary:hover{background:#e2e8f0}
+  .btn.danger{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
+  .btn.danger:hover{background:linear-gradient(135deg,#dc2626,#b91c1c)}
   .table-rtl{direction:rtl;text-align:right;border-collapse:collapse;width:100%;margin-top:12px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
   .table-rtl th,.table-rtl td{border:1px solid #e2e8f0;padding:12px 14px;font-size:14px}
   .table-rtl th{background:linear-gradient(135deg,#f8fafc,#f1f5f9);font-weight:600;color:#334155;text-align:center}
@@ -629,18 +630,6 @@ const SHARED_CSS = `
   .resize-item .size-info{font-size:11px;color:#64748b;margin-top:6px}
   .resize-item .remove-btn{position:absolute;top:4px;left:4px;background:#fee2e2;color:#991b1b;border:none;border-radius:50%;width:24px;height:24px;cursor:pointer;font-size:14px}
   .resize-toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-  
-  /* ---- PDF به Word ---- */
-  .pdf-info-box{display:flex;gap:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:14px;margin-bottom:16px}
-  .pdf-info-box .info-icon{font-size:24px}
-  .pdf-info-box p{margin:0;font-size:14px;color:#1e40af}
-  .pdf-preview{background:#f8fafc;border-radius:12px;padding:20px;text-align:center;margin-bottom:16px;border:1px solid #e2e8f0;min-height:100px}
-  .pdf-status{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;color:#64748b}
-  .status-icon{font-size:24px}
-  .pdf-options{display:flex;gap:20px;margin-bottom:16px;flex-wrap:wrap}
-  .option-group label{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px}
-  .pdf-toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-  .pdf-page{display:inline-block;margin:4px;padding:8px 12px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px}
 `;
 
 const FONT_LINK = `<link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">`;
@@ -860,7 +849,6 @@ function teacherPage() {
         <div class="tab" data-tab="tables">📊 جدول‌ساز</div>
         <div class="tab" data-tab="scan">📷 اسکنر</div>
         <div class="tab" data-tab="resize">🗜️ کاهش حجم</div>
-        <div class="tab" data-tab="pdf2word">📄 PDF به Word</div>
         <div class="tab" data-tab="settings">⚙️ تنظیمات</div>
         <div style="flex:1"></div>
         <div class="tab" id="btn-logout" style="background:#fee2e2;color:#991b1b">🚪 خروج</div>
@@ -991,6 +979,9 @@ function teacherPage() {
             <button class="btn secondary" id="btn-reset-scan">
               <span>🔄</span> بازنشانی
             </button>
+            <button class="btn danger" id="btn-remove-scan">
+              <span>🗑️</span> حذف عکس
+            </button>
           </div>
         </div>
       </div>
@@ -1000,7 +991,7 @@ function teacherPage() {
         <div class="section-header">
           <div>
             <h3>🗜️ کاهش حجم عکس</h3>
-            <p class="muted">عکس‌ها را با کیفیت و اندازه دلخواه فشرده کنید</p>
+            <p class="muted">عکس‌ها را با کیفیت دلخواه فشرده کنید</p>
           </div>
         </div>
         
@@ -1013,24 +1004,6 @@ function teacherPage() {
         
         <div id="resize-controls" class="hidden">
           <div class="resize-options">
-            <div class="resize-group">
-              <label>📏 اندازه جدید (پیکسل)</label>
-              <div class="size-inputs">
-                <div class="input-with-label">
-                  <span>عرض:</span>
-                  <input type="number" id="resize-width" min="100" max="8000" value="1920" placeholder="عرض">
-                </div>
-                <div class="input-with-label">
-                  <span>ارتفاع:</span>
-                  <input type="number" id="resize-height" min="100" max="8000" value="1080" placeholder="ارتفاع">
-                </div>
-              </div>
-              <label class="checkbox-label">
-                <input type="checkbox" id="resize-ratio" checked>
-                حفظ نسبت ابعاد
-              </label>
-            </div>
-            
             <div class="resize-group">
               <label>📊 کیفیت تصویر</label>
               <input type="range" id="resize-quality" min="10" max="100" value="85">
@@ -1057,66 +1030,6 @@ function teacherPage() {
               <span>⚡</span> فشرده‌سازی همه
             </button>
             <button class="btn secondary" id="btn-clear-resize">
-              <span>🗑️</span> پاک کردن
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- تبدیل PDF به Word -->
-      <div class="card tab-content hidden" id="tab-pdf2word">
-        <div class="section-header">
-          <div>
-            <h3>📝 تبدیل PDF به Word</h3>
-            <p class="muted">فایل PDF خود را با حفظ قالب‌بندی به Word تبدیل کنید</p>
-          </div>
-        </div>
-        
-        <div class="pdf-info-box">
-          <div class="info-icon">ℹ️</div>
-          <div>
-            <p><strong>نکته:</strong> برای نتیجه بهتر، PDF باید شامل متن باشد (نه فقط عکس). متن استخراج شده در یک فایل Word قرار می‌گیرد.</p>
-          </div>
-        </div>
-        
-        <div class="upload-zone" id="pdf-drop-zone">
-          <input type="file" accept="application/pdf" id="pdf-file" class="hidden">
-          <div class="upload-icon">📄</div>
-          <p>فایل PDF را اینجا رها کنید یا کلیک کنید</p>
-          <span class="muted">فرمت مجاز: PDF</span>
-        </div>
-        
-        <div id="pdf-controls" class="hidden">
-          <div class="pdf-preview" id="pdf-preview">
-            <div class="pdf-status">
-              <span class="status-icon">⏳</span>
-              <span>در حال پردازش...</span>
-            </div>
-          </div>
-          
-          <div class="pdf-options">
-            <div class="option-group">
-              <label>
-                <input type="checkbox" id="pdf-preserve" checked>
-                حفظ ترتیب صفحات
-              </label>
-            </div>
-            <div class="option-group">
-              <label>
-                <input type="checkbox" id="pdf-numbers">
-                شماره‌گذاری صفحات
-              </label>
-            </div>
-          </div>
-          
-          <div class="pdf-toolbar">
-            <button class="btn primary" id="btn-convert-docx">
-              <span>📥</span> دانلود Word
-            </button>
-            <button class="btn secondary" id="btn-convert-txt">
-              <span>📝</span> دانلود متن (TXT)
-            </button>
-            <button class="btn secondary" id="btn-clear-pdf">
               <span>🗑️</span> پاک کردن
             </button>
           </div>
@@ -1420,9 +1333,42 @@ function teacherScript() {
   document.getElementById('btn-add-table').onclick=()=>{TABLES.push({title:'',rows:4,cols:4,data:blankRows(4,4)});renderTables();};
   document.getElementById('btn-dl-excel').onclick=()=>{
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
-    let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>body{direction:rtl;font-family:Tahoma,Arial,sans-serif}.tbl{border-collapse:collapse;width:100%;margin-bottom:20px}.tbl th,.tbl td{border:1px solid #333;padding:10px 14px;text-align:right}.tbl th{background:#e8f0fe;font-weight:bold}.tbl tr:nth-child(even){background:#f9f9f9}</style></head><body>';
-    TABLES.forEach(t=>{if(t.title)html+='<h2 style="text-align:center;color:#333">'+esc(t.title)+'</h2>';html+='<table class="tbl"><tr>'+t.data[0].map(()=>'<th>ستون</th>').join('')+'</tr>';t.data.forEach(row=>{html+='<tr>'+row.map(c=>'<td>'+esc(c)+'</td>').join('')+'</tr>';});html+='</table>';});
-    html+='<p style="text-align:center;color:#888;font-size:12px">ساخته شده با پنل آزمون ساز</p></body></html>';
+    // ساخت HTML با فرمت اکسل حرفه‌ای
+    let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
+    html+='<head><meta charset="utf-8"><x:ExcelNameList><x:Name>Sheet1</x:Name></x:ExcelNameList>';
+    html+='<style>';
+    html+='.title{font-size:16pt;font-weight:bold;text-align:center;background:#4472C4;color:#fff;padding:10px}';
+    html+='.header{font-size:12pt;font-weight:bold;text-align:center;background:#D9E2F3;color:#000;padding:8px;border:1px solid #B4C6E7}';
+    html+='.cell{font-size:11pt;text-align:right;padding:6px;border:1px solid #B4C6E7}';
+    html+='.row-even{background:#F2F2F2}';
+    html+='</style></head><body>';
+    
+    TABLES.forEach((t,ti)=>{
+      // عنوان
+      html+='<table><tr><td class="title" colspan="'+t.cols+'">'+(t.title||'جدول '+(ti+1))+'</td></tr></table>';
+      // هدر
+      html+='<table>';
+      html+='<tr>';
+      for(let c=0;c<t.cols;c++){
+        html+='<td class="header">'+(c===0?'سوال':c===t.cols-1?'تایم':'گزینه '+(c))+'</td>';
+      }
+      html+='</tr>';
+      // داده‌ها
+      t.data.forEach((row,r)=>{
+        html+='<tr'+(r%2===1?' class="row-even"':'')+'>';
+        row.forEach((cell,c)=>{
+          html+='<td class="cell">'+esc(cell||'')+'</td>';
+        });
+        // اگر ستون کمتر از حداقل هست، خالی اضافه کن
+        for(let c=row.length;c<t.cols;c++){
+          html+='<td class="cell"></td>';
+        }
+        html+='</tr>';
+      });
+      html+='</table><br>';
+    });
+    
+    html+='</body></html>';
     const blob=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='جداول.xls';document.body.appendChild(a);a.click();a.remove();
     toast('فایل اکسل با موفقیت ساخته شد ✅');
@@ -1551,6 +1497,24 @@ function teacherScript() {
     applyScan();
   };
   
+  // حذف عکس و برگشت به حالت اولیه
+  document.getElementById('btn-remove-scan').onclick=()=>{
+    if(!confirm('عکس فعلی حذف شود؟'))return;
+    SCANIMG=null;
+    SCANORIG=null;
+    document.getElementById('scan-controls').classList.add('hidden');
+    document.getElementById('scan-drop-zone').classList.remove('hidden');
+    document.getElementById('scan-file').value='';
+    // ریست فیلترها
+    document.getElementById('scan-bright').value=0;
+    document.getElementById('scan-contrast').value=0;
+    document.getElementById('scan-sharp').value=0;
+    document.getElementById('scan-saturation').value=0;
+    updateFilterValues();
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.filter-btn[data-filter="original"]').classList.add('active');
+  };
+  
   document.getElementById('btn-dl-img').onclick=()=>{
     if(!SCANORIG){toast('ابتدا عکس را انتخاب کنید');return;}
     const cv=document.getElementById('scan-canvas');
@@ -1610,21 +1574,6 @@ function teacherScript() {
   }
   window.removeResizeImg=(i)=>{RESIZE_IMAGES.splice(i,1);renderResizePreview();if(!RESIZE_IMAGES.length)document.getElementById('resize-controls').classList.add('hidden');};
   
-  // Aspect ratio lock
-  let aspectRatio=1;
-  document.getElementById('resize-width').addEventListener('change',function(){
-    if(document.getElementById('resize-ratio').checked){
-      const h=Math.round(this.value/aspectRatio);
-      document.getElementById('resize-height').value=h;
-    }
-  });
-  document.getElementById('resize-height').addEventListener('change',function(){
-    if(document.getElementById('resize-ratio').checked){
-      const w=Math.round(this.value*aspectRatio);
-      document.getElementById('resize-width').value=w;
-    }
-  });
-  
   // Quality estimate
   document.getElementById('resize-quality').addEventListener('input',function(){
     const q=parseInt(this.value,10);
@@ -1641,18 +1590,18 @@ function teacherScript() {
   
   document.getElementById('btn-resize-all').onclick=()=>{
     if(!RESIZE_IMAGES.length){toast('ابتدا عکس انتخاب کنید');return;}
-    const w=parseInt(document.getElementById('resize-width').value,10);
-    const h=parseInt(document.getElementById('resize-height').value,10);
     const q=parseInt(document.getElementById('resize-quality').value,10)/100;
     const fmt=document.querySelector('.format-btn.active').dataset.format;
     const mime=fmt==='png'?'image/png':fmt==='webp'?'image/webp':'image/jpeg';
     const ext=fmt==='png'?'png':fmt==='webp'?'webp':'jpg';
     
     RESIZE_IMAGES.forEach((r,i)=>{
+      // حفظ اندازه اصلی عکس
       const cv=document.createElement('canvas');
-      cv.width=w;cv.height=h;
+      cv.width=r.img.width;
+      cv.height=r.img.height;
       const ctx=cv.getContext('2d');
-      ctx.drawImage(r.img,0,0,w,h);
+      ctx.drawImage(r.img,0,0);
       cv.toBlob(blob=>{
         const a=document.createElement('a');
         a.href=URL.createObjectURL(blob);
@@ -1667,110 +1616,6 @@ function teacherScript() {
     RESIZE_IMAGES=[];
     renderResizePreview();
     document.getElementById('resize-controls').classList.add('hidden');
-  };
-
-  // ---- تبدیل PDF به Word ----
-  let PDF_DATA=null;
-  const pdfDropZone=document.getElementById('pdf-drop-zone');
-  const pdfFileInput=document.getElementById('pdf-file');
-  pdfDropZone.onclick=()=>pdfFileInput.click();
-  pdfDropZone.addEventListener('dragover',e=>{e.preventDefault();pdfDropZone.classList.add('dragover');});
-  pdfDropZone.addEventListener('dragleave',()=>pdfDropZone.classList.remove('dragover'));
-  pdfDropZone.addEventListener('drop',e=>{e.preventDefault();pdfDropZone.classList.remove('dragover');if(e.dataTransfer.files[0])loadPdf(e.dataTransfer.files[0]);});
-  pdfFileInput.addEventListener('change',function(){if(this.files[0])loadPdf(this.files[0]);});
-  
-  async function loadPdf(file){
-    PDF_DATA=await file.arrayBuffer();
-    document.getElementById('pdf-controls').classList.remove('hidden');
-    document.getElementById('pdf-preview').innerHTML='<div class="pdf-status"><span class="status-icon">✅</span><span>فایل آماده است: '+file.name+' ('+(file.size/1024).toFixed(1)+' KB)</span></div>';
-  }
-  
-  document.getElementById('btn-convert-docx').onclick=async()=>{
-    if(!PDF_DATA){toast('ابتدا فایل PDF انتخاب کنید');return;}
-    try{
-      const pdfjsLib=window.pdfjsLib;
-      if(!pdfjsLib){
-        // Load PDF.js dynamically
-        const script=document.createElement('script');
-        script.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-        document.head.appendChild(script);
-        await new Promise(res=>script.onload=res);
-        pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-      }
-      
-      document.getElementById('pdf-preview').innerHTML='<div class="pdf-status"><span class="status-icon">⏳</span><span>در حال استخراج متن...</span></div>';
-      
-      const pdf=await pdfjsLib.getDocument({data:PDF_DATA}).promise;
-      let fullText='';
-      
-      for(let i=1;i<=pdf.numPages;i++){
-        const page=await pdf.getPage(i);
-        const textContent=await page.getTextContent();
-        const pageText=textContent.items.map(item=>item.str).join(' ');
-        fullText+='\\n\\n--- صفحه '+i+' ---\\n\\n'+pageText;
-      }
-      
-      // Create DOCX-like HTML
-      const preserveOrder=document.getElementById('pdf-preserve').checked;
-      const addNumbers=document.getElementById('pdf-numbers').checked;
-      
-      let docHtml='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>body{direction:rtl;font-family:Tahoma,Arial,sans-serif;line-height:2;font-size:14pt}p{margin:8px 0}</style></head><body>';
-      
-      const pages=fullText.split(/--- صفحه \\d+ ---/);
-      pages.forEach((page,i)=>{
-        if(page.trim()){
-          if(addNumbers)docHtml+='<p style="text-align:center;color:#888">صفحه '+(i+1)+'</p>';
-          page.split('\\n').filter(l=>l.trim()).forEach(line=>docHtml+='<p>'+esc(line)+'</p>');
-        }
-      });
-      
-      docHtml+='</body></html>';
-      
-      const blob=new Blob(['\ufeff'+docHtml],{type:'application/vnd.ms-word'});
-      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='تبدیل_شده.doc';document.body.appendChild(a);a.click();a.remove();
-      
-      document.getElementById('pdf-preview').innerHTML='<div class="pdf-status"><span class="status-icon">✅</span><span>تبدیل با موفقیت انجام شد!</span></div>';
-      toast('فایل Word با موفقیت ساخته شد ✅');
-    }catch(e){
-      document.getElementById('pdf-preview').innerHTML='<div class="pdf-status"><span class="status-icon">❌</span><span>خطا: '+e.message+'</span></div>';
-      toast('خطا در تبدیل فایل');
-    }
-  };
-  
-  document.getElementById('btn-convert-txt').onclick=async()=>{
-    if(!PDF_DATA){toast('ابتدا فایل PDF انتخاب کنید');return;}
-    try{
-      const pdfjsLib=window.pdfjsLib;
-      if(!pdfjsLib){
-        const script=document.createElement('script');
-        script.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-        document.head.appendChild(script);
-        await new Promise(res=>script.onload=res);
-        pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-      }
-      
-      const pdf=await pdfjsLib.getDocument({data:PDF_DATA}).promise;
-      let fullText='';
-      
-      for(let i=1;i<=pdf.numPages;i++){
-        const page=await pdf.getPage(i);
-        const textContent=await page.getTextContent();
-        fullText+='\\n\\n--- صفحه '+i+' ---\\n\\n';
-        fullText+=textContent.items.map(item=>item.str).join(' ');
-      }
-      
-      const blob=new Blob(['\ufeff'+fullText],{type:'text/plain'});
-      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='تبدیل_شده.txt';document.body.appendChild(a);a.click();a.remove();
-      toast('فایل متنی با موفقیت ساخته شد ✅');
-    }catch(e){
-      toast('خطا در تبدیل: '+e.message);
-    }
-  };
-  
-  document.getElementById('btn-clear-pdf').onclick=()=>{
-    PDF_DATA=null;
-    document.getElementById('pdf-controls').classList.add('hidden');
-    document.getElementById('pdf-preview').innerHTML='<div class="pdf-status"><span class="status-icon">📄</span><span>فایلی انتخاب نشده</span></div>';
   };
 
   checkAuth();
