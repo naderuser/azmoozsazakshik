@@ -1650,7 +1650,7 @@ function teacherScript() {
       rd.onload=ev=>{
         const img=new Image();
         img.onload=()=>{
-          RESIZE_IMAGES.push({file,img,original:ev.target.result});
+          RESIZE_IMAGES.push({file,img,original:ev.target.result,preview:ev.target.result,filename:file.name});
           document.getElementById('resize-controls').classList.remove('hidden');
           renderResizePreview();
         };
