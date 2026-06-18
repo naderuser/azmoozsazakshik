@@ -1346,17 +1346,15 @@ function teacherScript() {
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
     const theme=COLOR_THEMES[TABLE_THEME_IDX];
     
-    // ساخت HTML با فرمت اکسل - فقط رنگ سربرگ جدول، بدون خط کشی
+    // ساخت HTML با فرمت اکسل RTL با خط کشی
     let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
     html+='<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>';
     html+='<xml><x:ExcelWorkbook xmlns:x="urn:schemas-microsoft-com:office:excel"><x:WindowHeight>8535</x:WindowHeight><x:WindowWidth>21555</x:WindowWidth><x:WindowTopX>480</x:WindowTopX><x:WindowTopY>90</x:WindowTopY><x:RefineRectsAwareImport>1</x:RefineRectsAwareImport><x:TabRatio>850</x:TabRatio><x:ActiveSheet>0</x:ActiveSheet></x:ExcelWorkbook></xml>';
     html+='<Styles>';
-    // Title row - background color
-    html+='<Style ss:ID="sTitle"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Size="14" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/></Style>';
-    // Header row - background color
-    html+='<Style ss:ID="sHeader"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/></Style>';
-    // Data row - white
-    html+='<Style ss:ID="sData"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/></Style>';
+    html+='<Style ss:ID="sTitle"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Size="14" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/><Borders><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
+    html+='<Style ss:ID="sHeader"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/><Borders><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
+    html+='<Style ss:ID="sEven"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/><Interior ss:Color="#'+theme.band+'" ss:Pattern="Solid"/><Borders><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
+    html+='<Style ss:ID="sOdd"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/><Borders><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
     html+='</Styles>';
     html+='</head><body>';
     
@@ -1365,24 +1363,20 @@ function teacherScript() {
       const headers=cols>=6?['سوال','گزینه ۱','گزینه ۲','گزینه ۳','گزینه ۴','تایم']:
         Array(cols).fill(0).map((_,i)=>i===0?'سوال':i===cols-1?'تایم':'ستون '+(i+1));
       
-      // ردیف عنوان
       html+='<table>';
       html+='<Row ss:Height="30"><Cell ss:StyleID="sTitle" ss:MergeAcross="'+(cols-1)+'"><Data ss:Type="String">'+(t.title||'بانک سوالات')+'</Data></Cell></Row>';
-      
-      // ردیف هدر
       html+='<Row ss:Height="25">';
       headers.forEach((h,i)=>{
         html+='<Cell ss:StyleID="sHeader"><Data ss:Type="String">'+esc(h)+'</Data></Cell>';
       });
       html+='</Row>';
-      
-      // ردیف‌های داده - سفید، بدون خط
       t.data.forEach((row,r)=>{
+        const style=r%2===1?'sEven':'sOdd';
         html+='<Row>';
         row.forEach((cell)=>{
-          html+='<Cell ss:StyleID="sData"><Data ss:Type="String">'+esc(cell||'')+'</Data></Cell>';
+          html+='<Cell ss:StyleID="'+style+'"><Data ss:Type="String">'+esc(cell||'')+'</Data></Cell>';
         });
-        for(let c=row.length;c<cols;c++)html+='<Cell ss:StyleID="sData"><Data ss:Type="String"></Data></Cell>';
+        for(let c=row.length;c<cols;c++)html+='<Cell ss:StyleID="'+style+'"><Data ss:Type="String"></Data></Cell>';
         html+='</Row>';
       });
       html+='</table>';
