@@ -1346,18 +1346,21 @@ function teacherScript() {
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
     const theme=COLOR_THEMES[TABLE_THEME_IDX];
     
-    // ساخت HTML با فرمت اکسل حرفه‌ای RTL با جدول واقعی
+    // ساخت HTML با فرمت اکسل با جدول واقعی
     let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
     html+='<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>';
     html+='<xml><x:ExcelWorkbook xmlns:x="urn:schemas-microsoft-com:office:excel"><x:WindowHeight>8535</x:WindowHeight><x:WindowWidth>21555</x:WindowWidth><x:WindowTopX>480</x:WindowTopX><x:WindowTopY>90</x:WindowTopY><x:RefineRectsAwareImport>1</x:RefineRectsAwareImport><x:TabRatio>850</x:TabRatio><x:ActiveSheet>0</x:ActiveSheet></x:ExcelWorkbook></xml>';
-    // استایل‌ها
     html+='<Styles>';
-    html+='<Style ss:ID="s75"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/></Style>';
-    html+='<Style ss:ID="s76"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Size="16" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/></Style>';
-    html+='<Style ss:ID="s77"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/><Interior ss:Color="#'+theme.band+'" ss:Pattern="Solid"/></Style>';
-    html+='<Style ss:ID="s78"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/></Style>';
+    // Title row style
+    html+='<Style ss:ID="sTitle"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Size="14" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/></Style>';
+    // Header row style  
+    html+='<Style ss:ID="sHeader"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/><Borders><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
+    // Data row even
+    html+='<Style ss:ID="sEven"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/><Interior ss:Color="#'+theme.band+'" ss:Pattern="Solid"/></Style>';
+    // Data row odd
+    html+='<Style ss:ID="sOdd"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/></Style>';
     html+='</Styles>';
-    html+='</head><body style="direction:rtl">';
+    html+='</head><body>';
     
     TABLES.forEach((t,ti)=>{
       const cols=t.cols||6;
@@ -1365,23 +1368,20 @@ function teacherScript() {
         Array(cols).fill(0).map((_,i)=>i===0?'سوال':i===cols-1?'تایم':'ستون '+(i+1));
       const rowCount=t.data.length+2;
       
-      // جدول اکسل واقعی با ss:Table
-      html+='<table>';
-      html+='<AutoFilter x:Range="A1:'+String.fromCharCode(64+cols)+rowCount+'" xmlns:x="urn:schemas-microsoft-com:office:excel"/>';
-      
       // ردیف عنوان
-      html+='<Row ss:Height="30"><Cell ss:StyleID="s76" ss:MergeAcross="'+(cols-1)+'"><Data ss:Type="String">'+(t.title||'بانک سوالات')+'</Data></Cell></Row>';
+      html+='<table>';
+      html+='<Row ss:Height="30"><Cell ss:StyleID="sTitle" ss:MergeAcross="'+(cols-1)+'"><Data ss:Type="String">'+(t.title||'بانک سوالات')+'</Data></Cell></Row>';
       
       // ردیف هدر
       html+='<Row ss:Height="25">';
       headers.forEach((h,i)=>{
-        html+='<Cell ss:StyleID="s75"><Data ss:Type="String">'+esc(h)+'</Data></Cell>';
+        html+='<Cell ss:StyleID="sHeader"><Data ss:Type="String">'+esc(h)+'</Data></Cell>';
       });
       html+='</Row>';
       
       // ردیف‌های داده
       t.data.forEach((row,r)=>{
-        const style=r%2===1?'s77':'s78';
+        const style=r%2===1?'sEven':'sOdd';
         html+='<Row>';
         row.forEach((cell)=>{
           html+='<Cell ss:StyleID="'+style+'"><Data ss:Type="String">'+esc(cell||'')+'</Data></Cell>';
