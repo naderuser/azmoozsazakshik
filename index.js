@@ -1055,7 +1055,7 @@ function teacherPage() {
           <div class="resize-preview" id="resize-preview"></div>
           
           <div class="resize-toolbar">
-            <button class="btn secondary" id="btn-crop">
+            <button class="btn secondary hidden" id="btn-crop">
               <span>✂️</span> برش (Crop)
             </button>
             <button class="btn primary" id="btn-resize-all">
@@ -1662,11 +1662,17 @@ function teacherScript() {
   
   function renderResizePreview(){
     const box=document.getElementById('resize-preview');
-    if(!RESIZE_IMAGES.length){box.innerHTML='';return;}
+    const cropBtn=document.getElementById('btn-crop');
+    if(!RESIZE_IMAGES.length){
+      box.innerHTML='';
+      cropBtn.classList.add('hidden');
+      return;
+    }
     box.innerHTML=RESIZE_IMAGES.map((r,i)=>{
       const origSize=(r.file.size/1024).toFixed(1);
-      return '<div class="resize-item"><button class="remove-btn" onclick="removeResizeImg('+i+')">×</button><img src="'+r.original+'" alt=""><div class="size-info">'+origSize+' KB</div></div>';
+      return '<div class="resize-item"><button class="remove-btn" onclick="removeResizeImg('+i+')">×</button><img src="'+r.preview+'" alt=""><div class="size-info">'+origSize+' KB</div></div>';
     }).join('');
+    cropBtn.classList.remove('hidden');
   }
   window.removeResizeImg=(i)=>{RESIZE_IMAGES.splice(i,1);renderResizePreview();if(!RESIZE_IMAGES.length)document.getElementById('resize-controls').classList.add('hidden');};
   
