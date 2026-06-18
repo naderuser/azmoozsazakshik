@@ -1346,44 +1346,38 @@ function teacherScript() {
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
     const theme=COLOR_THEMES[TABLE_THEME_IDX];
     
-    // ساخت HTML با فرمت اکسل RTL با خط کشی
+    // ساخت HTML با فرمت اکسل حرفه‌ای
     let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
-    html+='<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>';
-    html+='<xml><x:ExcelWorkbook xmlns:x="urn:schemas-microsoft-com:office:excel"><x:WindowHeight>8535</x:WindowHeight><x:WindowWidth>21555</x:WindowWidth><x:WindowTopX>480</x:WindowTopX><x:WindowTopY>90</x:WindowTopY><x:RefineRectsAwareImport>1</x:RefineRectsAwareImport><x:TabRatio>850</x:TabRatio><x:ActiveSheet>0</x:ActiveSheet></x:ExcelWorkbook></xml>';
-    html+='<Styles>';
-    html+='<Style ss:ID="sTitle"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Size="14" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/><Borders><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
-    html+='<Style ss:ID="sHeader"><Alignment ss:Horizontal="Center" ss:Vertical="Center"/><Font ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#'+theme.header+'" ss:Pattern="Solid"/><Borders><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
-    html+='<Style ss:ID="sEven"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/><Interior ss:Color="#'+theme.band+'" ss:Pattern="Solid"/><Borders><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
-    html+='<Style ss:ID="sOdd"><Alignment ss:Horizontal="Right" ss:Vertical="Center"/><Borders><Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/><Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/></Borders></Style>';
-    html+='</Styles>';
-    html+='</head><body>';
+    html+='<head><meta charset="utf-8"><x:ExcelNameList><x:Name>Sheet1</x:Name></x:ExcelNameList>';
+    html+='<style>';
+    html+='.title{font-size:16pt;font-weight:bold;text-align:center;background:#'+theme.header+';color:#fff;padding:10px}';
+    html+='.header{font-size:12pt;font-weight:bold;text-align:center;background:#'+theme.header+';color:#fff;padding:8px;border:1px solid #B4C6E7}';
+    html+='.cell{font-size:11pt;text-align:right;padding:6px;border:1px solid #B4C6E7}';
+    html+='.row-even{background:#'+theme.band+'}';
+    html+='</style></head><body>';
     
     TABLES.forEach((t,ti)=>{
       const cols=t.cols||6;
       const headers=cols>=6?['سوال','گزینه ۱','گزینه ۲','گزینه ۳','گزینه ۴','تایم']:
         Array(cols).fill(0).map((_,i)=>i===0?'سوال':i===cols-1?'تایم':'ستون '+(i+1));
       
+      html+='<table><tr><td class="title" colspan="'+cols+'">'+(t.title||'جدول '+(ti+1))+'</td></tr></table>';
       html+='<table>';
-      html+='<Row ss:Height="30"><Cell ss:StyleID="sTitle" ss:MergeAcross="'+(cols-1)+'"><Data ss:Type="String">'+(t.title||'بانک سوالات')+'</Data></Cell></Row>';
-      html+='<Row ss:Height="25">';
-      headers.forEach((h,i)=>{
-        html+='<Cell ss:StyleID="sHeader"><Data ss:Type="String">'+esc(h)+'</Data></Cell>';
-      });
-      html+='</Row>';
+      html+='<tr>';
+      headers.forEach(h=>html+='<td class="header">'+esc(h)+'</td>');
+      html+='</tr>';
       t.data.forEach((row,r)=>{
-        const style=r%2===1?'sEven':'sOdd';
-        html+='<Row>';
+        html+='<tr'+(r%2===1?' class="row-even"':'')+'>';
         row.forEach((cell)=>{
-          html+='<Cell ss:StyleID="'+style+'"><Data ss:Type="String">'+esc(cell||'')+'</Data></Cell>';
+          html+='<td class="cell">'+esc(cell||'')+'</td>';
         });
-        for(let c=row.length;c<cols;c++)html+='<Cell ss:StyleID="'+style+'"><Data ss:Type="String"></Data></Cell>';
-        html+='</Row>';
+        for(let c=row.length;c<cols;c++)html+='<td class="cell"></td>';
+        html+='</tr>';
       });
-      html+='</table>';
+      html+='</table><br>';
     });
     
     html+='</body></html>';
-    
     const blob=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='جداول.xls';document.body.appendChild(a);a.click();a.remove();
     toast('فایل اکسل با موفقیت ساخته شد ✅');
