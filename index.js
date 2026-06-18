@@ -2077,7 +2077,7 @@ function teacherScript() {
         })
       });
       
-      if(!res.ok){toast('خطا در دریافت فایل');return;}
+      if(!res.ok){const errData=await res.json().catch(()=>({error:"خطای نامشخص"}));toast("خطا: "+errData.error);return;}
       
       const blob=await res.blob();
       const url=URL.createObjectURL(blob);
