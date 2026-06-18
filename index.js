@@ -1350,33 +1350,36 @@ function teacherScript() {
     let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
     html+='<head><meta charset="utf-8"><x:ExcelNameList><x:Name>Sheet1</x:Name></x:ExcelNameList>';
     html+='<style>';
-    html+='.title{font-size:16pt;font-weight:bold;text-align:center;background:#'+theme.header+';color:#fff;padding:10px}';
-    html+='.header{font-size:12pt;font-weight:bold;text-align:center;background:#'+theme.header+';color:#fff;padding:8px;border:1px solid #B4C6E7}';
+    html+='.title{font-size:16pt;font-weight:bold;text-align:center;background:#4472C4;color:#fff;padding:10px}';
+    html+='.header{font-size:12pt;font-weight:bold;text-align:center;background:#D9E2F3;color:#000;padding:8px;border:1px solid #B4C6E7}';
     html+='.cell{font-size:11pt;text-align:right;padding:6px;border:1px solid #B4C6E7}';
-    html+='.row-even{background:#'+theme.band+'}';
+    html+='.row-even{background:#F2F2F2}';
     html+='</style></head><body>';
-    
+
     TABLES.forEach((t,ti)=>{
-      const cols=t.cols||6;
-      const headers=cols>=6?['سوال','گزینه ۱','گزینه ۲','گزینه ۳','گزینه ۴','تایم']:
-        Array(cols).fill(0).map((_,i)=>i===0?'سوال':i===cols-1?'تایم':'ستون '+(i+1));
-      
-      html+='<table><tr><td class="title" colspan="'+cols+'">'+(t.title||'جدول '+(ti+1))+'</td></tr></table>';
+      // عنوان
+      html+='<table><tr><td class="title" colspan="'+t.cols+'">'+(t.title||'جدول '+(ti+1))+'</td></tr></table>';
+      // هدر
       html+='<table>';
       html+='<tr>';
-      headers.forEach(h=>html+='<td class="header">'+esc(h)+'</td>');
+      for(let c=0;c<t.cols;c++){
+        html+='<td class="header">'+(c===0?'سوال':c===t.cols-1?'تایم':'گزینه '+(c))+'</td>';
+      }
       html+='</tr>';
+      // داده‌ها
       t.data.forEach((row,r)=>{
         html+='<tr'+(r%2===1?' class="row-even"':'')+'>';
-        row.forEach((cell)=>{
+        row.forEach((cell,c)=>{
           html+='<td class="cell">'+esc(cell||'')+'</td>';
         });
-        for(let c=row.length;c<cols;c++)html+='<td class="cell"></td>';
+        for(let c=row.length;c<t.cols;c++){
+          html+='<td class="cell"></td>';
+        }
         html+='</tr>';
       });
       html+='</table><br>';
     });
-    
+
     html+='</body></html>';
     const blob=new Blob(['\ufeff'+html],{type:'application/vnd.ms-excel'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='جداول.xls';document.body.appendChild(a);a.click();a.remove();
