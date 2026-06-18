@@ -1346,10 +1346,11 @@ function teacherScript() {
     if(!TABLES.length){toast('ابتدا یک جدول بسازید');return;}
     const theme=COLOR_THEMES[TABLE_THEME_IDX];
     
-    // ساخت HTML با فرمت اکسل - جدول سمت چپ
+    // ساخت HTML با فرمت اکسل RTL - جدول از راست
     let html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">';
     html+='<head><meta charset="utf-8"><x:ExcelNameList><x:Name>Sheet1</x:Name></x:ExcelNameList>';
     html+='<style>';
+    html+='table{direction:rtl}';
     html+='.title{font-size:16pt;font-weight:bold;text-align:center;background:#4472C4;color:#fff;padding:10px}';
     html+='.header{font-size:12pt;font-weight:bold;text-align:center;background:#D9E2F3;color:#000;padding:8px;border:1px solid #B4C6E7}';
     html+='.cell{font-size:11pt;text-align:right;padding:6px;border:1px solid #B4C6E7}';
@@ -1358,9 +1359,9 @@ function teacherScript() {
 
     TABLES.forEach((t,ti)=>{
       // عنوان
-      html+='<table><tr><td class="title" colspan="'+t.cols+'">'+(t.title||'جدول '+(ti+1))+'</td></tr></table>';
+      html+='<table ss:Direction="RightToLeft"><tr><td class="title" colspan="'+t.cols+'">'+(t.title||'جدول '+(ti+1))+'</td></tr></table>';
       // هدر
-      html+='<table>';
+      html+='<table ss:Direction="RightToLeft">';
       html+='<tr>';
       for(let c=0;c<t.cols;c++){
         html+='<td class="header">'+(c===0?'سوال':c===t.cols-1?'تایم':'گزینه '+(c))+'</td>';
