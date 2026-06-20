@@ -356,6 +356,34 @@ async function handleApi(req, env, url, path) {
     }
   }
 
+  // هوش مصنوعی Groq
+  if (path === "/api/ai/chat" && method === "POST") {
+    if (!(await isTeacher(req, env))) return json({ error: "دسترسی غیرمجاز" }, 401);
+    const body = await req.json().catch(() => ({}));
+    const messages = body.messages || [];
+    const apiKey = env.GROQ_API_KEY;
+    if (!apiKey) return json({ error: "کلید GROQ_API_KEY تنظیم نشده" }, 500);
+    try {
+      const aiRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "system", content: "You are a helpful assistant for Iranian teachers. Always respond in Persian/Farsi." }, ...messages.slice(-10)],
+          max_tokens: 1024
+        })
+      });
+      if (!aiRes.ok) {
+        const errText = await aiRes.text();
+        return json({ error: "Groq: " + errText }, aiRes.status);
+      }
+      const aiData = await aiRes.json();
+      return json({ ok: true, content: aiData.choices?.[0]?.message?.content || "" });
+    } catch (e) {
+      return json({ error: "Error: " + e.message }, 500);
+    }
+  }
+
   return json({ ok: false, error: "مسیر یافت نشد" }, 404);
 }
 
@@ -652,8 +680,7 @@ const SHARED_CSS = `
   .ratio-btn:hover{border-color:var(--primary-2)}
   .ratio-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
   .crop-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-  
-  /* ---- Ranking ---- */
+`;
 
 const FONT_LINK = `<link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">`;
 
@@ -873,6 +900,7 @@ function teacherPage() {
         <div class="tab" data-tab="scan">📷 اسکنر</div>
         <div class="tab" data-tab="resize">🗜️ کاهش حجم</div>
         <div class="tab" data-tab="crop">✂️ برش عکس</div>
+        <div class="tab" data-tab="ai">🤖 هوش مصنوعی</div>
         <div class="tab" data-tab="settings">⚙️ تنظیمات</div>
         <div style="flex:1"></div>
         <div class="tab" id="btn-logout" style="background:#fee2e2;color:#991b1b">🚪 خروج</div>
@@ -1116,6 +1144,22 @@ function teacherPage() {
         </div>
       </div>
 
+      <!-- هوش مصنوعی -->
+      <div class="card tab-content hidden" id="tab-ai">
+        <div class="section-header">
+          <div>
+            <h3>🤖 دستیار هوش مصنوعی</h3>
+            <p class="muted">سوالات خود را بپرسید</p>
+          </div>
+        </div>
+        <div id="ai-messages" class="ai-messages" style="min-height:200px;max-height:400px;overflow-y:auto;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:10px"></div>
+        <div class="flex gap-2">
+          <input type="text" id="ai-input" placeholder="سوال خود را بنویسید..." style="flex:1">
+          <button class="btn primary" id="btn-ai-send">ارسال</button>
+        </div>
+      </div>
+
+      <!-- تنظیمات -->
       <div class="card tab-content hidden" id="tab-settings">
         <h3>تغییر رمز عبور</h3>
         <label>رمز عبور جدید</label><input id="new-pass" type="password" autocomplete="new-password">
@@ -1377,6 +1421,27 @@ function teacherScript() {
   document.getElementById('btn-refresh-ans').onclick=loadAnswers;
 
   // ---- تغییر رمز عبور ----
+  // AI Chat
+  var aiMessages = [];
+  document.getElementById('btn-ai-send').onclick=async()=>{
+    const input = document.getElementById('ai-input');
+    const text = input.value.trim();
+    if (!text) return;
+    aiMessages.push({role:'user', content:text});
+    input.value = '';
+    document.getElementById('ai-messages').innerHTML += '<div style="text-align:left;margin:5px 0"><b>شما:</b> '+esc(text)+'</div><div style="text-align:left;color:#666">...</div>';
+    const box = document.getElementById('ai-messages');
+    try {
+      const res = await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:aiMessages})});
+      const d = await res.json();
+      if (d.error) { alert(d.error); return; }
+      aiMessages.push({role:'assistant', content:d.content});
+      box.innerHTML = aiMessages.map(m=>'<div style="text-align:'+(m.role==='user'?'left':'right')+';margin:5px 0"><b>'+(m.role==='user'?'شما':'🤖')+':</b> '+esc(m.content)+'</div>').join('');
+    } catch(e){ alert('خطا: '+e.message); }
+    box.scrollTop = box.scrollHeight;
+  };
+  document.getElementById('ai-input').onkeydown=e=>{ if(e.key==='Enter') document.getElementById('btn-ai-send').click(); };
+
   document.getElementById('btn-change-pass').onclick=async()=>{
     const np=document.getElementById('new-pass').value;
     const msg=document.getElementById('pass-msg');
