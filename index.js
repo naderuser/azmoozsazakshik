@@ -46,118 +46,125 @@ export default {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>توصیف عملکرد پایه‌های اول تا ششم | نادر اکشیک</title>
+    <title>توصیف عملکرد پایه‌های اول تا ششم</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif; min-height: 100vh; padding: 30px 20px; position: relative; }
-        body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.05"><path fill="white" d="M20,20 L30,10 L40,20 L30,30 Z M70,70 L80,60 L90,70 L80,80 Z M50,50 L60,40 L70,50 L60,60 Z"/></svg>'); background-size: 60px; pointer-events: none; z-index: 0; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);font-family:Vazirmatn,Segoe UI,Tahoma,sans-serif;min-height:100vh;padding:30px 20px;position:relative}
+        body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.05"><path fill="white" d="M20,20 L30,10 L40,20 L30,30 Z M70,70 L80,60 L90,70 L80,80 Z M50,50 L60,40 L70,50 L60,60 Z"/></svg>');background-size:60px;pointer-events:none;z-index:0}
         @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
-        .container { max-width: 1600px; margin: 0 auto; position: relative; z-index: 1; }
-        
-        /* ===== پنل معلم ===== */
-        .teacher-panel { background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-radius: 28px; padding: 25px 30px; margin-bottom: 30px; box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2); border: 2px solid #667eea; }
-        .teacher-panel .panel-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .teacher-panel h3 { color: #2d3748; display: flex; align-items: center; gap: 10px; font-size: 1.3rem; }
-        .teacher-panel h3 i { color: #667eea; }
-        .panel-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-        .panel-actions button { padding: 10px 22px; border: none; border-radius: 50px; font-size: 0.95rem; font-weight: 600; cursor: pointer; font-family: 'Vazirmatn', sans-serif; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
-        .btn-edit-mode { background: linear-gradient(135deg, #ed8936, #dd6b20); color: white; }
-        .btn-edit-mode:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(237,137,54,0.4); }
-        .btn-save-all { background: linear-gradient(135deg, #48bb78, #38a169); color: white; }
-        .btn-save-all:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(72,187,120,0.4); }
-        .btn-generate-uuid { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-        .btn-generate-uuid:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
-        .btn-copy-uuid { background: linear-gradient(135deg, #4299e1, #3182ce); color: white; }
-        .btn-copy-uuid:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(66,153,225,0.4); }
-        .btn-logout { background: linear-gradient(135deg, #fc8181, #e53e3e); color: white; }
-        .btn-logout:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(229,62,62,0.4); }
-        .uuid-display { background: #f7fafc; padding: 10px 18px; border-radius: 12px; font-family: monospace; font-size: 0.9rem; color: #2d3748; border: 2px dashed #a0aec0; direction: ltr; word-break: break-all; max-width: 350px; }
-        
-        /* ===== لاگین معلم ===== */
-        .login-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: white; border-radius: 30px; padding: 40px 50px; max-width: 420px; width: 90%; box-shadow: 0 30px 60px rgba(0,0,0,0.3); text-align: center; }
-        .login-box h2 { color: #2d3748; margin-bottom: 10px; font-size: 1.8rem; }
-        .login-box p { color: #718096; margin-bottom: 25px; font-size: 0.95rem; }
-        .login-box input { width: 100%; padding: 14px 18px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 1rem; font-family: 'Vazirmatn', sans-serif; outline: none; transition: border-color 0.3s; margin-bottom: 15px; text-align: center; letter-spacing: 3px; }
-        .login-box input:focus { border-color: #667eea; }
-        .login-box .login-btn { width: 100%; padding: 14px; border: none; border-radius: 16px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-size: 1.1rem; font-weight: 700; cursor: pointer; font-family: 'Vazirmatn', sans-serif; transition: all 0.3s; }
-        .login-box .login-btn:hover { transform: scale(1.02); box-shadow: 0 10px 25px -5px rgba(102,126,234,0.4); }
-        .login-box .login-error { color: #e53e3e; font-size: 0.9rem; margin-top: 10px; display: none; }
-        .login-box .login-icon { font-size: 4rem; color: #667eea; margin-bottom: 10px; }
-        
-        .hero { text-align: center; padding: 50px 30px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 60px; margin-bottom: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transition: transform 0.3s ease; border: 1px solid rgba(255,255,255,0.3); }
-        .hero:hover { transform: translateY(-5px); }
-        .hero h1 { font-size: 2.5rem; background: linear-gradient(135deg, #667eea, #764ba2, #f093fb); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 15px; }
-        .hero p { font-size: 1.1rem; color: #4a5568; opacity: 0.8; }
-        .designer { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 10px 25px; border-radius: 50px; font-size: 1rem; font-weight: 500; margin-top: 20px; box-shadow: 0 10px 20px -5px rgba(102,126,234,0.4); }
-        
-        .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 40px; }
-        .tab-btn { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: none; padding: 14px 32px; font-size: 1.1rem; font-weight: 600; border-radius: 60px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); color: white; font-family: 'Vazirmatn', sans-serif; border: 1px solid rgba(255,255,255,0.2); }
-        .tab-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); }
-        .tab-btn.active { background: white; color: #667eea; box-shadow: 0 15px 35px -10px rgba(0,0,0,0.3); border-color: white; }
-        
-        .tab-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 25px; gap: 15px; }
-        .tab-header h2 { color: white; font-size: 1.8rem; text-shadow: 2px 2px 8px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; }
-        .tab-header h2 i { font-size: 2rem; }
-        
-        .word-btn { background: linear-gradient(135deg, #1e6f3f, #2d8a4e); border: none; padding: 12px 28px; font-size: 1rem; font-weight: 600; border-radius: 50px; cursor: pointer; color: white; font-family: 'Vazirmatn', sans-serif; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .word-btn:hover { transform: scale(1.03); background: linear-gradient(135deg, #0f5a33, #1e6f3f); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
-        
-        .tab-content { display: none; animation: fadeInUp 0.6s cubic-bezier(0.2,0.9,0.4,1.1); }
-        .tab-content.active { display: block; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .subjects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 25px; }
-        .subject-card { background: rgba(255,255,255,0.98); backdrop-filter: blur(5px); border-radius: 28px; padding: 22px; transition: all 0.35s cubic-bezier(0.2,0.9,0.4,1.1); box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15); border-right: 6px solid; position: relative; overflow: hidden; }
-        .subject-card::before { content: ''; position: absolute; top: 0; right: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0)); pointer-events: none; }
-        .subject-card:hover { transform: translateY(-8px); box-shadow: 0 30px 45px -15px rgba(0,0,0,0.25); }
-        .subject-card.edit-mode { border-right-color: #ed8936 !important; background: rgba(255,255,255,0.98); }
-        .subject-card.edit-mode .subject-description { background: #fffff0; border: 2px dashed #ed8936; padding: 12px; border-radius: 12px; cursor: text; }
-        .subject-card.edit-mode .subject-description:focus { outline: 2px solid #ed8936; background: #fffef0; }
-        
-        .subject-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-        .subject-title { font-size: 1.25rem; font-weight: 800; color: #1a202c; display: flex; align-items: center; gap: 10px; }
-        .subject-title i { font-size: 1.4rem; color: #667eea; }
-        .level-badge { font-size: 0.7rem; padding: 5px 14px; border-radius: 30px; font-weight: 700; letter-spacing: 0.5px; }
-        .level-excellent { background: linear-gradient(135deg, #c6f6d5, #9ae6b4); color: #22543d; border-right-color: #48bb78; }
-        .level-good { background: linear-gradient(135deg, #fefcbf, #fde68a); color: #744210; border-right-color: #ecc94b; }
-        .level-acceptable { background: linear-gradient(135deg, #fed7d7, #feb2b2); color: #742a2a; border-right-color: #fc8181; }
-        .level-need { background: linear-gradient(135deg, #e2e8f0, #cbd5e0); color: #2d3748; border-right-color: #a0aec0; }
-        
-        .subject-description { font-size: 0.92rem; line-height: 1.7; color: #2d3748; text-align: justify; margin: 15px 0; }
-        .card-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-        .copy-btn { background: linear-gradient(135deg, #667eea, #764ba2); border: none; color: white; padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 8px; font-family: 'Vazirmatn', sans-serif; }
-        .copy-btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(102,126,234,0.4); }
-        .copy-btn.copied { background: linear-gradient(135deg, #48bb78, #38a169); }
-        .edit-btn { background: linear-gradient(135deg, #ed8936, #dd6b20); border: none; color: white; padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.25s ease; display: inline-flex; align-items: center; gap: 8px; font-family: 'Vazirmatn', sans-serif; }
-        .edit-btn:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(237,137,54,0.4); }
-        .edit-btn.saved { background: linear-gradient(135deg, #48bb78, #38a169); }
-        
-        .footer { text-align: center; margin-top: 50px; padding: 30px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 50px; color: #4a5568; font-size: 0.9rem; }
-        .toast { position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #48bb78, #38a169); color: white; padding: 14px 28px; border-radius: 60px; z-index: 1000; animation: slideInRight 0.3s ease; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); font-weight: 500; direction: rtl; }
-        .toast.error { background: linear-gradient(135deg, #fc8181, #e53e3e); }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        .uuid-input-area { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 15px; padding: 15px; background: #f7fafc; border-radius: 16px; border: 2px dashed #a0aec0; }
-        .uuid-input-area input { flex: 1; min-width: 200px; padding: 10px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; font-family: monospace; outline: none; direction: ltr; }
-        .uuid-input-area input:focus { border-color: #667eea; }
-        .uuid-input-area button { padding: 10px 24px; border: none; border-radius: 12px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: 600; cursor: pointer; font-family: 'Vazirmatn', sans-serif; transition: all 0.3s; }
-        .uuid-input-area button:hover { transform: scale(1.02); }
-        
-        .share-info { background: linear-gradient(135deg, #ebf8ff, #bee3f8); border-radius: 16px; padding: 15px 20px; margin-top: 10px; border-right: 4px solid #3182ce; }
-        .share-info a { color: #2b6cb0; text-decoration: none; font-weight: 600; word-break: break-all; }
-        .share-info a:hover { text-decoration: underline; }
-        
-        @media (max-width: 850px) { .subjects-grid { grid-template-columns: 1fr; } .tab-btn { padding: 10px 20px; font-size: 0.9rem; } .hero h1 { font-size: 1.8rem; } .tab-header h2 { font-size: 1.4rem; } .word-btn { padding: 8px 18px; font-size: 0.85rem; } .teacher-panel { padding: 18px; } .login-box { padding: 30px 25px; } }
-        @media (max-width: 480px) { body { padding: 15px; } .subject-card { padding: 16px; } }
-        
-        .teacher-panel-hidden { display: none !important; }
+        .container{max-width:1600px;margin:0 auto;position:relative;z-index:1}
+        .teacher-panel{background:rgba(255,255,255,0.98);backdrop-filter:blur(10px);border-radius:28px;padding:25px 30px;margin-bottom:30px;box-shadow:0 20px 35px -12px rgba(0,0,0,0.2);border:2px solid #667eea}
+        .teacher-panel .panel-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
+        .teacher-panel h3{color:#2d3748;display:flex;align-items:center;gap:10px;font-size:1.3rem}
+        .teacher-panel h3 i{color:#667eea}
+        .panel-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+        .panel-actions button{padding:10px 22px;border:none;border-radius:50px;font-size:.95rem;font-weight:600;cursor:pointer;font-family:Vazirmatn,sans-serif;transition:all .3s;display:flex;align-items:center;gap:8px}
+        .btn-edit-mode{background:linear-gradient(135deg,#ed8936,#dd6b20);color:#fff}
+        .btn-edit-mode:hover{transform:scale(1.02);box-shadow:0 5px 15px rgba(237,137,54,.4)}
+        .btn-save-all{background:linear-gradient(135deg,#48bb78,#38a169);color:#fff}
+        .btn-save-all:hover{transform:scale(1.02);box-shadow:0 5px 15px rgba(72,187,120,.4)}
+        .btn-generate-uuid{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
+        .btn-generate-uuid:hover{transform:scale(1.02);box-shadow:0 5px 15px rgba(102,126,234,.4)}
+        .btn-copy-uuid{background:linear-gradient(135deg,#4299e1,#3182ce);color:#fff}
+        .btn-copy-uuid:hover{transform:scale(1.02);box-shadow:0 5px 15px rgba(66,153,225,.4)}
+        .btn-delete-uuid{background:linear-gradient(135deg,#fc8181,#e53e3e);color:#fff}
+        .btn-delete-uuid:hover{transform:scale(1.02);box-shadow:0 5px 15px rgba(229,62,62,.4)}
+        .btn-logout{background:linear-gradient(135deg,#fc8181,#e53e3e);color:#fff}
+        .btn-logout:hover{transform:scale(1.02);box-shadow:0 5px 15px rgba(229,62,62,.4)}
+        .btn-settings{background:linear-gradient(135deg,#805ad5,#6b46c1);color:#fff}
+        .btn-settings:hover{transform:scale(1.02);box-shadow:0 5px 15px rgba(128,90,213,.4)}
+        .uuid-display{background:#f7fafc;padding:10px 18px;border-radius:12px;font-family:monospace;font-size:.9rem;color:#2d3748;border:2px dashed #a0aec0;direction:ltr;word-break:break-all;max-width:350px}
+        .settings-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:10000;display:none;justify-content:center;align-items:center}
+        .settings-modal.active{display:flex}
+        .settings-box{background:#fff;border-radius:30px;padding:40px 45px;max-width:500px;width:92%;box-shadow:0 30px 60px rgba(0,0,0,.3);max-height:90vh;overflow-y:auto}
+        .settings-box h2{color:#2d3748;font-size:1.6rem;display:flex;align-items:center;gap:12px;margin-bottom:25px}
+        .settings-box h2 i{color:#667eea}
+        .settings-section{margin-bottom:30px;padding-bottom:25px;border-bottom:2px solid #e2e8f0}
+        .settings-section:last-child{border-bottom:none;margin-bottom:0}
+        .settings-section h3{color:#2d3748;font-size:1.1rem;margin-bottom:15px;display:flex;align-items:center;gap:10px}
+        .settings-section h3 i{color:#667eea}
+        .settings-section label{display:block;color:#4a5568;font-size:.9rem;margin-bottom:5px}
+        .settings-section input[type="password"]{width:100%;padding:12px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:1rem;font-family:Vazirmatn,sans-serif;outline:none;transition:border-color .3s;margin-bottom:12px}
+        .settings-section input:focus{border-color:#667eea}
+        .settings-section .btn-primary{width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;font-family:Vazirmatn,sans-serif;transition:all .3s}
+        .settings-section .btn-primary:hover{transform:scale(1.02);box-shadow:0 10px 25px -5px rgba(102,126,234,.4)}
+        .settings-section .btn-close{width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:12px;background:transparent;color:#4a5568;font-size:1rem;font-weight:600;cursor:pointer;font-family:Vazirmatn,sans-serif;transition:all .3s;margin-top:10px}
+        .settings-section .btn-close:hover{background:#e2e8f0}
+        .settings-error{color:#e53e3e;font-size:.9rem;margin-top:5px;display:none}
+        .settings-success{color:#48bb78;font-size:.9rem;margin-top:5px;display:none}
+        .teacher-info{background:rgba(102,126,234,.1);padding:12px 16px;border-radius:12px;margin-bottom:15px;border-right:4px solid #667eea}
+        .teacher-info span{color:#4a5568;font-size:.85rem}
+        .teacher-info strong{color:#2d3748;font-family:monospace;direction:ltr;word-break:break-all}
+        .login-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:9999;display:flex;justify-content:center;align-items:center}
+        .login-box{background:#fff;border-radius:30px;padding:40px 50px;max-width:420px;width:90%;box-shadow:0 30px 60px rgba(0,0,0,.3);text-align:center}
+        .login-box h2{color:#2d3748;margin-bottom:10px;font-size:1.8rem}
+        .login-box p{color:#4a5568;margin-bottom:25px;font-size:.95rem}
+        .login-box input{width:100%;padding:14px 18px;border:2px solid #e2e8f0;border-radius:16px;font-size:1rem;font-family:Vazirmatn,sans-serif;outline:none;transition:border-color .3s;margin-bottom:15px;text-align:center;letter-spacing:3px}
+        .login-box input:focus{border-color:#667eea}
+        .login-box .login-btn{width:100%;padding:14px;border:none;border-radius:16px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:Vazirmatn,sans-serif;transition:all .3s}
+        .login-box .login-btn:hover{transform:scale(1.02);box-shadow:0 10px 25px -5px rgba(102,126,234,.4)}
+        .login-box .login-error{color:#e53e3e;font-size:.9rem;margin-top:10px;display:none}
+        .login-box .login-icon{font-size:4rem;color:#667eea;margin-bottom:10px}
+        .hero{text-align:center;padding:50px 30px;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);border-radius:60px;margin-bottom:40px;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);transition:all .3s;border:1px solid rgba(255,255,255,.3)}
+        .hero:hover{transform:translateY(-5px)}
+        .hero h1{font-size:2.5rem;background:linear-gradient(135deg,#667eea,#764ba2,#f093fb);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:15px}
+        .hero p{font-size:1.1rem;color:#4a5568;opacity:.8}
+        .designer{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:10px 25px;border-radius:50px;font-size:1rem;font-weight:500;margin-top:20px;box-shadow:0 10px 20px -5px rgba(102,126,234,.4)}
+        .tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;margin-bottom:40px}
+        .tab-btn{background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border:none;padding:14px 32px;font-size:1.1rem;font-weight:600;border-radius:60px;cursor:pointer;transition:all .3s cubic-bezier(.4,0,.2,1);color:#fff;font-family:Vazirmatn,sans-serif;border:1px solid rgba(255,255,255,.2)}
+        .tab-btn:hover{background:rgba(255,255,255,.3);transform:translateY(-3px);box-shadow:0 10px 25px -5px rgba(0,0,0,.2)}
+        .tab-btn.active{background:#fff;color:#667eea;box-shadow:0 15px 35px -10px rgba(0,0,0,.3);border-color:#fff}
+        .tab-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:25px;gap:15px}
+        .tab-header h2{color:#fff;font-size:1.8rem;text-shadow:2px 2px 8px rgba(0,0,0,.2);display:flex;align-items:center;gap:12px}
+        .tab-header h2 i{font-size:2rem}
+        .word-btn{background:linear-gradient(135deg,#1e6f3f,#2d8a4e);border:none;padding:12px 28px;font-size:1rem;font-weight:600;border-radius:50px;cursor:pointer;color:#fff;font-family:Vazirmatn,sans-serif;transition:all .3s;display:inline-flex;align-items:center;gap:10px;box-shadow:0 5px 15px rgba(0,0,0,.2)}
+        .word-btn:hover{transform:scale(1.03);background:linear-gradient(135deg,#0f5a33,#1e6f3f);box-shadow:0 8px 25px rgba(0,0,0,.3)}
+        .tab-content{display:none;animation:fadeInUp .6s cubic-bezier(.2,.9,.4,1.1)}
+        .tab-content.active{display:block}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        .subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:25px}
+        .subject-card{background:rgba(255,255,255,0.98);backdrop-filter:blur(5px);border-radius:28px;padding:22px;transition:all .35s cubic-bezier(.2,.9,.4,1.1);box-shadow:0 20px 35px -12px rgba(0,0,0,.15);border-right:6px solid;position:relative;overflow:hidden}
+        .subject-card::before{content:'';position:absolute;top:0;right:0;width:100%;height:100%;background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,0));pointer-events:none}
+        .subject-card:hover{transform:translateY(-8px);box-shadow:0 30px 45px -15px rgba(0,0,0,.25)}
+        .subject-card.edit-mode{border-right-color:#ed8936!important;background:rgba(255,255,255,0.98)}
+        .subject-card.edit-mode .subject-description{background:#fffff0;border:2px dashed #ed8936;padding:12px;border-radius:12px;cursor:text}
+        .subject-card.edit-mode .subject-description:focus{outline:2px solid #ed8936;background:#fffef0}
+        .subject-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px}
+        .subject-title{font-size:1.25rem;font-weight:800;color:#1a202c;display:flex;align-items:center;gap:10px}
+        .subject-title i{font-size:1.4rem;color:#667eea}
+        .level-badge{font-size:.7rem;padding:5px 14px;border-radius:30px;font-weight:700;letter-spacing:.5px}
+        .level-excellent{background:linear-gradient(135deg,#c6f6d5,#9ae6b4);color:#22543d;border-right-color:#48bb78}
+        .level-good{background:linear-gradient(135deg,#fefcbf,#fde68a);color:#744210;border-right-color:#ecc94b}
+        .level-acceptable{background:linear-gradient(135deg,#fed7d7,#feb2b2);color:#742a2a;border-right-color:#fc8181}
+        .level-need{background:linear-gradient(135deg,#e2e8f0,#cbd5e0);color:#2d3748;border-right-color:#a0aec0}
+        .subject-description{font-size:.92rem;line-height:1.7;color:#2d3748;text-align:justify;margin:15px 0}
+        .card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+        .copy-btn{background:linear-gradient(135deg,#667eea,#764ba2);border:none;color:#fff;padding:8px 18px;border-radius:50px;cursor:pointer;font-size:.8rem;font-weight:500;transition:all .25s;display:inline-flex;align-items:center;gap:8px;font-family:Vazirmatn,sans-serif}
+        .copy-btn:hover{transform:scale(1.02);box-shadow:0 5px 15px rgba(102,126,234,.4)}
+        .copy-btn.copied{background:linear-gradient(135deg,#48bb78,#38a169)}
+        .edit-btn{background:linear-gradient(135deg,#ed8936,#dd6b20);border:none;color:#fff;padding:8px 18px;border-radius:50px;cursor:pointer;font-size:.8rem;font-weight:500;transition:all .25s;display:inline-flex;align-items:center;gap:8px;font-family:Vazirmatn,sans-serif}
+        .edit-btn:hover{transform:scale(1.02);box-shadow:0 5px 15px rgba(237,137,54,.4)}
+        .edit-btn.saved{background:linear-gradient(135deg,#48bb78,#38a169)}
+        .footer{text-align:center;margin-top:50px;padding:30px;background:rgba(255,255,255,0.9);backdrop-filter:blur(10px);border-radius:50px;color:#4a5568;font-size:.9rem}
+        .toast{position:fixed;bottom:30px;right:30px;background:linear-gradient(135deg,#48bb78,#38a169);color:#fff;padding:14px 28px;border-radius:60px;z-index:1000;animation:slideInRight .3s;box-shadow:0 10px 25px -5px rgba(0,0,0,.2);font-weight:500;direction:rtl}
+        .toast.error{background:linear-gradient(135deg,#fc8181,#e53e3e)}
+        @keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+        .uuid-input-area{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:15px;padding:15px;background:#f7fafc;border-radius:16px;border:2px dashed #a0aec0}
+        .uuid-input-area input{flex:1;min-width:200px;padding:10px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:.95rem;font-family:monospace;outline:none;direction:ltr}
+        .uuid-input-area input:focus{border-color:#667eea}
+        .uuid-input-area button{padding:10px 24px;border:none;border-radius:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;font-weight:600;cursor:pointer;font-family:Vazirmatn,sans-serif;transition:all .3s}
+        .uuid-input-area button:hover{transform:scale(1.02)}
+        .share-info{background:linear-gradient(135deg,#ebf8ff,#bee3f8);border-radius:16px;padding:15px 20px;margin-top:10px;border-right:4px solid #3182ce}
+        .share-info a{color:#2b6cb0;text-decoration:none;font-weight:600;word-break:break-all}
+        .share-info a:hover{text-decoration:underline}
+        @media (max-width:850px){.subjects-grid{grid-template-columns:1fr}.tab-btn{padding:10px 20px;font-size:.9rem}.hero h1{font-size:1.8rem}.tab-header h2{font-size:1.4rem}.word-btn{padding:8px 18px;font-size:.85rem}.teacher-panel{padding:18px}.login-box{padding:30px 25px}.settings-box{padding:25px 20px}}
+        @media (max-width:480px){body{padding:15px}.subject-card{padding:16px}}
+        .teacher-panel-hidden{display:none!important}
     </style>
 </head>
 <body>
 
-<!-- ===== لاگین معلم ===== -->
 <div class="login-overlay" id="loginOverlay">
     <div class="login-box">
         <div class="login-icon"><i class="fas fa-chalkboard-teacher"></i></div>
@@ -165,21 +172,43 @@ export default {
         <p>برای ورود به پنل مدیریت، رمز عبور را وارد کنید</p>
         <input type="password" id="loginPassword" placeholder="••••••••" maxlength="20" onkeydown="if(event.key==='Enter') loginTeacher()">
         <button class="login-btn" onclick="loginTeacher()"><i class="fas fa-unlock"></i> ورود به پنل</button>
-        <div class="login-error" id="loginError">❌ رمز عبور اشتباه است!</div>
+        <div class="login-error" id="loginError">رمز عبور اشتباه است!</div>
+    </div>
+</div>
+
+<div class="settings-modal" id="settingsModal">
+    <div class="settings-box">
+        <h2><i class="fas fa-cog"></i> تنظیمات</h2>
+        <div class="teacher-info">
+            <span>شناسه معلم:</span><br>
+            <strong id="teacherIdDisplay">---</strong>
+        </div>
+        <div class="settings-section">
+            <h3><i class="fas fa-key"></i> تغییر رمز عبور</h3>
+            <label>رمز فعلی</label>
+            <input type="password" id="currentPassword" placeholder="رمز فعلی را وارد کنید">
+            <label>رمز جدید</label>
+            <input type="password" id="newPassword" placeholder="رمز جدید را وارد کنید">
+            <label>تکرار رمز جدید</label>
+            <input type="password" id="confirmPassword" placeholder="رمز جدید را دوباره وارد کنید">
+            <button class="btn-primary" onclick="changePassword()"><i class="fas fa-save"></i> تغییر رمز</button>
+            <div class="settings-error" id="passwordError">رمز فعلی اشتباه است یا رمز جدید مطابقت ندارد!</div>
+            <div class="settings-success" id="passwordSuccess">رمز عبور با موفقیت تغییر کرد!</div>
+        </div>
+        <button class="btn-close" onclick="closeSettings()"><i class="fas fa-times"></i> بستن</button>
     </div>
 </div>
 
 <div class="container">
     <div class="hero">
-        <h1>📚 توصیف عملکرد پایه‌های اول تا ششم</h1>
+        <h1>توصیف عملکرد پایه‌های اول تا ششم</h1>
         <p>دورهٔ ابتدائی</p>
         <div class="designer"><i class="fas fa-pen-fancy"></i> طراح: نادر اکشیک</div>
-        <div id="sharedBadge" style="display:none; margin-top:15px; background: #48bb78; color:white; padding:8px 20px; border-radius:50px; font-size:0.9rem;">
+        <div id="sharedBadge" style="display:none;margin-top:15px;background:#48bb78;color:#fff;padding:8px 20px;border-radius:50px;font-size:.9rem">
             <i class="fas fa-link"></i> این صفحه با UUID بارگذاری شده است
         </div>
     </div>
 
-    <!-- ===== پنل معلم (مخفی در ابتدا) ===== -->
     <div class="teacher-panel teacher-panel-hidden" id="teacherPanel">
         <div class="panel-header">
             <h3><i class="fas fa-chalkboard-teacher"></i> پنل معلم</h3>
@@ -188,27 +217,26 @@ export default {
                 <button class="btn-save-all" onclick="saveAllChanges()"><i class="fas fa-save"></i> ذخیره همه</button>
                 <button class="btn-generate-uuid" onclick="generateUUID()"><i class="fas fa-key"></i> تولید UUID جدید</button>
                 <button class="btn-copy-uuid" onclick="copyUUID()"><i class="fas fa-copy"></i> کپی UUID</button>
+                <button class="btn-delete-uuid" onclick="deleteUUID()"><i class="fas fa-trash"></i> حذف UUID</button>
+                <button class="btn-settings" onclick="openSettings()"><i class="fas fa-cog"></i> تنظیمات</button>
                 <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> خروج</button>
             </div>
         </div>
-        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-top: 15px;">
-            <span style="font-weight: 600; color: #4a5568;">UUID اشتراک‌گذاری:</span>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:15px;margin-top:15px">
+            <span style="font-weight:600;color:#4a5568">UUID اشتراک‌گذاری:</span>
             <span class="uuid-display" id="uuidDisplay">---</span>
-            <span style="font-size: 0.85rem; color: #718096;">(با این کد دیگران می‌تونن توصیف‌ها رو ببینن)</span>
+            <span style="font-size:.85rem;color:#4a5568">(با این کد دیگران می‌تونن توصیف‌ها رو ببینن)</span>
         </div>
-        
-        <!-- ===== لینک اشتراک‌گذاری ===== -->
-        <div class="share-info" id="shareLinkContainer" style="display:none;">
-            <i class="fas fa-share-alt" style="color:#2b6cb0;"></i>
-            <span style="font-weight:600;">لینک اشتراک‌گذاری:</span>
+        <div class="share-info" id="shareLinkContainer" style="display:none">
+            <i class="fas fa-share-alt" style="color:#2b6cb0"></i>
+            <span style="font-weight:600">لینک اشتراک‌گذاری:</span>
             <a href="#" id="shareLink" target="_blank">لینک</a>
-            <button onclick="copyShareLink()" style="background:none; border:none; color:#2b6cb0; cursor:pointer; font-size:0.9rem;">
+            <button onclick="copyShareLink()" style="background:none;border:none;color:#2b6cb0;cursor:pointer;font-size:.9rem">
                 <i class="fas fa-copy"></i> کپی لینک
             </button>
         </div>
-        
         <div class="uuid-input-area">
-            <span style="font-weight: 600; color: #4a5568;"><i class="fas fa-link"></i> ورود با UUID:</span>
+            <span style="font-weight:600;color:#4a5568"><i class="fas fa-link"></i> ورود با UUID:</span>
             <input type="text" id="uuidInput" placeholder="مثال: 550e8400-e29b-41d4-a716-446655440000" dir="ltr">
             <button onclick="loadByUUID()"><i class="fas fa-search"></i> بارگذاری</button>
         </div>
@@ -223,669 +251,129 @@ export default {
         <button class="tab-btn" data-grade="6">پایه ششم</button>
     </div>
 
-    <!-- ==================== پایه اول ==================== -->
     <div id="grade1" class="tab-content active">
         <div class="tab-header">
             <h2><i class="fas fa-star"></i> پایه اول</h2>
-            <button class="word-btn" onclick="downloadWord(1, 'پایه_اول')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه اول</button>
+            <button class="word-btn" onclick="downloadWord(1,'پایه_اول')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه اول</button>
         </div>
         <div id="word-grade1" class="subjects-grid"></div>
     </div>
 
-    <!-- ==================== پایه دوم ==================== -->
     <div id="grade2" class="tab-content">
         <div class="tab-header">
             <h2><i class="fas fa-star"></i> پایه دوم</h2>
-            <button class="word-btn" onclick="downloadWord(2, 'پایه_دوم')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه دوم</button>
+            <button class="word-btn" onclick="downloadWord(2,'پایه_دوم')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه دوم</button>
         </div>
         <div id="word-grade2" class="subjects-grid"></div>
     </div>
 
-    <!-- ==================== پایه سوم ==================== -->
     <div id="grade3" class="tab-content">
         <div class="tab-header">
             <h2><i class="fas fa-star"></i> پایه سوم</h2>
-            <button class="word-btn" onclick="downloadWord(3, 'پایه_سوم')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه سوم</button>
+            <button class="word-btn" onclick="downloadWord(3,'پایه_سوم')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه سوم</button>
         </div>
         <div id="word-grade3" class="subjects-grid"></div>
     </div>
 
-    <!-- ==================== پایه چهارم ==================== -->
     <div id="grade4" class="tab-content">
         <div class="tab-header">
             <h2><i class="fas fa-star"></i> پایه چهارم</h2>
-            <button class="word-btn" onclick="downloadWord(4, 'پایه_چهارم')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه چهارم</button>
+            <button class="word-btn" onclick="downloadWord(4,'پایه_چهارم')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه چهارم</button>
         </div>
         <div id="word-grade4" class="subjects-grid"></div>
     </div>
 
-    <!-- ==================== پایه پنجم ==================== -->
     <div id="grade5" class="tab-content">
         <div class="tab-header">
             <h2><i class="fas fa-star"></i> پایه پنجم</h2>
-            <button class="word-btn" onclick="downloadWord(5, 'پایه_پنجم')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه پنجم</button>
+            <button class="word-btn" onclick="downloadWord(5,'پایه_پنجم')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه پنجم</button>
         </div>
         <div id="word-grade5" class="subjects-grid"></div>
     </div>
 
-    <!-- ==================== پایه ششم ==================== -->
     <div id="grade6" class="tab-content">
         <div class="tab-header">
             <h2><i class="fas fa-star"></i> پایه ششم</h2>
-            <button class="word-btn" onclick="downloadWord(6, 'پایه_ششم')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه ششم</button>
+            <button class="word-btn" onclick="downloadWord(6,'پایه_ششم')"><i class="fas fa-file-word"></i> دانلود فایل Word پایه ششم</button>
         </div>
         <div id="word-grade6" class="subjects-grid"></div>
     </div>
 
-    <div style="display: flex; justify-content: center; margin: 40px 0 30px;">
-        <button class="word-btn" onclick="downloadAllGrades()" style="background: #2c5282; padding: 14px 35px; font-size: 1.1rem;"><i class="fas fa-file-word"></i> 📥 دانلود فایل Word همه پایه‌ها (یکجا)</button>
+    <div style="display:flex;justify-content:center;margin:40px 0 30px">
+        <button class="word-btn" onclick="downloadAllGrades()" style="background:#2c5282;padding:14px 35px;font-size:1.1rem"><i class="fas fa-file-word"></i> دانلود فایل Word همه پایه‌ها (یکجا)</button>
     </div>
 
     <div class="footer">
-        <i class="fas fa-heart" style="color: #e53e3e;"></i> توصیف عملکرد دورهٔ ابتدائی - پایه‌های اول تا ششم <i class="fas fa-heart" style="color: #e53e3e;"></i>
+        <i class="fas fa-heart" style="color:#e53e3e"></i> توصیف عملکرد دورهٔ ابتدائی - پایه‌های اول تا ششم <i class="fas fa-heart" style="color:#e53e3e"></i>
     </div>
 </div>
 
 <script>
-    // ==================== داده‌های پیش‌فرض ====================
-    const DEFAULT_DATA = {
-        1: [
-            { id: '1-1', subject: 'قرآن', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با علاقه و اشتیاق فراوان در کلاس قرآن شرکت می‌کند، آداب تلاوت را به‌طور کامل رعایت می‌نماید، آیات و سوره‌های آموزش‌داده‌شده را روان، شمرده، با تجوید صحیح و تلفظ دقیق روخوانی می‌کند.' },
-            { id: '1-2', subject: 'قرآن', level: 'level-good', levelText: 'خوب', desc: 'با رعایت آداب تلاوت، آیات را شمرده و با تلفظ نسبتاً صحیح روخوانی می‌کند. در فعالیت‌های گروهی قرآن فعال است و برخی سوره‌ها را با کمی کمک از حفظ می‌خواند.' },
-            { id: '1-3', subject: 'قرآن', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی و تشویق معلم، آیات را روخوانی می‌کند، آداب تلاوت را تا حدودی رعایت می‌نماید و در جمع‌خوانی شرکت می‌کند.' },
-            { id: '1-4', subject: 'قرآن', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در روخوانی آیات و رعایت تجوید نیاز به تمرین و تلاش بیشتری دارد. مرور روزانه در منزل و تکرار سوره‌ها کمک زیادی به پیشرفت او خواهد کرد.' },
-            { id: '1-5', subject: 'فارسی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'نشانه‌ها، کلمات و جمله‌ها را کاملاً روان، درست و با لحن مناسب می‌خواند. با دقت به داستان‌ها و متون گوش می‌دهد، سؤالات را به‌خوبی پاسخ می‌دهد و با خلاقیت زیبا سخن می‌گوید.' },
-            { id: '1-6', subject: 'فارسی', level: 'level-good', levelText: 'خوب', desc: 'نشانه‌ها و کلمات را به‌درستی تشخیص می‌دهد، متون را شمرده و با تلفظ مناسب می‌خواند. در فعالیت‌های گفتاری و گوش دادن فعال است.' },
-            { id: '1-7', subject: 'فارسی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با کمک و راهنمایی معلم، نشانه‌ها را می‌خواند، در گوش دادن به داستان‌ها توجه نشان می‌دهد و در فعالیت‌های گفتاری شرکت می‌کند.' },
-            { id: '1-8', subject: 'فارسی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در تشخیص سریع نشانه‌ها و خواندن روان کلمات نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های ساده در منزل به پیشرفت او کمک زیادی می‌کند.' },
-            { id: '1-9', subject: 'ریاضی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'مفاهیم اعداد، الگوها، جمع و تفریق ساده، اندازه‌گیری و شکل‌های هندسی را به‌خوبی درک می‌کند. مسائل را با سرعت و دقت حل می‌نماید.' },
-            { id: '1-10', subject: 'ریاضی', level: 'level-good', levelText: 'خوب', desc: 'اعداد را به‌درستی می‌شناسد، عملیات ساده جمع و تفریق را انجام می‌دهد و در شناخت الگوها و شکل‌ها موفق است.' },
-            { id: '1-11', subject: 'ریاضی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با کمک معلم، مفاهیم پایه ریاضی را یاد می‌گیرد، اعداد را می‌شناسد و در فعالیت‌های عملی شرکت می‌کند.' },
-            { id: '1-12', subject: 'ریاضی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در شناخت اعداد، حل مسائل ساده و درک الگوها نیاز به تمرین بیشتری دارد. انجام بازی‌های ریاضی و تمرین در منزل به پیشرفت او کمک می‌کند.' },
-            { id: '1-13', subject: 'علوم تجربی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با کنجکاوی و علاقه فراوان مشاهده می‌کند، سؤالات هوشمندانه می‌پرسد و درباره بدن خود، حواس پنج‌گانه، گیاهان و جانوران با جزئیات توضیح می‌دهد.' },
-            { id: '1-14', subject: 'علوم تجربی', level: 'level-good', levelText: 'خوب', desc: 'در فعالیت‌های عملی و مشاهده‌ای شرکت فعال دارد، مفاهیم ساده علوم را درک می‌کند و مشاهدات خود را به‌خوبی بیان می‌نماید.' },
-            { id: '1-15', subject: 'علوم تجربی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم، مشاهده می‌کند، در آزمایش‌ها شرکت می‌کند و دانسته‌های خود را بیان می‌کند.' },
-            { id: '1-16', subject: 'علوم تجربی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در دقت مشاهده، پرسشگری و بیان دانسته‌های علمی نیاز به تلاش بیشتری دارد. گفتگو درباره طبیعت در منزل به پیشرفت او کمک می‌کند.' },
-            { id: '1-17', subject: 'هنر', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با خلاقیت و تخیل بالا نقاشی می‌کشد، رنگ‌آمیزی را بسیار زیبا و دقیق انجام می‌دهد و در ساخت کاردستی و فعالیت‌های هنری بسیار موفق و نوآور است.' },
-            { id: '1-18', subject: 'هنر', level: 'level-good', levelText: 'خوب', desc: 'کارهای دستی و نقاشی را با علاقه انجام می‌دهد، رنگ‌ها را به‌خوبی ترکیب می‌کند و در فعالیت‌های هنری فعال است.' },
-            { id: '1-19', subject: 'هنر', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'در فعالیت‌های هنری و رنگ‌آمیزی شرکت می‌کند و کارهای خود را با راهنمایی معلم انجام می‌دهد.' },
-            { id: '1-20', subject: 'هنر', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در خلاقیت و دقت در کارهای هنری نیاز به تمرین بیشتری دارد. انجام فعالیت‌های هنری در منزل مفید خواهد بود.' },
-            { id: '1-21', subject: 'تربیت بدنی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'در حرکات پایه، بازی‌های گروهی و فعالیت‌های ورزشی بسیار هماهنگ، چابک و پر انرژی است. قوانین بازی را به‌خوبی رعایت می‌کند.' },
-            { id: '1-22', subject: 'تربیت بدنی', level: 'level-good', levelText: 'خوب', desc: 'حرکات ورزشی را درست و با هماهنگی انجام می‌دهد، در بازی‌های گروهی فعال است و از ورزش لذت می‌برد.' },
-            { id: '1-23', subject: 'تربیت بدنی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم، حرکات پایه را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند.' },
-            { id: '1-24', subject: 'تربیت بدنی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در هماهنگی بدنی و انجام حرکات نیاز به تمرین بیشتری دارد. فعالیت بدنی منظم در منزل به پیشرفت او کمک می‌کند.' },
-            { id: '1-25', subject: 'شایستگی عمومی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'بسیار منظم، پاکیزه و مسئولیت‌پذیر است، با ادب و احترام کامل با معلم و همکلاسی‌ها رفتار می‌کند و تکالیف را کامل و به‌موقع انجام می‌دهد.' },
-            { id: '1-26', subject: 'شایستگی عمومی', level: 'level-good', levelText: 'خوب', desc: 'منظم و پاکیزه است، با ادب رفتار می‌کند، در فعالیت‌های گروهی همکاری دارد و تکالیف را با تلاش انجام می‌دهد.' },
-            { id: '1-27', subject: 'شایستگی عمومی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم منظم است، ادب را رعایت می‌کند، در فعالیت‌های گروهی شرکت می‌کند و تکالیف را انجام می‌دهد.' },
-            { id: '1-28', subject: 'شایستگی عمومی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در نظم، پاکیزگی، همکاری و انجام به‌موقع تکالیف نیاز به تلاش بیشتری دارد. حمایت خانواده و یادآوری روزانه کمک زیادی می‌کند.' }
-        ],
-        2: [
-            { id: '2-1', subject: 'قرآن', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با علاقه و اشتیاق زیاد در کلاس قرآن شرکت می‌کند، آداب تلاوت را کاملاً رعایت می‌نماید، آیات و سوره‌ها را روان، با تجوید صحیح روخوانی می‌کند و چندین سوره را از حفظ دارد.' },
-            { id: '2-2', subject: 'قرآن', level: 'level-good', levelText: 'خوب', desc: 'آداب تلاوت را رعایت می‌کند، آیات را شمرده و با تلفظ مناسب روخوانی می‌نماید و برخی سوره‌ها را از حفظ می‌خواند.' },
-            { id: '2-3', subject: 'قرآن', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم آیات را روخوانی می‌کند، آداب تلاوت را تا حدودی رعایت می‌نماید و در فعالیت‌های گروهی شرکت می‌کند.' },
-            { id: '2-4', subject: 'قرآن', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در روخوانی روان آیات، رعایت تجوید و حفظ سوره‌ها نیاز به تمرین بیشتری دارد. مرور روزانه قرآن در منزل کمک زیادی خواهد کرد.' },
-            { id: '2-5', subject: 'فارسی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'متون درس را کاملاً روان، شمرده و با لحن مناسب می‌خواند، به جزئیات داستان‌ها دقت می‌کند و با خلاقیت زیبا سخن می‌گوید.' },
-            { id: '2-6', subject: 'فارسی', level: 'level-good', levelText: 'خوب', desc: 'متون را به‌درستی می‌خواند، درک مطلب خوبی دارد و در فعالیت‌های گفتاری و نوشتاری شرکت فعال دارد.' },
-            { id: '2-7', subject: 'فارسی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با کمک معلم متون را می‌خواند، در گوش دادن به داستان‌ها توجه نشان می‌دهد و در فعالیت‌های گفتاری شرکت می‌کند.' },
-            { id: '2-8', subject: 'فارسی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در خواندن روان و درک دقیق مطالب نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های داستان در منزل بسیار مفید خواهد بود.' },
-            { id: '2-9', subject: 'ریاضی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'مفاهیم اعداد، جمع و تفریق، ضرب ساده، کسرها و الگوها را به‌خوبی درک می‌کند و مسائل را با سرعت و دقت حل می‌نماید.' },
-            { id: '2-10', subject: 'ریاضی', level: 'level-good', levelText: 'خوب', desc: 'عملیات جمع، تفریق و ضرب ساده را به‌درستی انجام می‌دهد و الگوها و شکل‌ها را می‌شناسد.' },
-            { id: '2-11', subject: 'ریاضی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'در درس ریاضی، مفاهیم اصلی مانند جمع و تفریق، شناخت اشکال هندسی و اندازه‌گیری را در سطح قابل قبول فرا گرفته است. او در حل مسائل ساده تا حدی موفق بوده، اما برای تسلط بیشتر بر مفاهیم، افزایش دقت در محاسبات و توانایی حل مسائل پیچیده‌تر، نیاز به تمرین و تکرار بیشتری دارد.' },
-            { id: '2-12', subject: 'ریاضی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در درک مفاهیم و حل سریع مسائل نیاز به تمرین بیشتری دارد. انجام بازی‌های ریاضی و تمرین روزانه در منزل کمک خواهد کرد.' },
-            { id: '2-13', subject: 'علوم تجربی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با کنجکاوی فراوان مشاهده و آزمایش می‌کند و درباره بدن انسان، گیاهان، جانوران و مواد با جزئیات توضیح می‌دهد.' },
-            { id: '2-14', subject: 'علوم تجربی', level: 'level-good', levelText: 'خوب', desc: 'در فعالیت‌های عملی و آزمایش‌ها شرکت فعال دارد و مفاهیم علوم را به‌خوبی درک می‌کند.' },
-            { id: '2-15', subject: 'علوم تجربی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم در آزمایش‌ها شرکت می‌کند و دانسته‌های خود را تا حدودی بیان می‌کند.' },
-            { id: '2-16', subject: 'علوم تجربی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در دقت مشاهده و پرسشگری نیاز به تلاش بیشتری دارد. گفتگو درباره طبیعت در منزل مفید است.' },
-            { id: '2-17', subject: 'هدیه‌های آسمانی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با علاقه و اشتیاق فراوان در کلاس شرکت می‌کند، داستان‌های پیامبران و اهل بیت را با دقت گوش می‌دهد و مفاهیم دینی را در رفتار خود نشان می‌دهد.' },
-            { id: '2-18', subject: 'هدیه‌های آسمانی', level: 'level-good', levelText: 'خوب', desc: 'مفاهیم دینی را به‌خوبی درک کرده و در فعالیت‌های کلاسی مشارکت فعال دارد.' },
-            { id: '2-19', subject: 'هدیه‌های آسمانی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'در درس هدیه‌های آسمان، مفاهیم و پیام‌های دینی را در حد انتظار فرا گرفته و با احکام و داستان‌های دینی آشنایی دارد.' },
-            { id: '2-20', subject: 'هدیه‌های آسمانی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در توجه به درس و درک مفاهیم دینی نیاز به تلاش بیشتری دارد. مرور درس‌ها در منزل کمک زیادی می‌کند.' },
-            { id: '2-21', subject: 'هنر', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با خلاقیت بالا نقاشی می‌کشد و کاردستی‌های خلاقانه می‌سازد و در فعالیت‌های هنری بسیار نوآور است.' },
-            { id: '2-22', subject: 'هنر', level: 'level-good', levelText: 'خوب', desc: 'کارهای دستی و نقاشی را با علاقه انجام می‌دهد و رنگ‌ها را به‌خوبی ترکیب می‌کند.' },
-            { id: '2-23', subject: 'هنر', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'در فعالیت‌های هنری شرکت می‌کند و کارهای خود را با راهنمایی معلم انجام می‌دهد.' },
-            { id: '2-24', subject: 'هنر', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در خلاقیت و دقت کارهای هنری نیاز به تمرین بیشتری دارد. فعالیت هنری در منزل مفید خواهد بود.' },
-            { id: '2-25', subject: 'تربیت بدنی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'در حرکات ورزشی، بازی‌های گروهی و فعالیت‌های بدنی بسیار هماهنگ، چابک و پر انرژی است و قوانین را رعایت می‌کند.' },
-            { id: '2-26', subject: 'تربیت بدنی', level: 'level-good', levelText: 'خوب', desc: 'حرکات ورزشی را درست انجام می‌دهد و در بازی‌های گروهی فعال است.' },
-            { id: '2-27', subject: 'تربیت بدنی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم حرکات را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند.' },
-            { id: '2-28', subject: 'تربیت بدنی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در هماهنگی بدنی و استقامت نیاز به تمرین بیشتری دارد. فعالیت بدنی منظم در منزل کمک می‌کند.' },
-            { id: '2-29', subject: 'شایستگی عمومی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'بسیار منظم، مسئولیت‌پذیر و همکاری‌کننده است، با ادب و احترام کامل رفتار می‌کند و تکالیف را کامل و به‌موقع تحویل می‌دهد.' },
-            { id: '2-30', subject: 'شایستگی عمومی', level: 'level-good', levelText: 'خوب', desc: 'منظم است، مسئولیت خود را می‌پذیرد و با دیگران همکاری می‌کند.' },
-            { id: '2-31', subject: 'شایستگی عمومی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم منظم و مسئولیت‌پذیر است و در فعالیت‌های گروهی شرکت می‌کند.' },
-            { id: '2-32', subject: 'شایستگی عمومی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در نظم، مسئولیت‌پذیری و همکاری نیاز به تلاش بیشتری دارد. برنامه‌ریزی روزانه در منزل کمک می‌کند.' }
-        ],
-        3: [
-            { id: '3-1', subject: 'قرآن', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با اشتیاق فراوان در کلاس قرآن شرکت می‌کند، آداب تلاوت را به‌طور کامل رعایت می‌نماید، آیات و سوره‌ها را روان، با تجوید صحیح روخوانی می‌کند و چندین سوره را کاملاً از حفظ دارد.' },
-            { id: '3-2', subject: 'قرآن', level: 'level-good', levelText: 'خوب', desc: 'آداب تلاوت را رعایت می‌کند، آیات را شمرده و با تلفظ مناسب روخوانی می‌نماید و برخی سوره‌ها را از حفظ می‌خواند.' },
-            { id: '3-3', subject: 'قرآن', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم آیات را روخوانی می‌کند، آداب تلاوت را تا حدودی رعایت می‌نماید و در فعالیت‌های گروهی شرکت می‌کند.' },
-            { id: '3-4', subject: 'قرآن', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در روخوانی روان، رعایت تجوید و حفظ سوره‌ها نیاز به تمرین بیشتری دارد. مرور روزانه قرآن در منزل کمک زیادی خواهد کرد.' },
-            { id: '3-5', subject: 'فارسی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'متون درس را کاملاً روان، با لحن مناسب و رسا می‌خواند، درک مطلب عالی دارد، به جزئیات داستان‌ها و شعرها دقت می‌کند و با خلاقیت زیبا سخن می‌گوید.' },
-            { id: '3-6', subject: 'فارسی', level: 'level-good', levelText: 'خوب', desc: 'متون را به‌درستی و شمرده می‌خواند، درک مطلب خوبی نشان می‌دهد و نظرات خود را به‌خوبی بیان می‌کند.' },
-            { id: '3-7', subject: 'فارسی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'در درس فارسی، مهارت‌های خواندن و نوشتن را در حد قابل قبول فرا گرفته است. او قادر به درک متون ساده بوده و توانایی نوشتن جملات ابتدایی را دارد.' },
-            { id: '3-8', subject: 'فارسی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در خواندن روان و درک دقیق مطالب نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های داستان در منزل بسیار مفید خواهد بود.' },
-            { id: '3-9', subject: 'ریاضی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'مفاهیم اعداد، ضرب و تقسیم، کسرها، مساحت، حجم، زمان و مسائل را به‌خوبی درک می‌کند و مسائل را با سرعت و دقت حل می‌نماید.' },
-            { id: '3-10', subject: 'ریاضی', level: 'level-good', levelText: 'خوب', desc: 'عملیات ضرب و تقسیم را به‌درستی انجام می‌دهد، کسرها و مفاهیم هندسی را می‌شناسد و در حل مسائل کلاسی موفق است.' },
-            { id: '3-11', subject: 'ریاضی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'در درس ریاضی، مفاهیم پایه مانند جمع و تفریق اعداد سه رقمی و درک اشکال هندسی را در سطح قابل قبول فرا گرفته است. او در حل مسائل ساده توانایی نسبی دارد، اما برای تسلط بیشتر بر محاسبات و درک عمیق‌تر مفاهیم، نیازمند تمرین و تکرار بیشتر است.' },
-            { id: '3-12', subject: 'ریاضی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در درک مفاهیم و حل سریع مسائل نیاز به تمرین بیشتری دارد. بازی‌های ریاضی و تمرین روزانه در منزل به پیشرفت او کمک خواهد کرد.' },
-            { id: '3-13', subject: 'علوم تجربی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با کنجکاوی زیاد مشاهده و آزمایش می‌کند، سؤالات هوشمندانه می‌پرسد و درباره بدن انسان، نیرو، مواد، گیاهان، جانوران و محیط زیست با جزئیات توضیح می‌دهد.' },
-            { id: '3-14', subject: 'علوم تجربی', level: 'level-good', levelText: 'خوب', desc: 'در درس علوم تجربی، مفاهیم و مباحث ارائه شده را به خوبی درک کرده و قادر به توضیح ارتباط بین پدیده‌های علمی است. او در انجام آزمایش‌ها با دقت و علاقه شرکت می‌کند.' },
-            { id: '3-15', subject: 'علوم تجربی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'در درس علوم تجربی، مفاهیم اصلی را در حد قابل قبول فرا گرفته و با برخی از موضوعات علمی آشنایی دارد. او در انجام آزمایش‌ها نیاز به راهنمایی بیشتری دارد.' },
-            { id: '3-16', subject: 'علوم تجربی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در دقت مشاهده و بیان مفاهیم علمی نیاز به تلاش بیشتری دارد. گفتگو درباره طبیعت در منزل مفید است.' },
-            { id: '3-17', subject: 'مطالعات اجتماعی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با علاقه درباره خانواده، مدرسه، محله، شهر، استان و کشور صحبت می‌کند و نقش افراد، مشاغل و قوانین را به‌خوبی می‌شناسد.' },
-            { id: '3-18', subject: 'مطالعات اجتماعی', level: 'level-good', levelText: 'خوب', desc: 'مفاهیم اجتماعی را به‌خوبی درک کرده و در فعالیت‌های کلاسی مشارکت فعال دارد.' },
-            { id: '3-19', subject: 'مطالعات اجتماعی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'مفاهیم را در سطح قابل قبول فرا گرفته است. او با موضوعات اصلی آشنایی نسبی دارد و در پاسخ به پرسش‌ها معمولاً نیازمند راهنمایی کوتاه است.' },
-            { id: '3-20', subject: 'مطالعات اجتماعی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در درک مفاهیم اجتماعی و بیان دانسته‌ها نیاز به تمرین بیشتری دارد. گفتگو درباره اخبار ساده در منزل کمک می‌کند.' },
-            { id: '3-21', subject: 'هدیه‌های آسمانی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با اشتیاق فراوان در کلاس شرکت می‌کند، داستان‌های پیامبران و امامان را با دقت گوش می‌دهد و مفاهیم دینی را در رفتار خود نشان می‌دهد.' },
-            { id: '3-22', subject: 'هدیه‌های آسمانی', level: 'level-good', levelText: 'خوب', desc: 'مفاهیم دینی و آموزه‌های اخلاقی را به خوبی درک کرده و در زندگی خود به کار می‌بندد.' },
-            { id: '3-23', subject: 'هدیه‌های آسمانی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'مفاهیم و آموزه‌های دینی را در حد قابل قبول فرا گرفته و با برخی از موضوعات آشنایی دارد.' },
-            { id: '3-24', subject: 'هدیه‌های آسمانی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در توجه به درس، درک مفاهیم دینی و به‌کار بستن آن‌ها در رفتار نیاز به تلاش بیشتری دارد. مرور درس‌ها در منزل کمک می‌کند.' },
-            { id: '3-25', subject: 'هنر', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با خلاقیت بالا نقاشی می‌کشد، رنگ‌آمیزی دقیق و زیبا انجام می‌دهد و کاردستی‌های خلاقانه می‌سازد.' },
-            { id: '3-26', subject: 'هنر', level: 'level-good', levelText: 'خوب', desc: 'کارهای دستی و نقاشی را با علاقه انجام می‌دهد و رنگ‌ها را به‌خوبی ترکیب می‌کند.' },
-            { id: '3-27', subject: 'هنر', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'در فعالیت‌های هنری شرکت می‌کند و کارهای خود را با راهنمایی معلم انجام می‌دهد.' },
-            { id: '3-28', subject: 'هنر', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در خلاقیت و دقت کارهای هنری نیاز به تمرین بیشتری دارد. فعالیت هنری در منزل مفید خواهد بود.' },
-            { id: '3-29', subject: 'تربیت بدنی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'در حرکات ورزشی و بازی‌های گروهی بسیار هماهنگ، چابک و پر انرژی است و روحیه همکاری بالایی دارد.' },
-            { id: '3-30', subject: 'تربیت بدنی', level: 'level-good', levelText: 'خوب', desc: 'حرکات ورزشی را درست انجام می‌دهد و در بازی‌های گروهی فعال است.' },
-            { id: '3-31', subject: 'تربیت بدنی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم حرکات را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند.' },
-            { id: '3-32', subject: 'تربیت بدنی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در هماهنگی بدنی و استقامت نیاز به تمرین بیشتری دارد. فعالیت بدنی منظم در منزل کمک می‌کند.' },
-            { id: '3-33', subject: 'شایستگی عمومی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'بسیار منظم، مسئولیت‌پذیر و همکاری‌کننده است، با ادب و احترام کامل رفتار می‌کند و تکالیف را دقیق و خلاقانه انجام می‌دهد.' },
-            { id: '3-34', subject: 'شایستگی عمومی', level: 'level-good', levelText: 'خوب', desc: 'منظم و مسئولیت‌پذیر است، ادب را رعایت می‌کند و در فعالیت‌ها همکاری دارد.' },
-            { id: '3-35', subject: 'شایستگی عمومی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم منظم است و در کارهای گروهی شرکت می‌کند.' },
-            { id: '3-36', subject: 'شایستگی عمومی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در نظم، مسئولیت‌پذیری و همکاری نیاز به تلاش بیشتری دارد. برنامه‌ریزی و حمایت خانواده مفید است.' }
-        ],
-        4: [
-            { id: '4-1', subject: 'قرآن', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با اشتیاق فراوان در کلاس شرکت می‌کند، آداب تلاوت را کاملاً رعایت می‌نماید، آیات و سوره‌ها را روان با تجوید صحیح روخوانی می‌کند و چندین سوره را از حفظ دارد.' },
-            { id: '4-2', subject: 'قرآن', level: 'level-good', levelText: 'خوب', desc: 'آداب تلاوت را رعایت می‌کند، آیات را شمرده و با تلفظ مناسب روخوانی می‌نماید و برخی سوره‌ها را از حفظ می‌خواند.' },
-            { id: '4-3', subject: 'قرآن', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم آیات را روخوانی می‌کند، آداب تلاوت را تا حدودی رعایت می‌نماید و در فعالیت‌های گروهی شرکت می‌کند.' },
-            { id: '4-4', subject: 'قرآن', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در روخوانی روان آیات، رعایت تجوید و حفظ سوره‌ها نیاز به تمرین بیشتری دارد. مرور روزانه قرآن در منزل کمک زیادی خواهد کرد.' },
-            { id: '4-5', subject: 'فارسی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'متون درس را کاملاً روان، رسا و با لحن مناسب می‌خواند، درک مطلب عالی دارد و با خلاقیت زیبا سخن می‌گوید.' },
-            { id: '4-6', subject: 'فارسی', level: 'level-good', levelText: 'خوب', desc: 'متون را به‌درستی و شمرده می‌خواند، درک مطلب خوبی نشان می‌دهد و نظرات خود را به‌خوبی بیان می‌کند.' },
-            { id: '4-7', subject: 'فارسی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با کمک معلم متون را می‌خواند، در گوش دادن به درس‌ها توجه نشان می‌دهد و در فعالیت‌های گفتاری شرکت می‌کند.' },
-            { id: '4-8', subject: 'فارسی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در خواندن روان و درک دقیق مطالب نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های داستان در منزل بسیار مفید خواهد بود.' },
-            { id: '4-9', subject: 'ریاضی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'مفاهیم اعداد بزرگ، ضرب و تقسیم چندرقمی، کسرها، مساحت و محیط شکل‌ها را به‌طور عمیق درک می‌کند و مسائل را با روش‌های خلاقانه حل می‌نماید.' },
-            { id: '4-10', subject: 'ریاضی', level: 'level-good', levelText: 'خوب', desc: 'عملیات ضرب، تقسیم و کار با کسرها را به‌درستی انجام می‌دهد و مسائل استاندارد کلاسی را با موفقیت حل می‌کند.' },
-            { id: '4-11', subject: 'ریاضی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'مفاهیم پایه‌ای درس ریاضی مانند جمع، تفریق و ضرب اعداد صحیح و شناخت اولیه کسرهای متعارفی را در سطح قابل قبول کسب کند. او در حل مسائل ساده که نیاز به این عملیات دارند، عملکرد نسبتاً خوبی دارد.' },
-            { id: '4-12', subject: 'ریاضی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در درک عمیق مفاهیم و حل سریع مسائل نیاز به تمرین بیشتری دارد. انجام بازی‌های ریاضی و حل مسائل روزانه در منزل کمک شایانی خواهد کرد.' },
-            { id: '4-13', subject: 'علوم تجربی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با کنجکاوی و اشتیاق زیاد مشاهده و آزمایش می‌کند و درباره مغناطیس، نور و صدا، نیرو و حرکت، مواد و بدن انسان با جزئیات توضیح می‌دهد.' },
-            { id: '4-14', subject: 'علوم تجربی', level: 'level-good', levelText: 'خوب', desc: 'مفاهیم علمی را به خوبی درک کرده و توانایی بالایی در مشاهده، آزمایش و تحلیل نتایج نشان می‌دهد.' },
-            { id: '4-15', subject: 'علوم تجربی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'او مفاهیم اصلی مانند شناخت اجزای محیط اطراف و ویژگی‌های ابتدایی موجودات زنده را آموخته و در فعالیت‌های کلاسی مشارکت نسبی دارد.' },
-            { id: '4-16', subject: 'علوم تجربی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در دقت مشاهده و بیان علمی مفاهیم نیاز به تلاش بیشتری دارد. انجام آزمایش‌های ساده در منزل و گفتگو درباره پدیده‌های اطراف به پیشرفت او کمک می‌کند.' },
-            { id: '4-17', subject: 'مطالعات اجتماعی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با علاقه فراوان درباره خانواده، محله و شهر، استان و ایران عزیز و فعالیت‌های اقتصادی صحبت می‌کند و نقش افراد و قوانین را به‌خوبی می‌شناسد.' },
-            { id: '4-18', subject: 'مطالعات اجتماعی', level: 'level-good', levelText: 'خوب', desc: 'مفاهیم مربوط به خانواده، اجتماع و محیط پیرامون خود را به خوبی درک کرده و توانایی بالایی در تحلیل روابط اجتماعی و مسئولیت‌های شهروندی نشان می‌دهد.' },
-            { id: '4-19', subject: 'مطالعات اجتماعی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'مفاهیم پایه‌ای مانند آشنایی با خانواده، محله و برخی نهادهای اجتماعی را در سطح قابل قبول فرا گرفته است.' },
-            { id: '4-20', subject: 'مطالعات اجتماعی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در درک عمیق مفاهیم شهروندی و جغرافیایی نیاز به تمرین بیشتری دارد. نگاه کردن به نقشه ایران و گفتگو در منزل کمک زیادی می‌کند.' },
-            { id: '4-21', subject: 'هدیه‌های آسمانی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با اشتیاق و توجه کامل در کلاس شرکت می‌کند و مفاهیم مهم دینی مانند توحید، نبوت، امامت و اخلاق اسلامی را در رفتار خود نشان می‌دهد.' },
-            { id: '4-22', subject: 'هدیه‌های آسمانی', level: 'level-good', levelText: 'خوب', desc: 'دانش‌آموز مفاهیم کلیدی درس هدیه‌های آسمانی را به خوبی فرا گرفته است. او در فعالیت‌های کلاسی با موضوعات دینی، حضوری فعال و مؤثر دارد.' },
-            { id: '4-23', subject: 'هدیه‌های آسمانی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'مفاهیم و آموزه‌های دینی را در حد قابل قبول فرا گرفته و با برخی از موضوعات درس هدیه‌های آسمانی آشنایی دارد.' },
-            { id: '4-24', subject: 'هدیه‌های آسمانی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در توجه کامل به درس و درک عمیق مفاهیم دینی نیاز به تلاش بیشتری دارد. مرور درس‌ها و خواندن داستان‌های دینی در منزل کمک می‌کند.' },
-            { id: '4-25', subject: 'هنر', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با خلاقیت و تخیل بسیار بالا نقاشی می‌کشد و کاردستی‌های خلاقانه و نوآورانه می‌سازد.' },
-            { id: '4-26', subject: 'هنر', level: 'level-good', levelText: 'خوب', desc: 'کارهای دستی و نقاشی را با علاقه و دقت مناسب انجام می‌دهد و رنگ‌ها را به‌خوبی ترکیب می‌کند.' },
-            { id: '4-27', subject: 'هنر', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'در فعالیت‌های هنری شرکت می‌کند و کارهای خود را با راهنمایی معلم به پایان می‌رساند.' },
-            { id: '4-28', subject: 'هنر', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در خلاقیت و دقت در جزئیات کارهای هنری نیاز به تمرین بیشتری دارد.' },
-            { id: '4-29', subject: 'تربیت بدنی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'در حرکات ورزشی و بازی‌های گروهی بسیار هماهنگ، چابک و پر انرژی است و قوانین بازی را کاملاً رعایت می‌کند.' },
-            { id: '4-30', subject: 'تربیت بدنی', level: 'level-good', levelText: 'خوب', desc: 'حرکات ورزشی را درست و با هماهنگی انجام می‌دهد و در بازی‌های گروهی فعال است.' },
-            { id: '4-31', subject: 'تربیت بدنی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم حرکات پایه را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند.' },
-            { id: '4-32', subject: 'تربیت بدنی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در هماهنگی بدنی و استقامت نیاز به تمرین بیشتری دارد.' },
-            { id: '4-33', subject: 'شایستگی عمومی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'بسیار منظم، پاکیزه و مسئولیت‌پذیر است و در کارهای گروهی پیشرو و همکاری‌کننده است.' },
-            { id: '4-34', subject: 'شایستگی عمومی', level: 'level-good', levelText: 'خوب', desc: 'منظم و مسئولیت‌پذیر است و ادب و احترام را رعایت می‌کند.' },
-            { id: '4-35', subject: 'شایستگی عمومی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با یادآوری معلم منظم است و در کارهای گروهی شرکت می‌کند.' },
-            { id: '4-36', subject: 'شایستگی عمومی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در نظم، مسئولیت‌پذیری و همکاری نیاز به تلاش بیشتری دارد.' }
-        ],
-        5: [
-            { id: '5-1', subject: 'قرآن', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با اشتیاق و علاقه زیاد در کلاس قرآن شرکت می‌کند، آداب تلاوت را کامل رعایت می‌کند، آیات را روان با تجوید صحیح روخوانی می‌کند و چندین سوره را از حفظ دارد.' },
-            { id: '5-2', subject: 'قرآن', level: 'level-good', levelText: 'خوب', desc: 'آداب تلاوت را به‌خوبی رعایت می‌کند، آیات را شمرده و با تلفظ مناسب روخوانی می‌نماید و بیشتر سوره‌ها را با کمی مرور از حفظ می‌خواند.' },
-            { id: '5-3', subject: 'قرآن', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم آداب را رعایت می‌کند، آیات را روخوانی می‌کند و در جمع‌خوانی شرکت می‌نماید.' },
-            { id: '5-4', subject: 'قرآن', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در رعایت آداب، روخوانی روان و حفظ سوره‌ها نیاز به تمرین بیشتری دارد. مرور روزانه قرآن در منزل کمک زیادی خواهد کرد.' },
-            { id: '5-5', subject: 'فارسی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'متون درس را کاملاً روان و رسا می‌خواند، درک مطلب عمیق دارد، به جزئیات و پیام متن دقت می‌کند و با واژگان غنی زیبا سخن می‌گوید.' },
-            { id: '5-6', subject: 'فارسی', level: 'level-good', levelText: 'خوب', desc: 'دانش‌آموز با علاقه در فعالیت‌های فارسی شرکت می‌کند، متن‌ها را روان می‌خواند و مفهوم کلی آن‌ها را درک می‌کند. در نگارش و املا عملکرد مناسبی دارد.' },
-            { id: '5-7', subject: 'فارسی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'دانش‌آموز در خواندن، درک مطلب و نگارش به سطح قابل قبولی دست یافته است، اما برای افزایش دقت در روخوانی، املا و بیان منظور خود در نوشتار به تمرین و تلاش بیشتری نیاز دارد.' },
-            { id: '5-8', subject: 'فارسی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در خواندن روان و درک عمیق جزئیات نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های داستان در منزل بسیار مفید خواهد بود.' },
-            { id: '5-9', subject: 'ریاضی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'مفاهیم را عمیق درک می‌کند، مسائل را با سرعت و دقت حل می‌نماید و در فعالیت‌های عملی و گروهی بسیار فعال و نوآور است.' },
-            { id: '5-10', subject: 'ریاضی', level: 'level-good', levelText: 'خوب', desc: 'دانش‌آموز مفاهیم و مهارت‌های ریاضی را به خوبی فراگرفته و در حل تمرین‌ها و مسئله‌ها عملکرد مناسبی دارد. با دقت و علاقه در فعالیت‌های کلاسی شرکت می‌کند.' },
-            { id: '5-11', subject: 'ریاضی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'مفاهیم اصلی ریاضی را در حد قابل قبول فراگرفته است، اما برای افزایش سرعت و دقت در محاسبات و حل مسئله به تمرین بیشتری نیاز دارد.' },
-            { id: '5-12', subject: 'ریاضی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در درک عمیق مفاهیم و حل سریع مسائل نیاز به تمرین بیشتری دارد. حل مسائل روزانه و بازی‌های ریاضی در منزل به پیشرفت او کمک خواهد کرد.' },
-            { id: '5-13', subject: 'علوم تجربی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با کنجکاوی زیاد مشاهده و آزمایش می‌کند، سؤالات هوشمندانه می‌پرسد و مفاهیم را با جزئیات و مثال‌های واقعی توضیح می‌دهد.' },
-            { id: '5-14', subject: 'علوم تجربی', level: 'level-good', levelText: 'خوب', desc: 'مفاهیم علوم را به خوبی درک کرده و در فعالیت‌های علمی و آزمایشگاهی با علاقه و دقت مشارکت می‌کند.' },
-            { id: '5-15', subject: 'علوم تجربی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'مفاهیم اصلی علوم را در حد قابل قبول فراگرفته است، اما برای افزایش دقت در مشاهده، انجام فعالیت‌های علمی و درک بهتر برخی مفاهیم به تمرین و تلاش بیشتری نیاز دارد.' },
-            { id: '5-16', subject: 'علوم تجربی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در دقت مشاهده، پرسشگری و بیان علمی نیاز به تلاش بیشتری دارد. انجام آزمایش‌های ساده در منزل و گفتگو درباره طبیعت مفید است.' },
-            { id: '5-17', subject: 'مطالعات اجتماعی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با علاقه درباره تاریخ، جغرافیا، اقتصاد و حقوق شهروندی صحبت می‌کند، نقش افراد و قوانین را به‌خوبی می‌شناسد و در فعالیت‌ها مسئولیت‌پذیر است.' },
-            { id: '5-18', subject: 'مطالعات اجتماعی', level: 'level-good', levelText: 'خوب', desc: 'مطالب درسی را به خوبی فراگرفته و در بحث‌ها و فعالیت‌های کلاسی مشارکت فعالی دارد.' },
-            { id: '5-19', subject: 'مطالعات اجتماعی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'مطالب درسی را در حد قابل قبول آموخته است، اما برای افزایش دقت در یادگیری و مشارکت بیشتر در فعالیت‌های کلاسی به تمرین و تلاش بیشتری نیاز دارد.' },
-            { id: '5-20', subject: 'مطالعات اجتماعی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در درک عمیق مفاهیم و بیان دانسته‌ها نیاز به تمرین بیشتری دارد. گفتگو درباره نقشه و اخبار ساده در منزل کمک می‌کند.' },
-            { id: '5-21', subject: 'هدیه‌های آسمانی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با اشتیاق کامل در کلاس شرکت می‌کند، داستان‌های دینی را با دقت بازگو می‌کند و مفاهیم توحید، نبوت و اخلاق را در رفتار روزمره نشان می‌دهد.' },
-            { id: '5-22', subject: 'هدیه‌های آسمانی', level: 'level-good', levelText: 'خوب', desc: 'دانش‌آموز با دقت و تمرکز بالا، آموزه‌های مربوط به سیره پیامبران و ائمه (ع) را در این نوبت فرا گرفته است.' },
-            { id: '5-23', subject: 'هدیه‌های آسمانی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'موضوعات کلی درس، توانسته است در فعالیت‌های پایه شرکت کند، اما برای درک عمیق‌تر داستان‌ها و جزئیات مربوط به سیره معصومین، نیاز به مطالعه بیشتر و تمرین دارد.' },
-            { id: '5-24', subject: 'هدیه‌های آسمانی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در توجه به درس، درک مفاهیم و به‌کار بستن آن‌ها در رفتار نیاز به تلاش بیشتری دارد. مرور درس‌ها در منزل مفید است.' },
-            { id: '5-25', subject: 'هنر', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با خلاقیت بالا نقاشی می‌کشد، رنگ‌آمیزی زیبا انجام می‌دهد، کاردستی‌های نوآورانه می‌سازد و در فعالیت‌های هنری بسیار موفق است.' },
-            { id: '5-26', subject: 'هنر', level: 'level-good', levelText: 'خوب', desc: 'کارهای دستی و نقاشی را با علاقه و دقت انجام می‌دهد و رنگ‌ها را به‌خوبی ترکیب می‌کند.' },
-            { id: '5-27', subject: 'هنر', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'در فعالیت‌های هنری شرکت می‌کند و کارهای خود را با راهنمایی معلم انجام می‌دهد.' },
-            { id: '5-28', subject: 'هنر', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در خلاقیت و دقت کارهای هنری نیاز به تمرین بیشتری دارد. فعالیت هنری در منزل مفید خواهد بود.' },
-            { id: '5-29', subject: 'تربیت بدنی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'در حرکات و بازی‌های گروهی بسیار هماهنگ، چابک و پر انرژی است، قوانین را کامل رعایت می‌کند و روحیه همکاری و رهبری بالایی دارد.' },
-            { id: '5-30', subject: 'تربیت بدنی', level: 'level-good', levelText: 'خوب', desc: 'حرکات ورزشی را درست انجام می‌دهد، در بازی‌ها فعال است و از ورزش لذت می‌برد.' },
-            { id: '5-31', subject: 'تربیت بدنی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم حرکات را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند.' },
-            { id: '5-32', subject: 'تربیت بدنی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در هماهنگی بدنی، استقامت و اجرای صحیح حرکات نیاز به تمرین بیشتری دارد. فعالیت بدنی منظم کمک می‌کند.' },
-            { id: '5-33', subject: 'شایستگی عمومی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'بسیار منظم، مسئولیت‌پذیر و همکاری‌کننده است، با ادب و احترام کامل رفتار می‌کند و در فعالیت‌های گروهی و کلاسی پیشرو است.' },
-            { id: '5-34', subject: 'شایستگی عمومی', level: 'level-good', levelText: 'خوب', desc: 'منظم است، مسئولیت خود را می‌پذیرد، با دیگران همکاری می‌کند و تکالیف را با تلاش انجام می‌دهد.' },
-            { id: '5-35', subject: 'شایستگی عمومی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم منظم و مسئولیت‌پذیر است و در فعالیت‌های گروهی شرکت می‌کند.' },
-            { id: '5-36', subject: 'شایستگی عمومی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در نظم، مسئولیت‌پذیری، همکاری و دقت در انجام تکالیف نیاز به تلاش بیشتری دارد. برنامه‌ریزی روزانه و تشویق در منزل کمک زیادی می‌کند.' }
-        ],
-        6: [
-            { id: '6-1', subject: 'قرآن', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با اشتیاق و علاقه زیاد در کلاس قرآن شرکت می‌کند، آداب تلاوت را کامل رعایت می‌کند، آیات را روان با تجوید صحیح روخوانی می‌کند و چندین سوره را از حفظ دارد.' },
-            { id: '6-2', subject: 'قرآن', level: 'level-good', levelText: 'خوب', desc: 'آداب تلاوت را به‌خوبی رعایت می‌کند، آیات را شمرده و با تلفظ مناسب روخوانی می‌نماید و بیشتر سوره‌ها را با کمی مرور از حفظ می‌خواند.' },
-            { id: '6-3', subject: 'قرآن', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم آداب را رعایت می‌کند، آیات را روخوانی می‌کند و در جمع‌خوانی شرکت می‌نماید.' },
-            { id: '6-4', subject: 'قرآن', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در رعایت آداب، روخوانی روان و حفظ سوره‌ها نیاز به تمرین بیشتری دارد. مرور روزانه قرآن در منزل کمک زیادی خواهد کرد.' },
-            { id: '6-5', subject: 'فارسی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'متون درس را کاملاً روان و رسا می‌خواند، درک مطلب عمیق دارد، به جزئیات، آرایه‌ها و پیام متن دقت می‌کند و با واژگان غنی زیبا سخن می‌گوید.' },
-            { id: '6-6', subject: 'فارسی', level: 'level-good', levelText: 'خوب', desc: 'دانش‌آموز با توانایی بسیار بالا در تحلیل متون ادبی، توانسته است لایه‌های معنایی و نکات ظریف نویسنده را به درستی استخراج کند.' },
-            { id: '6-7', subject: 'فارسی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'مهارت‌های پایه را به خوبی کسب کرده است. او در خواندن متن و پاسخ به سوالات مستقیم موفق است، اما برای رسیدن به درک عمیق‌تر و تحلیل نکات ادبی و پیام‌های نهفته در متن، نیاز به تمرین و مطالعه بیشتر دارد.' },
-            { id: '6-8', subject: 'فارسی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در خواندن روان و درک عمیق جزئیات نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های داستان در منزل بسیار مفید خواهد بود.' },
-            { id: '6-9', subject: 'ریاضی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'مفاهیم نسبت، تناسب، درصد، هندسه و آمار را عمیق درک می‌کند، مسائل پیچیده را با سرعت و روش‌های متنوع حل می‌نماید و در فعالیت‌های گروهی نوآور است.' },
-            { id: '6-10', subject: 'ریاضی', level: 'level-good', levelText: 'خوب', desc: 'عملیات ریاضی و مفاهیم را به‌درستی انجام می‌دهد، مسائل کلاسی را با دقت حل می‌کند و در فعالیت‌ها شرکت فعال دارد.' },
-            { id: '6-11', subject: 'ریاضی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با کمک معلم مفاهیم را یاد می‌گیرد، عملیات پایه را انجام می‌دهد و در فعالیت‌های کلاسی شرکت می‌کند.' },
-            { id: '6-12', subject: 'ریاضی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در درک عمیق مفاهیم و حل مسائل چندمرحله‌ای نیاز به تمرین بیشتری دارد. حل مسائل روزانه و بازی‌های ریاضی در منزل به تقویت پایه او کمک می‌کند.' },
-            { id: '6-13', subject: 'علوم تجربی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با کنجکاوی و اشتیاق فراوان مشاهده و آزمایش می‌کند، سؤالات هوشمندانه می‌پرسد و مفاهیم علمی را با استدلال قوی و جزئیات دقیق توضیح می‌دهد.' },
-            { id: '6-14', subject: 'علوم تجربی', level: 'level-good', levelText: 'خوب', desc: 'مراحل انجام آزمایش‌های کلاسی را دنبال کرده و مشاهدات خود را به درستی ثبت می‌کند. او توانایی بسیار خوبی در تشخیص متغیرها و درک روابط بین پدیده‌ها دارد.' },
-            { id: '6-15', subject: 'علوم تجربی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'حقایق علمی و اطلاعات پایه را به خوبی یاد می‌گیرد، اما برای رسیدن به سطح بالاتر، نیاز به تمرین بیشتر در زمینه تحلیل پدیده‌ها و توضیح "چراها" دارد.' },
-            { id: '6-16', subject: 'علوم تجربی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در دقت مشاهده، پرسشگری و بیان مفاهیم علمی نیاز به تلاش بیشتری دارد. انجام آزمایش‌های ساده در منزل و گفتگو درباره پدیده‌های اطراف کمک می‌کند.' },
-            { id: '6-17', subject: 'مطالعات اجتماعی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با علاقه درباره تاریخ معاصر، جغرافیا، اقتصاد، حقوق شهروندی و مسائل جهانی صحبت می‌کند، نقش افراد و قوانین را به‌خوبی می‌شناسد و در فعالیت‌ها مسئولیت‌پذیر است.' },
-            { id: '6-18', subject: 'مطالعات اجتماعی', level: 'level-good', levelText: 'خوب', desc: 'توانسته است ارتباط میان وقایع تاریخی و تأثیر آن‌ها بر جامعه امروزی را به خوبی تحلیل کند. او با دقت نظر بالا، حقوق و مسئولیت‌های شهروندی را شناخته و در فعالیت‌های گروهی، رویکردی سازنده و مسئولانه از خود نشان می‌دهد.' },
-            { id: '6-19', subject: 'مطالعات اجتماعی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'او توانایی یادگیری اطلاعات پایه تاریخی و جغرافیایی را دارد، اما برای درک عمیق‌تر روابط علت و معلولی در رویدادهای اجتماعی و تاریخی، نیاز به تمرین و توجه بیشتری دارد.' },
-            { id: '6-20', subject: 'مطالعات اجتماعی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در درک عمیق مفاهیم و بیان دانسته‌ها نیاز به تمرین بیشتری دارد. گفتگو درباره نقشه و اخبار در منزل کمک می‌کند.' },
-            { id: '6-21', subject: 'هدیه‌های آسمانی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با اشتیاق کامل در کلاس شرکت می‌کند، داستان‌های دینی را با دقت بازگو می‌کند و مفاهیم توحید، نبوت، معاد و اخلاق را در رفتار روزمره نشان می‌دهد.' },
-            { id: '6-22', subject: 'هدیه‌های آسمانی', level: 'level-good', levelText: 'خوب', desc: 'با پایبندی به اصول اخلاقی آموخته شده از درس هدیه‌های آسمان، رفتاری سنجیده و مؤدبانه از خود نشان می‌دهد. او در رعایت احترام به دیگران، صداقت در گفتار و رفتار، و کمک به هم‌نوعان، گام‌های مؤثری برداشته است.' },
-            { id: '6-23', subject: 'هدیه‌های آسمانی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'او با مفاهیم اصلی درس مانند خداشناسی و پیامبران آشنایی دارد، اما برای رسیدن به سطوح بالاتر، نیاز به تمرین و پایبندی بیشتر در انجام فرایض دینی مانند نماز و رعایت احترام به والدین دارد.' },
-            { id: '6-24', subject: 'هدیه‌های آسمانی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در توجه به درس، درک مفاهیم و به‌کار بستن آن‌ها در رفتار نیاز به تلاش بیشتری دارد. مرور درس‌ها در منزل مفید است.' },
-            { id: '6-25', subject: 'تفکر و پژوهش', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با خلاقیت و دقت بالا مسئله‌شناسی می‌کند، سؤالات پژوهشی طرح می‌کند، اطلاعات جمع‌آوری می‌کند و گزارش‌های منظم و نوآورانه ارائه می‌دهد.' },
-            { id: '6-26', subject: 'تفکر و پژوهش', level: 'level-good', levelText: 'خوب', desc: 'او در مواجهه با چالش‌ها، ابتدا مسئله را به دقت تعریف کرده، سپس با طرح سوالات هوشمندانه، به دنبال یافتن اطلاعات مرتبط می‌گردد. توانایی او در ارزیابی منابع و نتیجه‌گیری منطقی بر اساس شواهد، بسیار قابل تقدیر است.' },
-            { id: '6-27', subject: 'تفکر و پژوهش', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'او در جمع‌آوری اطلاعات مشارکت می‌کند، اما برای ارزیابی دقیق منابع و تشخیص اطلاعات معتبر از غیرمعتبر، نیاز به راهنمایی و تمرین بیشتری دارد.' },
-            { id: '6-28', subject: 'تفکر و پژوهش', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در مسئله‌شناسی، جمع‌آوری اطلاعات و گزارش‌نویسی نیاز به تمرین بیشتری دارد.' },
-            { id: '6-29', subject: 'هنر', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با خلاقیت بالا نقاشی می‌کشد، رنگ‌آمیزی زیبا انجام می‌دهد، کاردستی‌های نوآورانه می‌سازد و در فعالیت‌های هنری بسیار موفق است.' },
-            { id: '6-30', subject: 'هنر', level: 'level-good', levelText: 'خوب', desc: 'کارهای دستی و نقاشی را با علاقه و دقت انجام می‌دهد و رنگ‌ها را به‌خوبی ترکیب می‌کند.' },
-            { id: '6-31', subject: 'هنر', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'در فعالیت‌های هنری شرکت می‌کند و کارهای خود را با راهنمایی معلم انجام می‌دهد.' },
-            { id: '6-32', subject: 'هنر', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در خلاقیت و دقت کارهای هنری نیاز به تمرین بیشتری دارد. فعالیت هنری در منزل مفید خواهد بود.' },
-            { id: '6-33', subject: 'کار و فناوری', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'با اشتیاق و خلاقیت بالا در فعالیت‌های عملی شرکت می‌کند، مفاهیم فناوری را عمیق درک می‌کند و پروژه‌ها را با کیفیت عالی انجام می‌دهد.' },
-            { id: '6-34', subject: 'کار و فناوری', level: 'level-good', levelText: 'خوب', desc: 'در فعالیت‌های عملی فعال است، مفاهیم فناوری را به‌خوبی درک می‌کند و نکات ایمنی را رعایت می‌کند.' },
-            { id: '6-35', subject: 'کار و فناوری', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم در فعالیت‌های عملی شرکت می‌کند و نکات ایمنی پایه را رعایت می‌نماید.' },
-            { id: '6-36', subject: 'کار و فناوری', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در درک مفاهیم فناوری، دقت در ساخت و رعایت کامل ایمنی نیاز به تمرین بیشتری دارد.' },
-            { id: '6-37', subject: 'تربیت بدنی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'در حرکات و بازی‌های گروهی بسیار هماهنگ، چابک و پر انرژی است، قوانین را کامل رعایت می‌کند و روحیه همکاری و رهبری بالایی دارد.' },
-            { id: '6-38', subject: 'تربیت بدنی', level: 'level-good', levelText: 'خوب', desc: 'حرکات ورزشی را درست انجام می‌دهد، در بازی‌ها فعال است و از ورزش لذت می‌برد.' },
-            { id: '6-39', subject: 'تربیت بدنی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با راهنمایی معلم حرکات را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند.' },
-            { id: '6-40', subject: 'تربیت بدنی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در هماهنگی بدنی، استقامت و اجرای صحیح حرکات نیاز به تمرین بیشتری دارد. فعالیت بدنی منظم کمک می‌کند.' },
-            { id: '6-41', subject: 'شایستگی عمومی', level: 'level-excellent', levelText: 'خیلی خوب', desc: 'بسیار منظم، مسئولیت‌پذیر و همکاری‌کننده است، با ادب و احترام کامل رفتار می‌کند و در فعالیت‌های گروهی نقش رهبری مثبت دارد.' },
-            { id: '6-42', subject: 'شایستگی عمومی', level: 'level-good', levelText: 'خوب', desc: 'منظم و مسئولیت‌پذیر است، ادب و قوانین را رعایت می‌کند و در کارهای گروهی همکاری دارد.' },
-            { id: '6-43', subject: 'شایستگی عمومی', level: 'level-acceptable', levelText: 'قابل قبول', desc: 'با یادآوری معلم منظم است، در فعالیت‌های گروهی شرکت می‌کند و قوانین را تا حدودی رعایت می‌کند.' },
-            { id: '6-44', subject: 'شایستگی عمومی', level: 'level-need', levelText: 'نیاز به تلاش بیشتر', desc: 'در نظم، مسئولیت‌پذیری، همکاری و دقت در انجام تکالیف نیاز به تلاش بیشتری دارد. برنامه‌ریزی مستقل و حمایت خانواده بسیار مفید است.' }
-        ]
-    };
+const DEFAULT_DATA = {
+1:[{id:"1-1",subject:"قرآن",level:"level-excellent",levelText:"خیلی خوب",desc:"با علاقه و اشتیاق فراوان در کلاس قرآن شرکت می‌کند، آداب تلاوت را به‌طور کامل رعایت می‌نماید، آیات و سوره‌های آموزش‌داده‌شده را روان، شمرده، با تجوید صحیح و تلفظ دقیق روخوانی می‌کند."},{id:"1-2",subject:"قرآن",level:"level-good",levelText:"خوب",desc:"با رعایت آداب تلاوت، آیات را شمرده و با تلفظ نسبتاً صحیح روخوانی می‌کند. در فعالیت‌های گروهی قرآن فعال است و برخی سوره‌ها را با کمی کمک از حفظ می‌خواند."},{id:"1-3",subject:"قرآن",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی و تشویق معلم، آیات را روخوانی می‌کند، آداب تلاوت را تا حدودی رعایت می‌نماید و در جمع‌خوانی شرکت می‌کند."},{id:"1-4",subject:"قرآن",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در روخوانی آیات و رعایت تجوید نیاز به تمرین و تلاش بیشتری دارد. مرور روزانه در منزل و تکرار سوره‌ها کمک زیادی به پیشرفت او خواهد کرد."},{id:"1-5",subject:"فارسی",level:"level-excellent",levelText:"خیلی خوب",desc:"نشانه‌ها، کلمات و جمله‌ها را کاملاً روان، درست و با لحن مناسب می‌خواند. با دقت به داستان‌ها و متون گوش می‌دهد، سؤالات را به‌خوبی پاسخ می‌دهد و با خلاقیت زیبا سخن می‌گوید."},{id:"1-6",subject:"فارسی",level:"level-good",levelText:"خوب",desc:"نشانه‌ها و کلمات را به‌درستی تشخیص می‌دهد، متون را شمرده و با تلفظ مناسب می‌خواند. در فعالیت‌های گفتاری و گوش دادن فعال است."},{id:"1-7",subject:"فارسی",level:"level-acceptable",levelText:"قابل قبول",desc:"با کمک و راهنمایی معلم، نشانه‌ها را می‌خواند، در گوش دادن به داستان‌ها توجه نشان می‌دهد و در فعالیت‌های گفتاری شرکت می‌کند."},{id:"1-8",subject:"فارسی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در تشخیص سریع نشانه‌ها و خواندن روان کلمات نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های ساده در منزل به پیشرفت او کمک زیادی می‌کند."},{id:"1-9",subject:"ریاضی",level:"level-excellent",levelText:"خیلی خوب",desc:"مفاهیم اعداد، الگوها، جمع و تفریق ساده، اندازه‌گیری و شکل‌های هندسی را به‌خوبی درک می‌کند. مسائل را با سرعت و دقت حل می‌نماید."},{id:"1-10",subject:"ریاضی",level:"level-good",levelText:"خوب",desc:"اعداد را به‌درستی می‌شناسد، عملیات ساده جمع و تفریق را انجام می‌دهد و در شناخت الگوها و شکل‌ها موفق است."},{id:"1-11",subject:"ریاضی",level:"level-acceptable",levelText:"قابل قبول",desc:"با کمک معلم، مفاهیم پایه ریاضی را یاد می‌گیرد، اعداد را می‌شناسد و در فعالیت‌های عملی شرکت می‌کند."},{id:"1-12",subject:"ریاضی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در شناخت اعداد، حل مسائل ساده و درک الگوها نیاز به تمرین بیشتری دارد. انجام بازی‌های ریاضی و تمرین در منزل به پیشرفت او کمک می‌کند."},{id:"1-13",subject:"علوم تجربی",level:"level-excellent",levelText:"خیلی خوب",desc:"با کنجکاوی و علاقه فراوان مشاهده می‌کند، سؤالات هوشمندانه می‌پرسد و درباره بدن خود، حواس پنج‌گانه، گیاهان و جانوران با جزئیات توضیح می‌دهد."},{id:"1-14",subject:"علوم تجربی",level:"level-good",levelText:"خوب",desc:"در فعالیت‌های عملی و مشاهده‌ای شرکت فعال دارد، مفاهیم ساده علوم را درک می‌کند و مشاهدات خود را به‌خوبی بیان می‌نماید."},{id:"1-15",subject:"علوم تجربی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم، مشاهده می‌کند، در آزمایش‌ها شرکت می‌کند و دانسته‌های خود را بیان می‌کند."},{id:"1-16",subject:"علوم تجربی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در دقت مشاهده، پرسشگری و بیان دانسته‌های علمی نیاز به تلاش بیشتری دارد. گفتگو درباره طبیعت در منزل به پیشرفت او کمک می‌کند."},{id:"1-17",subject:"هنر",level:"level-excellent",levelText:"خیلی خوب",desc:"با خلاقیت و تخیل بالا نقاشی می‌کشد، رنگ‌آمیزی را بسیار زیبا و دقیق انجام می‌دهد و در ساخت کاردستی و فعالیت‌های هنری بسیار موفق و نوآور است."},{id:"1-18",subject:"هنر",level:"level-good",levelText:"خوب",desc:"کارهای دستی و نقاشی را با علاقه انجام می‌دهد، رنگ‌ها را به‌خوبی ترکیب می‌کند و در فعالیت‌های هنری فعال است."},{id:"1-19",subject:"هنر",level:"level-acceptable",levelText:"قابل قبول",desc:"در فعالیت‌های هنری و رنگ‌آمیزی شرکت می‌کند و کارهای خود را با راهنمایی معلم انجام می‌دهد."},{id:"1-20",subject:"هنر",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در خلاقیت و دقت در کارهای هنری نیاز به تمرین بیشتری دارد. انجام فعالیت‌های هنری در منزل مفید خواهد بود."},{id:"1-21",subject:"تربیت بدنی",level:"level-excellent",levelText:"خیلی خوب",desc:"در حرکات پایه، بازی‌های گروهی و فعالیت‌های ورزشی بسیار هماهنگ، چابک و پر انرژی است. قوانین بازی را به‌خوبی رعایت می‌کند."},{id:"1-22",subject:"تربیت بدنی",level:"level-good",levelText:"خوب",desc:"حرکات ورزشی را درست و با هماهنگی انجام می‌دهد، در بازی‌های گروهی فعال است و از ورزش لذت می‌برد."},{id:"1-23",subject:"تربیت بدنی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم، حرکات پایه را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند."},{id:"1-24",subject:"تربیت بدنی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در هماهنگی بدنی و انجام حرکات نیاز به تمرین بیشتری دارد. فعالیت بدنی منظم در منزل به پیشرفت او کمک می‌کند."},{id:"1-25",subject:"شایستگی عمومی",level:"level-excellent",levelText:"خیلی خوب",desc:"بسیار منظم، پاکیزه و مسئولیت‌پذیر است، با ادب و احترام کامل با معلم و همکلاسی‌ها رفتار می‌کند و تکالیف را کامل و به‌موقع انجام می‌دهد."},{id:"1-26",subject:"شایستگی عمومی",level:"level-good",levelText:"خوب",desc:"منظم و پاکیزه است، با ادب رفتار می‌کند، در فعالیت‌های گروهی همکاری دارد و تکالیف را با تلاش انجام می‌دهد."},{id:"1-27",subject:"شایستگی عمومی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم منظم است، ادب را رعایت می‌کند، در فعالیت‌های گروهی شرکت می‌کند و تکالیف را انجام می‌دهد."},{id:"1-28",subject:"شایستگی عمومی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در نظم، پاکیزگی، همکاری و انجام به‌موقع تکالیف نیاز به تلاش بیشتری دارد. حمایت خانواده و یادآوری روزانه کمک زیادی می‌کند."}],
+2:[{id:"2-1",subject:"قرآن",level:"level-excellent",levelText:"خیلی خوب",desc:"با علاقه و اشتیاق زیاد در کلاس قرآن شرکت می‌کند، آداب تلاوت را کاملاً رعایت می‌نماید، آیات و سوره‌ها را روان، با تجوید صحیح روخوانی می‌کند و چندین سوره را از حفظ دارد."},{id:"2-2",subject:"قرآن",level:"level-good",levelText:"خوب",desc:"آداب تلاوت را رعایت می‌کند، آیات را شمرده و با تلفظ مناسب روخوانی می‌نماید و برخی سوره‌ها را از حفظ می‌خواند."},{id:"2-3",subject:"قرآن",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم آیات را روخوانی می‌کند، آداب تلاوت را تا حدودی رعایت می‌نماید و در فعالیت‌های گروهی شرکت می‌کند."},{id:"2-4",subject:"قرآن",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در روخوانی روان آیات، رعایت تجوید و حفظ سوره‌ها نیاز به تمرین بیشتری دارد. مرور روزانه قرآن در منزل کمک زیادی خواهد کرد."},{id:"2-5",subject:"فارسی",level:"level-excellent",levelText:"خیلی خوب",desc:"متون درس را کاملاً روان، شمرده و با لحن مناسب می‌خواند، به جزئیات داستان‌ها دقت می‌کند و با خلاقیت زیبا سخن می‌گوید."},{id:"2-6",subject:"فارسی",level:"level-good",levelText:"خوب",desc:"متون را به‌درستی می‌خواند، درک مطلب خوبی دارد و در فعالیت‌های گفتاری و نوشتاری شرکت فعال دارد."},{id:"2-7",subject:"فارسی",level:"level-acceptable",levelText:"قابل قبول",desc:"با کمک معلم متون را می‌خواند، در گوش دادن به داستان‌ها توجه نشان می‌دهد و در فعالیت‌های گفتاری شرکت می‌کند."},{id:"2-8",subject:"فارسی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در خواندن روان و درک دقیق مطالب نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های داستان در منزل بسیار مفید خواهد بود."},{id:"2-9",subject:"ریاضی",level:"level-excellent",levelText:"خیلی خوب",desc:"مفاهیم اعداد، جمع و تفریق، ضرب ساده، کسرها و الگوها را به‌خوبی درک می‌کند و مسائل را با سرعت و دقت حل می‌نماید."},{id:"2-10",subject:"ریاضی",level:"level-good",levelText:"خوب",desc:"عملیات جمع، تفریق و ضرب ساده را به‌درستی انجام می‌دهد و الگوها و شکل‌ها را می‌شناسد."},{id:"2-11",subject:"ریاضی",level:"level-acceptable",levelText:"قابل قبول",desc:"در درس ریاضی، مفاهیم اصلی مانند جمع و تفریق، شناخت اشکال هندسی و اندازه‌گیری را در سطح قابل قبول فرا گرفته است."},{id:"2-12",subject:"ریاضی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در درک مفاهیم و حل سریع مسائل نیاز به تمرین بیشتری دارد. انجام بازی‌های ریاضی و تمرین روزانه در منزل کمک خواهد کرد."},{id:"2-13",subject:"علوم تجربی",level:"level-excellent",levelText:"خیلی خوب",desc:"با کنجکاوی فراوان مشاهده و آزمایش می‌کند و درباره بدن انسان، گیاهان، جانوران و مواد با جزئیات توضیح می‌دهد."},{id:"2-14",subject:"علوم تجربی",level:"level-good",levelText:"خوب",desc:"در فعالیت‌های عملی و آزمایش‌ها شرکت فعال دارد و مفاهیم علوم را به‌خوبی درک می‌کند."},{id:"2-15",subject:"علوم تجربی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم در آزمایش‌ها شرکت می‌کند و دانسته‌های خود را تا حدودی بیان می‌کند."},{id:"2-16",subject:"علوم تجربی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در دقت مشاهده و پرسشگری نیاز به تلاش بیشتری دارد. گفتگو درباره طبیعت در منزل مفید است."},{id:"2-17",subject:"هدیه‌های آسمانی",level:"level-excellent",levelText:"خیلی خوب",desc:"با علاقه و اشتیاق فراوان در کلاس شرکت می‌کند، داستان‌های پیامبران و اهل بیت را با دقت گوش می‌دهد و مفاهیم دینی را در رفتار خود نشان می‌دهد."},{id:"2-18",subject:"هدیه‌های آسمانی",level:"level-good",levelText:"خوب",desc:"مفاهیم دینی را به‌خوبی درک کرده و در فعالیت‌های کلاسی مشارکت فعال دارد."},{id:"2-19",subject:"هدیه‌های آسمانی",level:"level-acceptable",levelText:"قابل قبول",desc:"در درس هدیه‌های آسمان، مفاهیم و پیام‌های دینی را در حد انتظار فرا گرفته و با احکام و داستان‌های دینی آشنایی دارد."},{id:"2-20",subject:"هدیه‌های آسمانی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در توجه به درس و درک مفاهیم دینی نیاز به تلاش بیشتری دارد. مرور درس‌ها در منزل کمک زیادی می‌کند."},{id:"2-21",subject:"هنر",level:"level-excellent",levelText:"خیلی خوب",desc:"با خلاقیت بالا نقاشی می‌کشد و کاردستی‌های خلاقانه می‌سازد و در فعالیت‌های هنری بسیار نوآور است."},{id:"2-22",subject:"هنر",level:"level-good",levelText:"خوب",desc:"کارهای دستی و نقاشی را با علاقه انجام می‌دهد و رنگ‌ها را به‌خوبی ترکیب می‌کند."},{id:"2-23",subject:"هنر",level:"level-acceptable",levelText:"قابل قبول",desc:"در فعالیت‌های هنری شرکت می‌کند و کارهای خود را با راهنمایی معلم انجام می‌دهد."},{id:"2-24",subject:"هنر",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در خلاقیت و دقت کارهای هنری نیاز به تمرین بیشتری دارد. فعالیت هنری در منزل مفید خواهد بود."},{id:"2-25",subject:"تربیت بدنی",level:"level-excellent",levelText:"خیلی خوب",desc:"در حرکات ورزشی، بازی‌های گروهی و فعالیت‌های بدنی بسیار هماهنگ، چابک و پر انرژی است و قوانین را رعایت می‌کند."},{id:"2-26",subject:"تربیت بدنی",level:"level-good",levelText:"خوب",desc:"حرکات ورزشی را درست انجام می‌دهد و در بازی‌های گروهی فعال است."},{id:"2-27",subject:"تربیت بدنی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم حرکات را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند."},{id:"2-28",subject:"تربیت بدنی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در هماهنگی بدنی و استقامت نیاز به تمرین بیشتری دارد. فعالیت بدنی منظم در منزل کمک می‌کند."},{id:"2-29",subject:"شایستگی عمومی",level:"level-excellent",levelText:"خیلی خوب",desc:"بسیار منظم، مسئولیت‌پذیر و همکاری‌کننده است، با ادب و احترام کامل رفتار می‌کند و تکالیف را کامل و به‌موقع تحویل می‌دهد."},{id:"2-30",subject:"شایستگی عمومی",level:"level-good",levelText:"خوب",desc:"منظم است، مسئولیت خود را می‌پذیرد و با دیگران همکاری می‌کند."},{id:"2-31",subject:"شایستگی عمومی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم منظم و مسئولیت‌پذیر است و در فعالیت‌های گروهی شرکت می‌کند."},{id:"2-32",subject:"شایستگی عمومی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در نظم، مسئولیت‌پذیری و همکاری نیاز به تلاش بیشتری دارد. برنامه‌ریزی روزانه در منزل کمک می‌کند."}],
+3:[{id:"3-1",subject:"قرآن",level:"level-excellent",levelText:"خیلی خوب",desc:"با اشتیاق فراوان در کلاس قرآن شرکت می‌کند، آداب تلاوت را به‌طور کامل رعایت می‌نماید، آیات و سوره‌ها را روان، با تجوید صحیح روخوانی می‌کند و چندین سوره را کاملاً از حفظ دارد."},{id:"3-2",subject:"قرآن",level:"level-good",levelText:"خوب",desc:"آداب تلاوت را رعایت می‌کند، آیات را شمرده و با تلفظ مناسب روخوانی می‌نماید و برخی سوره‌ها را از حفظ می‌خواند."},{id:"3-3",subject:"قرآن",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم آیات را روخوانی می‌کند، آداب تلاوت را تا حدودی رعایت می‌نماید و در فعالیت‌های گروهی شرکت می‌کند."},{id:"3-4",subject:"قرآن",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در روخوانی روان، رعایت تجوید و حفظ سوره‌ها نیاز به تمرین بیشتری دارد. مرور روزانه قرآن در منزل کمک زیادی خواهد کرد."},{id:"3-5",subject:"فارسی",level:"level-excellent",levelText:"خیلی خوب",desc:"متون درس را کاملاً روان، با لحن مناسب و رسا می‌خواند، درک مطلب عالی دارد، به جزئیات داستان‌ها و شعرها دقت می‌کند و با خلاقیت زیبا سخن می‌گوید."},{id:"3-6",subject:"فارسی",level:"level-good",levelText:"خوب",desc:"متون را به‌درستی و شمرده می‌خواند، درک مطلب خوبی نشان می‌دهد و نظرات خود را به‌خوبی بیان می‌کند."},{id:"3-7",subject:"فارسی",level:"level-acceptable",levelText:"قابل قبول",desc:"در درس فارسی، مهارت‌های خواندن و نوشتن را در حد قابل قبول فرا گرفته است."},{id:"3-8",subject:"فارسی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در خواندن روان و درک دقیق مطالب نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های داستان در منزل بسیار مفید خواهد بود."},{id:"3-9",subject:"ریاضی",level:"level-excellent",levelText:"خیلی خوب",desc:"مفاهیم اعداد، ضرب و تقسیم، کسرها، مساحت، حجم، زمان و مسائل را به‌خوبی درک می‌کند و مسائل را با سرعت و دقت حل می‌نماید."},{id:"3-10",subject:"ریاضی",level:"level-good",levelText:"خوب",desc:"عملیات ضرب و تقسیم را به‌درستی انجام می‌دهد، کسرها و مفاهیم هندسی را می‌شناسد و در حل مسائل کلاسی موفق است."},{id:"3-11",subject:"ریاضی",level:"level-acceptable",levelText:"قابل قبول",desc:"در درس ریاضی، مفاهیم پایه مانند جمع و تفریق اعداد سه رقمی و درک اشکال هندسی را در سطح قابل قبول فرا گرفته است."},{id:"3-12",subject:"ریاضی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در درک مفاهیم و حل سریع مسائل نیاز به تمرین بیشتری دارد. بازی‌های ریاضی و تمرین روزانه در منزل به پیشرفت او کمک خواهد کرد."},{id:"3-13",subject:"علوم تجربی",level:"level-excellent",levelText:"خیلی خوب",desc:"با کنجکاوی زیاد مشاهده و آزمایش می‌کند، سؤالات هوشمندانه می‌پرسد و درباره بدن انسان، نیرو، مواد، گیاهان، جانوران و محیط زیست با جزئیات توضیح می‌دهد."},{id:"3-14",subject:"علوم تجربی",level:"level-good",levelText:"خوب",desc:"در درس علوم تجربی، مفاهیم و مباحث ارائه شده را به خوبی درک کرده و قادر به توضیح ارتباط بین پدیده‌های علمی است."},{id:"3-15",subject:"علوم تجربی",level:"level-acceptable",levelText:"قابل قبول",desc:"در درس علوم تجربی، مفاهیم اصلی را در حد قابل قبول فرا گرفته و با برخی از موضوعات علمی آشنایی دارد."},{id:"3-16",subject:"علوم تجربی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در دقت مشاهده و بیان مفاهیم علمی نیاز به تلاش بیشتری دارد. گفتگو درباره طبیعت در منزل مفید است."},{id:"3-17",subject:"مطالعات اجتماعی",level:"level-excellent",levelText:"خیلی خوب",desc:"با علاقه درباره خانواده، مدرسه، محله، شهر، استان و کشور صحبت می‌کند و نقش افراد، مشاغل و قوانین را به‌خوبی می‌شناسد."},{id:"3-18",subject:"مطالعات اجتماعی",level:"level-good",levelText:"خوب",desc:"مفاهیم اجتماعی را به‌خوبی درک کرده و در فعالیت‌های کلاسی مشارکت فعال دارد."},{id:"3-19",subject:"مطالعات اجتماعی",level:"level-acceptable",levelText:"قابل قبول",desc:"مفاهیم را در سطح قابل قبول فرا گرفته است."},{id:"3-20",subject:"مطالعات اجتماعی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در درک مفاهیم اجتماعی و بیان دانسته‌ها نیاز به تمرین بیشتری دارد."},{id:"3-21",subject:"هدیه‌های آسمانی",level:"level-excellent",levelText:"خیلی خوب",desc:"با اشتیاق فراوان در کلاس شرکت می‌کند، داستان‌های پیامبران و امامان را با دقت گوش می‌دهد و مفاهیم دینی را در رفتار خود نشان می‌دهد."},{id:"3-22",subject:"هدیه‌های آسمانی",level:"level-good",levelText:"خوب",desc:"مفاهیم دینی و آموزه‌های اخلاقی را به خوبی درک کرده و در زندگی خود به کار می‌بندد."},{id:"3-23",subject:"هدیه‌های آسمانی",level:"level-acceptable",levelText:"قابل قبول",desc:"مفاهیم و آموزه‌های دینی را در حد قابل قبول فرا گرفته و با برخی از موضوعات آشنایی دارد."},{id:"3-24",subject:"هدیه‌های آسمانی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در توجه به درس، درک مفاهیم دینی و به‌کار بستن آن‌ها در رفتار نیاز به تلاش بیشتری دارد."},{id:"3-25",subject:"هنر",level:"level-excellent",levelText:"خیلی خوب",desc:"با خلاقیت بالا نقاشی می‌کشد، رنگ‌آمیزی دقیق و زیبا انجام می‌دهد و کاردستی‌های خلاقانه می‌سازد."},{id:"3-26",subject:"هنر",level:"level-good",levelText:"خوب",desc:"کارهای دستی و نقاشی را با علاقه انجام می‌دهد و رنگ‌ها را به‌خوبی ترکیب می‌کند."},{id:"3-27",subject:"هنر",level:"level-acceptable",levelText:"قابل قبول",desc:"در فعالیت‌های هنری شرکت می‌کند و کارهای خود را با راهنمایی معلم انجام می‌دهد."},{id:"3-28",subject:"هنر",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در خلاقیت و دقت کارهای هنری نیاز به تمرین بیشتری دارد. فعالیت هنری در منزل مفید خواهد بود."},{id:"3-29",subject:"تربیت بدنی",level:"level-excellent",levelText:"خیلی خوب",desc:"در حرکات ورزشی و بازی‌های گروهی بسیار هماهنگ، چابک و پر انرژی است و روحیه همکاری بالایی دارد."},{id:"3-30",subject:"تربیت بدنی",level:"level-good",levelText:"خوب",desc:"حرکات ورزشی را درست انجام می‌دهد و در بازی‌های گروهی فعال است."},{id:"3-31",subject:"تربیت بدنی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم حرکات را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند."},{id:"3-32",subject:"تربیت بدنی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در هماهنگی بدنی و استقامت نیاز به تمرین بیشتری دارد. فعالیت بدنی منظم در منزل کمک می‌کند."},{id:"3-33",subject:"شایستگی عمومی",level:"level-excellent",levelText:"خیلی خوب",desc:"بسیار منظم، مسئولیت‌پذیر و همکاری‌کننده است، با ادب و احترام کامل رفتار می‌کند و تکالیف را دقیق و خلاقانه انجام می‌دهد."},{id:"3-34",subject:"شایستگی عمومی",level:"level-good",levelText:"خوب",desc:"منظم و مسئولیت‌پذیر است، ادب را رعایت می‌کند و در فعالیت‌ها همکاری دارد."},{id:"3-35",subject:"شایستگی عمومی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم منظم است و در کارهای گروهی شرکت می‌کند."},{id:"3-36",subject:"شایستگی عمومی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در نظم، مسئولیت‌پذیری و همکاری نیاز به تلاش بیشتری دارد."}],
+4:[{id:"4-1",subject:"قرآن",level:"level-excellent",levelText:"خیلی خوب",desc:"با اشتیاق فراوان در کلاس شرکت می‌کند، آداب تلاوت را کاملاً رعایت می‌نماید، آیات و سوره‌ها را روان با تجوید صحیح روخوانی می‌کند و چندین سوره را از حفظ دارد."},{id:"4-2",subject:"قرآن",level:"level-good",levelText:"خوب",desc:"آداب تلاوت را رعایت می‌کند، آیات را شمرده و با تلفظ مناسب روخوانی می‌نماید و برخی سوره‌ها را از حفظ می‌خواند."},{id:"4-3",subject:"قرآن",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم آیات را روخوانی می‌کند، آداب تلاوت را تا حدودی رعایت می‌نماید و در فعالیت‌های گروهی شرکت می‌کند."},{id:"4-4",subject:"قرآن",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در روخوانی روان آیات، رعایت تجوید و حفظ سوره‌ها نیاز به تمرین بیشتری دارد. مرور روزانه قرآن در منزل کمک زیادی خواهد کرد."},{id:"4-5",subject:"فارسی",level:"level-excellent",levelText:"خیلی خوب",desc:"متون درس را کاملاً روان، رسا و با لحن مناسب می‌خواند، درک مطلب عالی دارد و با خلاقیت زیبا سخن می‌گوید."},{id:"4-6",subject:"فارسی",level:"level-good",levelText:"خوب",desc:"متون را به‌درستی و شمرده می‌خواند، درک مطلب خوبی نشان می‌دهد و نظرات خود را به‌خوبی بیان می‌کند."},{id:"4-7",subject:"فارسی",level:"level-acceptable",levelText:"قابل قبول",desc:"با کمک معلم متون را می‌خواند، در گوش دادن به درس‌ها توجه نشان می‌دهد و در فعالیت‌های گفتاری شرکت می‌کند."},{id:"4-8",subject:"فارسی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در خواندن روان و درک دقیق مطالب نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های داستان در منزل بسیار مفید خواهد بود."},{id:"4-9",subject:"ریاضی",level:"level-excellent",levelText:"خیلی خوب",desc:"مفاهیم اعداد بزرگ، ضرب و تقسیم چندرقمی، کسرها، مساحت و محیط شکل‌ها را به‌طور عمیق درک می‌کند و مسائل را با روش‌های خلاقانه حل می‌نماید."},{id:"4-10",subject:"ریاضی",level:"level-good",levelText:"خوب",desc:"عملیات ضرب، تقسیم و کار با کسرها را به‌درستی انجام می‌دهد و مسائل استاندارد کلاسی را با موفقیت حل می‌کند."},{id:"4-11",subject:"ریاضی",level:"level-acceptable",levelText:"قابل قبول",desc:"مفاهیم پایه‌ای درس ریاضی مانند جمع، تفریق و ضرب اعداد صحیح و شناخت اولیه کسرهای متعارفی را در سطح قابل قبول کسب کرده است."},{id:"4-12",subject:"ریاضی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در درک عمیق مفاهیم و حل سریع مسائل نیاز به تمرین بیشتری دارد."},{id:"4-13",subject:"علوم تجربی",level:"level-excellent",levelText:"خیلی خوب",desc:"با کنجکاوی و اشتیاق زیاد مشاهده و آزمایش می‌کند و درباره مغناطیس، نور و صدا، نیرو و حرکت، مواد و بدن انسان با جزئیات توضیح می‌دهد."},{id:"4-14",subject:"علوم تجربی",level:"level-good",levelText:"خوب",desc:"مفاهیم علمی را به خوبی درک کرده و توانایی بالایی در مشاهده، آزمایش و تحلیل نتایج نشان می‌دهد."},{id:"4-15",subject:"علوم تجربی",level:"level-acceptable",levelText:"قابل قبول",desc:"او مفاهیم اصلی مانند شناخت اجزای محیط اطراف و ویژگی‌های ابتدایی موجودات زنده را آموخته و در فعالیت‌های کلاسی مشارکت نسبی دارد."},{id:"4-16",subject:"علوم تجربی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در دقت مشاهده و بیان علمی مفاهیم نیاز به تلاش بیشتری دارد."},{id:"4-17",subject:"مطالعات اجتماعی",level:"level-excellent",levelText:"خیلی خوب",desc:"با علاقه فراوان درباره خانواده، محله و شهر، استان و ایران عزیز و فعالیت‌های اقتصادی صحبت می‌کند و نقش افراد و قوانین را به‌خوبی می‌شناسد."},{id:"4-18",subject:"مطالعات اجتماعی",level:"level-good",levelText:"خوب",desc:"مفاهیم مربوط به خانواده، اجتماع و محیط پیرامون خود را به خوبی درک کرده و توانایی بالایی در تحلیل روابط اجتماعی و مسئولیت‌های شهروندی نشان می‌دهد."},{id:"4-19",subject:"مطالعات اجتماعی",level:"level-acceptable",levelText:"قابل قبول",desc:"مفاهیم پایه‌ای مانند آشنایی با خانواده، محله و برخی نهادهای اجتماعی را در سطح قابل قبول فرا گرفته است."},{id:"4-20",subject:"مطالعات اجتماعی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در درک عمیق مفاهیم شهروندی و جغرافیایی نیاز به تمرین بیشتری دارد."},{id:"4-21",subject:"هدیه‌های آسمانی",level:"level-excellent",levelText:"خیلی خوب",desc:"با اشتیاق و توجه کامل در کلاس شرکت می‌کند و مفاهیم مهم دینی مانند توحید، نبوت، امامت و اخلاق اسلامی را در رفتار خود نشان می‌دهد."},{id:"4-22",subject:"هدیه‌های آسمانی",level:"level-good",levelText:"خوب",desc:"دانش‌آموز مفاهیم کلیدی درس هدیه‌های آسمانی را به خوبی فرا گرفته است."},{id:"4-23",subject:"هدیه‌های آسمانی",level:"level-acceptable",levelText:"قابل قبول",desc:"مفاهیم و آموزه‌های دینی را در حد قابل قبول فرا گرفته و با برخی از موضوعات درس هدیه‌های آسمانی آشنایی دارد."},{id:"4-24",subject:"هدیه‌های آسمانی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در توجه کامل به درس و درک عمیق مفاهیم دینی نیاز به تلاش بیشتری دارد."},{id:"4-25",subject:"هنر",level:"level-excellent",levelText:"خیلی خوب",desc:"با خلاقیت و تخیل بسیار بالا نقاشی می‌کشد و کاردستی‌های خلاقانه و نوآورانه می‌سازد."},{id:"4-26",subject:"هنر",level:"level-good",levelText:"خوب",desc:"کارهای دستی و نقاشی را با علاقه و دقت مناسب انجام می‌دهد و رنگ‌ها را به‌خوبی ترکیب می‌کند."},{id:"4-27",subject:"هنر",level:"level-acceptable",levelText:"قابل قبول",desc:"در فعالیت‌های هنری شرکت می‌کند و کارهای خود را با راهنمایی معلم به پایان می‌رساند."},{id:"4-28",subject:"هنر",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در خلاقیت و دقت در جزئیات کارهای هنری نیاز به تمرین بیشتری دارد."},{id:"4-29",subject:"تربیت بدنی",level:"level-excellent",levelText:"خیلی خوب",desc:"در حرکات ورزشی و بازی‌های گروهی بسیار هماهنگ، چابک و پر انرژی است و قوانین بازی را کاملاً رعایت می‌کند."},{id:"4-30",subject:"تربیت بدنی",level:"level-good",levelText:"خوب",desc:"حرکات ورزشی را درست و با هماهنگی انجام می‌دهد و در بازی‌های گروهی فعال است."},{id:"4-31",subject:"تربیت بدنی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم حرکات پایه را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند."},{id:"4-32",subject:"تربیت بدنی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در هماهنگی بدنی و استقامت نیاز به تمرین بیشتری دارد."},{id:"4-33",subject:"شایستگی عمومی",level:"level-excellent",levelText:"خیلی خوب",desc:"بسیار منظم، پاکیزه و مسئولیت‌پذیر است و در کارهای گروهی پیشرو و همکاری‌کننده است."},{id:"4-34",subject:"شایستگی عمومی",level:"level-good",levelText:"خوب",desc:"منظم و مسئولیت‌پذیر است و ادب و احترام را رعایت می‌کند."},{id:"4-35",subject:"شایستگی عمومی",level:"level-acceptable",levelText:"قابل قبول",desc:"با یادآوری معلم منظم است و در کارهای گروهی شرکت می‌کند."},{id:"4-36",subject:"شایستگی عمومی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در نظم، مسئولیت‌پذیری و همکاری نیاز به تلاش بیشتری دارد."}],
+5:[{id:"5-1",subject:"قرآن",level:"level-excellent",levelText:"خیلی خوب",desc:"با اشتیاق و علاقه زیاد در کلاس قرآن شرکت می‌کند، آداب تلاوت را کامل رعایت می‌کند، آیات را روان با تجوید صحیح روخوانی می‌کند و چندین سوره را از حفظ دارد."},{id:"5-2",subject:"قرآن",level:"level-good",levelText:"خوب",desc:"آداب تلاوت را به‌خوبی رعایت می‌کند، آیات را شمرده و با تلفظ مناسب روخوانی می‌نماید و بیشتر سوره‌ها را با کمی مرور از حفظ می‌خواند."},{id:"5-3",subject:"قرآن",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم آداب را رعایت می‌کند، آیات را روخوانی می‌کند و در جمع‌خوانی شرکت می‌نماید."},{id:"5-4",subject:"قرآن",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در رعایت آداب، روخوانی روان و حفظ سوره‌ها نیاز به تمرین بیشتری دارد. مرور روزانه قرآن در منزل کمک زیادی خواهد کرد."},{id:"5-5",subject:"فارسی",level:"level-excellent",levelText:"خیلی خوب",desc:"متون درس را کاملاً روان و رسا می‌خواند، درک مطلب عمیق دارد، به جزئیات و پیام متن دقت می‌کند و با واژگان غنی زیبا سخن می‌گوید."},{id:"5-6",subject:"فارسی",level:"level-good",levelText:"خوب",desc:"دانش‌آموز با علاقه در فعالیت‌های فارسی شرکت می‌کند، متن‌ها را روان می‌خواند و مفهوم کلی آن‌ها را درک می‌کند."},{id:"5-7",subject:"فارسی",level:"level-acceptable",levelText:"قابل قبول",desc:"دانش‌آموز در خواندن، درک مطلب و نگارش به سطح قابل قبولی دست یافته است."},{id:"5-8",subject:"فارسی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در خواندن روان و درک عمیق جزئیات نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های داستان در منزل بسیار مفید خواهد بود."},{id:"5-9",subject:"ریاضی",level:"level-excellent",levelText:"خیلی خوب",desc:"مفاهیم را عمیق درک می‌کند، مسائل را با سرعت و دقت حل می‌نماید و در فعالیت‌های عملی و گروهی بسیار فعال و نوآور است."},{id:"5-10",subject:"ریاضی",level:"level-good",levelText:"خوب",desc:"دانش‌آموز مفاهیم و مهارت‌های ریاضی را به خوبی فراگرفته و در حل تمرین‌ها و مسئله‌ها عملکرد مناسبی دارد."},{id:"5-11",subject:"ریاضی",level:"level-acceptable",levelText:"قابل قبول",desc:"مفاهیم اصلی ریاضی را در حد قابل قبول فراگرفته است."},{id:"5-12",subject:"ریاضی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در درک عمیق مفاهیم و حل سریع مسائل نیاز به تمرین بیشتری دارد. حل مسائل روزانه و بازی‌های ریاضی در منزل به پیشرفت او کمک خواهد کرد."},{id:"5-13",subject:"علوم تجربی",level:"level-excellent",levelText:"خیلی خوب",desc:"با کنجکاوی زیاد مشاهده و آزمایش می‌کند، سؤالات هوشمندانه می‌پرسد و مفاهیم را با جزئیات و مثال‌های واقعی توضیح می‌دهد."},{id:"5-14",subject:"علوم تجربی",level:"level-good",levelText:"خوب",desc:"مفاهیم علوم را به خوبی درک کرده و در فعالیت‌های علمی و آزمایشگاهی با علاقه و دقت مشارکت می‌کند."},{id:"5-15",subject:"علوم تجربی",level:"level-acceptable",levelText:"قابل قبول",desc:"مفاهیم اصلی علوم را در حد قابل قبول فراگرفته است."},{id:"5-16",subject:"علوم تجربی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در دقت مشاهده، پرسشگری و بیان علمی نیاز به تلاش بیشتری دارد."},{id:"5-17",subject:"مطالعات اجتماعی",level:"level-excellent",levelText:"خیلی خوب",desc:"با علاقه درباره تاریخ، جغرافیا، اقتصاد و حقوق شهروندی صحبت می‌کند، نقش افراد و قوانین را به‌خوبی می‌شناسد و در فعالیت‌ها مسئولیت‌پذیر است."},{id:"5-18",subject:"مطالعات اجتماعی",level:"level-good",levelText:"خوب",desc:"مطالب درسی را به خوبی فراگرفته و در بحث‌ها و فعالیت‌های کلاسی مشارکت فعالی دارد."},{id:"5-19",subject:"مطالعات اجتماعی",level:"level-acceptable",levelText:"قابل قبول",desc:"مطالب درسی را در حد قابل قبول آموخته است."},{id:"5-20",subject:"مطالعات اجتماعی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در درک عمیق مفاهیم و بیان دانسته‌ها نیاز به تمرین بیشتری دارد."},{id:"5-21",subject:"هدیه‌های آسمانی",level:"level-excellent",levelText:"خیلی خوب",desc:"با اشتیاق کامل در کلاس شرکت می‌کند، داستان‌های دینی را با دقت بازگو می‌کند و مفاهیم توحید، نبوت و اخلاق را در رفتار روزمره نشان می‌دهد."},{id:"5-22",subject:"هدیه‌های آسمانی",level:"level-good",levelText:"خوب",desc:"دانش‌آموز با دقت و تمرکز بالا، آموزه‌های مربوط به سیره پیامبران و ائمه (ع) را در این نوبت فرا گرفته است."},{id:"5-23",subject:"هدیه‌های آسمانی",level:"level-acceptable",levelText:"قابل قبول",desc:"موضوعات کلی درس، توانسته است در فعالیت‌های پایه شرکت کند."},{id:"5-24",subject:"هدیه‌های آسمانی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در توجه به درس، درک مفاهیم و به‌کار بستن آن‌ها در رفتار نیاز به تلاش بیشتری دارد."},{id:"5-25",subject:"هنر",level:"level-excellent",levelText:"خیلی خوب",desc:"با خلاقیت بالا نقاشی می‌کشد، رنگ‌آمیزی زیبا انجام می‌دهد، کاردستی‌های نوآورانه می‌سازد و در فعالیت‌های هنری بسیار موفق است."},{id:"5-26",subject:"هنر",level:"level-good",levelText:"خوب",desc:"کارهای دستی و نقاشی را با علاقه و دقت انجام می‌دهد و رنگ‌ها را به‌خوبی ترکیب می‌کند."},{id:"5-27",subject:"هنر",level:"level-acceptable",levelText:"قابل قبول",desc:"در فعالیت‌های هنری شرکت می‌کند و کارهای خود را با راهنمایی معلم انجام می‌دهد."},{id:"5-28",subject:"هنر",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در خلاقیت و دقت کارهای هنری نیاز به تمرین بیشتری دارد."},{id:"5-29",subject:"تربیت بدنی",level:"level-excellent",levelText:"خیلی خوب",desc:"در حرکات و بازی‌های گروهی بسیار هماهنگ، چابک و پر انرژی است، قوانین را کامل رعایت می‌کند و روحیه همکاری و رهبری بالایی دارد."},{id:"5-30",subject:"تربیت بدنی",level:"level-good",levelText:"خوب",desc:"حرکات ورزشی را درست انجام می‌دهد، در بازی‌ها فعال است و از ورزش لذت می‌برد."},{id:"5-31",subject:"تربیت بدنی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم حرکات را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند."},{id:"5-32",subject:"تربیت بدنی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در هماهنگی بدنی، استقامت و اجرای صحیح حرکات نیاز به تمرین بیشتری دارد."},{id:"5-33",subject:"شایستگی عمومی",level:"level-excellent",levelText:"خیلی خوب",desc:"بسیار منظم، مسئولیت‌پذیر و همکاری‌کننده است، با ادب و احترام کامل رفتار می‌کند و در فعالیت‌های گروهی و کلاسی پیشرو است."},{id:"5-34",subject:"شایستگی عمومی",level:"level-good",levelText:"خوب",desc:"منظم است، مسئولیت خود را می‌پذیرد، با دیگران همکاری می‌کند و تکالیف را با تلاش انجام می‌دهد."},{id:"5-35",subject:"شایستگی عمومی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم منظم و مسئولیت‌پذیر است و در فعالیت‌های گروهی شرکت می‌کند."},{id:"5-36",subject:"شایستگی عمومی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در نظم، مسئولیت‌پذیری، همکاری و دقت در انجام تکالیف نیاز به تلاش بیشتری دارد."}],
+6:[{id:"6-1",subject:"قرآن",level:"level-excellent",levelText:"خیلی خوب",desc:"با اشتیاق و علاقه زیاد در کلاس قرآن شرکت می‌کند، آداب تلاوت را کامل رعایت می‌کند، آیات را روان با تجوید صحیح روخوانی می‌کند و چندین سوره را از حفظ دارد."},{id:"6-2",subject:"قرآن",level:"level-good",levelText:"خوب",desc:"آداب تلاوت را به‌خوبی رعایت می‌کند، آیات را شمرده و با تلفظ مناسب روخوانی می‌نماید و بیشتر سوره‌ها را با کمی مرور از حفظ می‌خواند."},{id:"6-3",subject:"قرآن",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم آداب را رعایت می‌کند، آیات را روخوانی می‌کند و در جمع‌خوانی شرکت می‌نماید."},{id:"6-4",subject:"قرآن",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در رعایت آداب، روخوانی روان و حفظ سوره‌ها نیاز به تمرین بیشتری دارد. مرور روزانه قرآن در منزل کمک زیادی خواهد کرد."},{id:"6-5",subject:"فارسی",level:"level-excellent",levelText:"خیلی خوب",desc:"متون درس را کاملاً روان و رسا می‌خواند، درک مطلب عمیق دارد، به جزئیات، آرایه‌ها و پیام متن دقت می‌کند و با واژگان غنی زیبا سخن می‌گوید."},{id:"6-6",subject:"فارسی",level:"level-good",levelText:"خوب",desc:"دانش‌آموز با توانایی بسیار بالا در تحلیل متون ادبی، توانسته است لایه‌های معنایی و نکات ظریف نویسنده را به درستی استخراج کند."},{id:"6-7",subject:"فارسی",level:"level-acceptable",levelText:"قابل قبول",desc:"مهارت‌های پایه را به خوبی کسب کرده است."},{id:"6-8",subject:"فارسی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در خواندن روان و درک عمیق جزئیات نیاز به تمرین بیشتری دارد. خواندن روزانه کتاب‌های داستان در منزل بسیار مفید خواهد بود."},{id:"6-9",subject:"ریاضی",level:"level-excellent",levelText:"خیلی خوب",desc:"مفاهیم نسبت، تناسب، درصد، هندسه و آمار را عمیق درک می‌کند، مسائل پیچیده را با سرعت و روش‌های متنوع حل می‌نماید و در فعالیت‌های گروهی نوآور است."},{id:"6-10",subject:"ریاضی",level:"level-good",levelText:"خوب",desc:"عملیات ریاضی و مفاهیم را به‌درستی انجام می‌دهد، مسائل کلاسی را با دقت حل می‌کند و در فعالیت‌ها شرکت فعال دارد."},{id:"6-11",subject:"ریاضی",level:"level-acceptable",levelText:"قابل قبول",desc:"با کمک معلم مفاهیم را یاد می‌گیرد، عملیات پایه را انجام می‌دهد و در فعالیت‌های کلاسی شرکت می‌کند."},{id:"6-12",subject:"ریاضی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در درک عمیق مفاهیم و حل مسائل چندمرحله‌ای نیاز به تمرین بیشتری دارد."},{id:"6-13",subject:"علوم تجربی",level:"level-excellent",levelText:"خیلی خوب",desc:"با کنجکاوی و اشتیاق فراوان مشاهده و آزمایش می‌کند، سؤالات هوشمندانه می‌پرسد و مفاهیم علمی را با استدلال قوی و جزئیات دقیق توضیح می‌دهد."},{id:"6-14",subject:"علوم تجربی",level:"level-good",levelText:"خوب",desc:"مراحل انجام آزمایش‌های کلاسی را دنبال کرده و مشاهدات خود را به درستی ثبت می‌کند."},{id:"6-15",subject:"علوم تجربی",level:"level-acceptable",levelText:"قابل قبول",desc:"حقایق علمی و اطلاعات پایه را به خوبی یاد می‌گیرد."},{id:"6-16",subject:"علوم تجربی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در دقت مشاهده، پرسشگری و بیان مفاهیم علمی نیاز به تلاش بیشتری دارد."},{id:"6-17",subject:"مطالعات اجتماعی",level:"level-excellent",levelText:"خیلی خوب",desc:"با علاقه درباره تاریخ معاصر، جغرافیا، اقتصاد، حقوق شهروندی و مسائل جهانی صحبت می‌کند، نقش افراد و قوانین را به‌خوبی می‌شناسد و در فعالیت‌ها مسئولیت‌پذیر است."},{id:"6-18",subject:"مطالعات اجتماعی",level:"level-good",levelText:"خوب",desc:"توانسته است ارتباط میان وقایع تاریخی و تأثیر آن‌ها بر جامعه امروزی را به خوبی تحلیل کند."},{id:"6-19",subject:"مطالعات اجتماعی",level:"level-acceptable",levelText:"قابل قبول",desc:"او توانایی یادگیری اطلاعات پایه تاریخی و جغرافیایی را دارد."},{id:"6-20",subject:"مطالعات اجتماعی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در درک عمیق مفاهیم و بیان دانسته‌ها نیاز به تمرین بیشتری دارد."},{id:"6-21",subject:"هدیه‌های آسمانی",level:"level-excellent",levelText:"خیلی خوب",desc:"با اشتیاق کامل در کلاس شرکت می‌کند، داستان‌های دینی را با دقت بازگو می‌کند و مفاهیم توحید، نبوت، معاد و اخلاق را در رفتار روزمره نشان می‌دهد."},{id:"6-22",subject:"هدیه‌های آسمانی",level:"level-good",levelText:"خوب",desc:"با پایبندی به اصول اخلاقی آموخته شده از درس هدیه‌های آسمان، رفتاری سنجیده و مؤدبانه از خود نشان می‌دهد."},{id:"6-23",subject:"هدیه‌های آسمانی",level:"level-acceptable",levelText:"قابل قبول",desc:"او با مفاهیم اصلی درس مانند خداشناسی و پیامبران آشنایی دارد."},{id:"6-24",subject:"هدیه‌های آسمانی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در توجه به درس، درک مفاهیم و به‌کار بستن آن‌ها در رفتار نیاز به تلاش بیشتری دارد."},{id:"6-25",subject:"تفکر و پژوهش",level:"level-excellent",levelText:"خیلی خوب",desc:"با خلاقیت و دقت بالا مسئله‌شناسی می‌کند، سؤالات پژوهشی طرح می‌کند، اطلاعات جمع‌آوری می‌کند و گزارش‌های منظم و نوآورانه ارائه می‌دهد."},{id:"6-26",subject:"تفکر و پژوهش",level:"level-good",levelText:"خوب",desc:"او در مواجهه با چالش‌ها، ابتدا مسئله را به دقت تعریف کرده، سپس با طرح سوالات هوشمندانه، به دنبال یافتن اطلاعات مرتبط می‌گردد."},{id:"6-27",subject:"تفکر و پژوهش",level:"level-acceptable",levelText:"قابل قبول",desc:"او در جمع‌آوری اطلاعات مشارکت می‌کند."},{id:"6-28",subject:"تفکر و پژوهش",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در مسئله‌شناسی، جمع‌آوری اطلاعات و گزارش‌نویسی نیاز به تمرین بیشتری دارد."},{id:"6-29",subject:"هنر",level:"level-excellent",levelText:"خیلی خوب",desc:"با خلاقیت بالا نقاشی می‌کشد، رنگ‌آمیزی زیبا انجام می‌دهد، کاردستی‌های نوآورانه می‌سازد و در فعالیت‌های هنری بسیار موفق است."},{id:"6-30",subject:"هنر",level:"level-good",levelText:"خوب",desc:"کارهای دستی و نقاشی را با علاقه و دقت انجام می‌دهد و رنگ‌ها را به‌خوبی ترکیب می‌کند."},{id:"6-31",subject:"هنر",level:"level-acceptable",levelText:"قابل قبول",desc:"در فعالیت‌های هنری شرکت می‌کند و کارهای خود را با راهنمایی معلم انجام می‌دهد."},{id:"6-32",subject:"هنر",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در خلاقیت و دقت کارهای هنری نیاز به تمرین بیشتری دارد."},{id:"6-33",subject:"کار و فناوری",level:"level-excellent",levelText:"خیلی خوب",desc:"با اشتیاق و خلاقیت بالا در فعالیت‌های عملی شرکت می‌کند، مفاهیم فناوری را عمیق درک می‌کند و پروژه‌ها را با کیفیت عالی انجام می‌دهد."},{id:"6-34",subject:"کار و فناوری",level:"level-good",levelText:"خوب",desc:"در فعالیت‌های عملی فعال است، مفاهیم فناوری را به‌خوبی درک می‌کند و نکات ایمنی را رعایت می‌کند."},{id:"6-35",subject:"کار و فناوری",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم در فعالیت‌های عملی شرکت می‌کند و نکات ایمنی پایه را رعایت می‌نماید."},{id:"6-36",subject:"کار و فناوری",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در درک مفاهیم فناوری، دقت در ساخت و رعایت کامل ایمنی نیاز به تمرین بیشتری دارد."},{id:"6-37",subject:"تربیت بدنی",level:"level-excellent",levelText:"خیلی خوب",desc:"در حرکات و بازی‌های گروهی بسیار هماهنگ، چابک و پر انرژی است، قوانین را کامل رعایت می‌کند و روحیه همکاری و رهبری بالایی دارد."},{id:"6-38",subject:"تربیت بدنی",level:"level-good",levelText:"خوب",desc:"حرکات ورزشی را درست انجام می‌دهد، در بازی‌ها فعال است و از ورزش لذت می‌برد."},{id:"6-39",subject:"تربیت بدنی",level:"level-acceptable",levelText:"قابل قبول",desc:"با راهنمایی معلم حرکات را انجام می‌دهد و در فعالیت‌های ورزشی شرکت می‌کند."},{id:"6-40",subject:"تربیت بدنی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در هماهنگی بدنی، استقامت و اجرای صحیح حرکات نیاز به تمرین بیشتری دارد."},{id:"6-41",subject:"شایستگی عمومی",level:"level-excellent",levelText:"خیلی خوب",desc:"بسیار منظم، مسئولیت‌پذیر و همکاری‌کننده است، با ادب و احترام کامل رفتار می‌کند و در فعالیت‌های گروهی نقش رهبری مثبت دارد."},{id:"6-42",subject:"شایستگی عمومی",level:"level-good",levelText:"خوب",desc:"منظم و مسئولیت‌پذیر است، ادب و قوانین را رعایت می‌کند و در کارهای گروهی همکاری دارد."},{id:"6-43",subject:"شایستگی عمومی",level:"level-acceptable",levelText:"قابل قبول",desc:"با یادآوری معلم منظم است، در فعالیت‌های گروهی شرکت می‌کند و قوانین را تا حدودی رعایت می‌کند."},{id:"6-44",subject:"شایستگی عمومی",level:"level-need",levelText:"نیاز به تلاش بیشتر",desc:"در نظم، مسئولیت‌پذیری، همکاری و دقت در انجام تکالیف نیاز به تلاش بیشتری دارد."}]
+};
 
-    // ==================== متغیرهای عمومی ====================
-    let currentData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-    let currentUUID = localStorage.getItem('currentUUID') || '';
-    let editMode = false;
-    let isLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
-    let isSharedMode = false;
+let currentData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+let currentUUID = localStorage.getItem('currentUUID') || '';
+let editMode = false;
+let isLoggedIn = localStorage.getItem('isTeacherLoggedIn') === 'true';
+let teacherId = localStorage.getItem('teacherId') || '';
+const ADMIN_PASSWORD = 'nader0933';
 
-    // ==================== لاگین معلم ====================
-    function loginTeacher() {
-        const password = document.getElementById('loginPassword').value;
-        const errorEl = document.getElementById('loginError');
-        
-        if (password === 'nader0933') {
-            isLoggedIn = true;
-            localStorage.setItem('isTeacherLoggedIn', 'true');
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('teacherPanel').classList.remove('teacher-panel-hidden');
-            showToast('✅ خوش آمدید استاد!');
-            loadData();
-        } else {
-            errorEl.style.display = 'block';
-            document.getElementById('loginPassword').value = '';
-            setTimeout(() => { errorEl.style.display = 'none'; }, 3000);
-        }
-    }
+// ===== تنظیمات =====
+function openSettings(){document.getElementById('settingsModal').classList.add('active');document.getElementById('teacherIdDisplay').textContent=teacherId||'---';document.getElementById('passwordError').style.display='none';document.getElementById('passwordSuccess').style.display='none';document.getElementById('currentPassword').value='';document.getElementById('newPassword').value='';document.getElementById('confirmPassword').value=''}
+function closeSettings(){document.getElementById('settingsModal').classList.remove('active')}
+function changePassword(){const cur=document.getElementById('currentPassword').value;const np=document.getElementById('newPassword').value;const cf=document.getElementById('confirmPassword').value;const err=document.getElementById('passwordError');const suc=document.getElementById('passwordSuccess');err.style.display='none';suc.style.display='none';const stored=localStorage.getItem('teacherPassword')||ADMIN_PASSWORD;if(cur!==stored){err.textContent='رمز فعلی اشتباه است!';err.style.display='block';return}if(np.length<4){err.textContent='رمز جدید باید حداقل 4 کاراکتر باشد!';err.style.display='block';return}if(np!==cf){err.textContent='رمز جدید و تکرار آن مطابقت ندارند!';err.style.display='block';return}localStorage.setItem('teacherPassword',np);suc.textContent='رمز عبور با موفقیت تغییر کرد!';suc.style.display='block';document.getElementById('currentPassword').value='';document.getElementById('newPassword').value='';document.getElementById('confirmPassword').value='';showToast('رمز عبور با موفقیت تغییر کرد!')}
 
-    // ==================== خروج ====================
-    function logout() {
-        if (confirm('آیا از خروج مطمئن هستید؟')) {
-            isLoggedIn = false;
-            localStorage.removeItem('isTeacherLoggedIn');
-            document.getElementById('teacherPanel').classList.add('teacher-panel-hidden');
-            document.getElementById('loginOverlay').style.display = 'flex';
-            document.getElementById('loginPassword').value = '';
-            showToast('🚪 خروج انجام شد');
-        }
-    }
+// ===== لاگین =====
+function loginTeacher(){const p=document.getElementById('loginPassword').value;const err=document.getElementById('loginError');const stored=localStorage.getItem('teacherPassword')||ADMIN_PASSWORD;if(p===stored){isLoggedIn=true;localStorage.setItem('isTeacherLoggedIn','true');if(!teacherId){teacherId=crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){const r=Math.random()*16|0;const v=c==='x'?r:(r&3|8);return v.toString(16)});localStorage.setItem('teacherId',teacherId)}document.getElementById('loginOverlay').style.display='none';document.getElementById('teacherPanel').classList.remove('teacher-panel-hidden');showToast('خوش آمدید استاد!');loadData()}else{err.style.display='block';document.getElementById('loginPassword').value='';setTimeout(()=>{err.style.display='none'},3000)}}
+function logout(){if(confirm('آیا از خروج مطمئن هستید؟')){isLoggedIn=false;localStorage.removeItem('isTeacherLoggedIn');document.getElementById('teacherPanel').classList.add('teacher-panel-hidden');document.getElementById('loginOverlay').style.display='flex';document.getElementById('loginPassword').value='';showToast('خروج انجام شد')}}
 
-    // ==================== تابع‌های اصلی ====================
-    function loadData() {
-        const saved = localStorage.getItem('descriptionsData');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                currentData = parsed;
-            } catch(e) {}
-        }
-        
-        if (currentUUID) {
-            document.getElementById('uuidDisplay').textContent = currentUUID;
-            updateShareLink();
-        }
-        
-        renderAll();
-    }
+// ===== مدیریت UUID =====
+function generateUUID(){currentUUID=crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){const r=Math.random()*16|0;const v=c==='x'?r:(r&3|8);return v.toString(16)});document.getElementById('uuidDisplay').textContent=currentUUID;localStorage.setItem('currentUUID',currentUUID);saveToServer(currentUUID,currentData);updateShareLink();showToast('UUID جدید ساخته شد: '+currentUUID)}
 
-    function renderAll() {
-        for (let grade = 1; grade <= 6; grade++) {
-            renderGrade(grade);
-        }
-    }
+function deleteUUID(){if(!currentUUID){showToast('هیچ UUID ای برای حذف وجود ندارد!',true);return}if(confirm('آیا از حذف UUID "'+currentUUID+'" مطمئن هستید؟')){currentUUID='';localStorage.removeItem('currentUUID');document.getElementById('uuidDisplay').textContent='---';document.getElementById('shareLinkContainer').style.display='none';showToast('UUID با موفقیت حذف شد!')}}
 
-    function renderGrade(grade) {
-        const container = document.getElementById('word-grade' + grade);
-        if (!container) return;
-        
-        const items = currentData[grade] || [];
-        container.innerHTML = '';
-        
-        items.forEach((item) => {
-            const card = document.createElement('div');
-            card.className = 'subject-card ' + item.level;
-            if (editMode) card.classList.add('edit-mode');
-            
-            const levelClass = item.level || 'level-good';
-            
-            card.innerHTML = \`
-                <div class="subject-header">
-                    <div class="subject-title"><i class="fas fa-book"></i> \${item.subject}</div>
-                    <span class="level-badge \${levelClass}">\${item.levelText}</span>
-                </div>
-                <div class="subject-description" contenteditable="\${editMode}" data-id="\${item.id}" data-grade="\${grade}">\${item.desc}</div>
-                <div class="card-actions">
-                    <button class="copy-btn" onclick="copyText(this)"><i class="fas fa-copy"></i> کپی</button>
-                    \${editMode ? \`<button class="edit-btn saved" onclick="saveSingle(this)" data-id="\${item.id}" data-grade="\${grade}"><i class="fas fa-check"></i> ذخیره</button>\` : ''}
-                </div>
-            \`;
-            container.appendChild(card);
-        });
-    }
+function copyUUID(){if(!currentUUID){showToast('ابتدا UUID بسازید!',true);return}navigator.clipboard.writeText(currentUUID).then(()=>showToast('UUID کپی شد!')).catch(()=>{const inp=document.createElement('input');inp.value=currentUUID;document.body.appendChild(inp);inp.select();document.execCommand('copy');document.body.removeChild(inp);showToast('UUID کپی شد!')})}
 
-    // ==================== ویرایش ====================
-    function toggleEditMode() {
-        editMode = !editMode;
-        renderAll();
-        showToast(editMode ? '🖊️ حالت ویرایش فعال شد' : '🔒 حالت ویرایش غیرفعال شد');
-    }
+function updateShareLink(){if(currentUUID){const link=window.location.origin+window.location.pathname+'?uuid='+currentUUID;document.getElementById('shareLink').href=link;document.getElementById('shareLink').textContent=link;document.getElementById('shareLinkContainer').style.display='block'}}
+function copyShareLink(){const link=document.getElementById('shareLink').href;navigator.clipboard.writeText(link).then(()=>showToast('لینک اشتراک‌گذاری کپی شد!')).catch(()=>{const inp=document.createElement('input');inp.value=link;document.body.appendChild(inp);inp.select();document.execCommand('copy');document.body.removeChild(inp);showToast('لینک اشتراک‌گذاری کپی شد!')})}
 
-    function saveSingle(btn) {
-        const id = btn.dataset.id;
-        const grade = parseInt(btn.dataset.grade);
-        const card = btn.closest('.subject-card');
-        const descEl = card.querySelector('.subject-description');
-        const newDesc = descEl.textContent.trim();
-        
-        const items = currentData[grade] || [];
-        const item = items.find(i => i.id === id);
-        if (item) {
-            item.desc = newDesc;
-            saveToLocal();
-            btn.innerHTML = '<i class="fas fa-check"></i> ذخیره شد';
-            setTimeout(() => {
-                btn.innerHTML = '<i class="fas fa-save"></i> ذخیره';
-            }, 1500);
-            showToast('✅ تغییرات ذخیره شد');
-        }
-    }
+async function loadByUUID(){const uuid=document.getElementById('uuidInput').value.trim();if(!uuid){showToast('لطفاً UUID را وارد کنید',true);return}await loadFromUUID(uuid)}
+async function loadFromUUID(uuid){try{const resp=await fetch('/api/load?uuid='+encodeURIComponent(uuid));const result=await resp.json();if(result.success){currentData=result.data;currentUUID=uuid;localStorage.setItem('descriptionsData',JSON.stringify(currentData));localStorage.setItem('currentUUID',uuid);document.getElementById('uuidDisplay').textContent=uuid;updateShareLink();renderAll();document.getElementById('sharedBadge').style.display='inline-block';showToast('داده‌ها با موفقیت بارگذاری شد!')}else{showToast('UUID نامعتبر است!',true)}}catch(e){showToast('خطا در ارتباط با سرور!',true);console.error(e)}}
 
-    function saveAllChanges() {
-        document.querySelectorAll('.subject-description[contenteditable="true"]').forEach(el => {
-            const id = el.dataset.id;
-            const grade = parseInt(el.dataset.grade);
-            const newDesc = el.textContent.trim();
-            const items = currentData[grade] || [];
-            const item = items.find(i => i.id === id);
-            if (item) {
-                item.desc = newDesc;
-            }
-        });
-        
-        saveToLocal();
-        showToast('✅ همه تغییرات ذخیره شد');
-    }
+// ===== توابع اصلی =====
+function loadData(){const saved=localStorage.getItem('descriptionsData');if(saved){try{const parsed=JSON.parse(saved);currentData=parsed}catch(e){}}if(currentUUID){document.getElementById('uuidDisplay').textContent=currentUUID;updateShareLink()}renderAll()}
+function renderAll(){for(let g=1;g<=6;g++)renderGrade(g)}
+function renderGrade(grade){const container=document.getElementById('word-grade'+grade);if(!container)return;const items=currentData[grade]||[];container.innerHTML='';items.forEach(item=>{const card=document.createElement('div');card.className='subject-card '+item.level;if(editMode)card.classList.add('edit-mode');const lc=item.level||'level-good';card.innerHTML='<div class="subject-header"><div class="subject-title"><i class="fas fa-book"></i> '+item.subject+'</div><span class="level-badge '+lc+'">'+item.levelText+'</span></div><div class="subject-description" contenteditable="'+editMode+'" data-id="'+item.id+'" data-grade="'+grade+'">'+item.desc+'</div><div class="card-actions"><button class="copy-btn" onclick="copyText(this)"><i class="fas fa-copy"></i> کپی</button>'+(editMode?'<button class="edit-btn saved" onclick="saveSingle(this)" data-id="'+item.id+'" data-grade="'+grade+'"><i class="fas fa-check"></i> ذخیره</button>':'')+'</div>';container.appendChild(card)})}
+function toggleEditMode(){editMode=!editMode;renderAll();showToast(editMode?'حالت ویرایش فعال شد':'حالت ویرایش غیرفعال شد')}
+function saveSingle(btn){const id=btn.dataset.id;const grade=parseInt(btn.dataset.grade);const card=btn.closest('.subject-card');const descEl=card.querySelector('.subject-description');const nd=descEl.textContent.trim();const items=currentData[grade]||[];const item=items.find(i=>i.id===id);if(item){item.desc=nd;saveToLocal();btn.innerHTML='<i class="fas fa-check"></i> ذخیره شد';setTimeout(()=>{btn.innerHTML='<i class="fas fa-save"></i> ذخیره'},1500);showToast('تغییرات ذخیره شد')}}
+function saveAllChanges(){document.querySelectorAll('.subject-description[contenteditable="true"]').forEach(el=>{const id=el.dataset.id;const grade=parseInt(el.dataset.grade);const nd=el.textContent.trim();const items=currentData[grade]||[];const item=items.find(i=>i.id===id);if(item)item.desc=nd});saveToLocal();showToast('همه تغییرات ذخیره شد')}
+function saveToLocal(){localStorage.setItem('descriptionsData',JSON.stringify(currentData));if(currentUUID)saveToServer(currentUUID,currentData)}
+async function saveToServer(uuid,data){try{await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uuid,grades:data})})}catch(e){console.error('خطا در ارتباط با سرور:',e)}}
 
-    function saveToLocal() {
-        localStorage.setItem('descriptionsData', JSON.stringify(currentData));
-        if (currentUUID) {
-            saveToServer(currentUUID, currentData);
-        }
-    }
+// ===== کپی متن =====
+window.copyText=function(btn){const card=btn.closest('.subject-card');const desc=card.querySelector('.subject-description').textContent.trim();navigator.clipboard.writeText(desc).then(()=>{const orig=btn.innerHTML;btn.innerHTML='<i class="fas fa-check"></i> کپی شد';btn.classList.add('copied');showToast('متن توصیف کپی شد!');setTimeout(()=>{btn.innerHTML=orig;btn.classList.remove('copied')},2000)}).catch(()=>showToast('خطا در کپی',true))}
 
-    async function saveToServer(uuid, data) {
-        try {
-            const response = await fetch('/api/save', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uuid, grades: data })
-            });
-            await response.json();
-        } catch(e) {
-            console.error('خطا در ارتباط با سرور:', e);
-        }
-    }
+// ===== دانلود Word =====
+function downloadWord(gradeId,fileName){const items=currentData[gradeId]||[];const title=document.querySelector('.hero h1').textContent;const designer=document.querySelector('.designer').textContent;let html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+' - '+fileName+'</title><style>body{font-family:Vazirmatn,Tahoma;direction:rtl;padding:40px}h1{text-align:center}.designer{text-align:center;margin-bottom:30px}h2{border-bottom:2px solid #667eea;padding-bottom:10px;margin-top:30px}.subject-card{margin-bottom:25px;border-right:4px solid #48bb78;padding-right:15px}.subject-title{font-size:1.3rem;font-weight:bold}.level-badge{display:inline-block;padding:2px 8px;border-radius:15px;font-size:.7rem;margin-right:10px}.level-excellent{background:#c6f6d5;color:#22543d}.level-good{background:#fefcbf;color:#744210}.level-acceptable{background:#fed7d7;color:#742a2a}.level-need{background:#e2e8f0;color:#2d3748}.subject-description{margin-top:8px;line-height:1.6;text-align:justify}</style></head><body><h1>'+title+'</h1><div class="designer">'+designer+'</div><h2>'+fileName+'</h2>';items.forEach(item=>{html+='<div class="subject-card"><div class="subject-title">'+item.subject+' <span class="level-badge '+item.level+'">'+item.levelText+'</span></div><div class="subject-description">'+item.desc+'</div></div>'});html+='<div class="footer">توصیف عملکرد دورهٔ ابتدائی - '+fileName+'</div></body></html>';const blob=new Blob([html],{type:'application/msword'});const link=document.createElement('a');const url=URL.createObjectURL(blob);link.href=url;link.download=fileName+'_توصیف_عملکرد.doc';document.body.appendChild(link);link.click();document.body.removeChild(link);URL.revokeObjectURL(url);showToast('فایل Word ذخیره شد!')}
+function downloadAllGrades(){const title=document.querySelector('.hero h1').textContent;const designer=document.querySelector('.designer').textContent;const names=['پایه اول','پایه دوم','پایه سوم','پایه چهارم','پایه پنجم','پایه ششم'];let html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+' - همه پایه‌ها</title><style>body{font-family:Vazirmatn,Tahoma;direction:rtl;padding:40px}h1{text-align:center}.designer{text-align:center;margin-bottom:30px}h2{border-bottom:2px solid #667eea;padding-bottom:10px;margin-top:30px}.subject-card{margin-bottom:25px;border-right:4px solid #48bb78;padding-right:15px}.subject-title{font-size:1.3rem;font-weight:bold}.level-badge{display:inline-block;padding:2px 8px;border-radius:15px;font-size:.7rem;margin-right:10px}.level-excellent{background:#c6f6d5;color:#22543d}.level-good{background:#fefcbf;color:#744210}.level-acceptable{background:#fed7d7;color:#742a2a}.level-need{background:#e2e8f0;color:#2d3748}.subject-description{margin-top:8px;line-height:1.6;text-align:justify}</style></head><body><h1>'+title+'</h1><div class="designer">'+designer+'</div>';for(let i=1;i<=6;i++){const items=currentData[i]||[];html+='<h2>'+names[i-1]+'</h2>';items.forEach(item=>{html+='<div class="subject-card"><div class="subject-title">'+item.subject+' <span class="level-badge '+item.level+'">'+item.levelText+'</span></div><div class="subject-description">'+item.desc+'</div></div>'})}html+='<div class="footer">توصیف عملکرد دورهٔ ابتدائی - همه پایه‌ها</div></body></html>';const blob=new Blob([html],{type:'application/msword'});const link=document.createElement('a');const url=URL.createObjectURL(blob);link.href=url;link.download='همه_پایه‌ها_توصیف_عملکرد.doc';document.body.appendChild(link);link.click();document.body.removeChild(link);URL.revokeObjectURL(url);showToast('فایل Word همه پایه‌ها ذخیره شد!')}
 
-    // ==================== UUID ====================
-    function generateUUID() {
-        currentUUID = crypto.randomUUID ? crypto.randomUUID() : 
-            'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                const r = Math.random() * 16 | 0;
-                const v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        document.getElementById('uuidDisplay').textContent = currentUUID;
-        localStorage.setItem('currentUUID', currentUUID);
-        saveToServer(currentUUID, currentData);
-        updateShareLink();
-        showToast('🔑 UUID جدید ساخته شد: ' + currentUUID);
-    }
+// ===== Toast =====
+function showToast(msg,err=false){const t=document.createElement('div');t.className='toast'+(err?' error':'');t.innerHTML=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000)}
 
-    function updateShareLink() {
-        if (currentUUID) {
-            const link = window.location.origin + window.location.pathname + '?uuid=' + currentUUID;
-            document.getElementById('shareLink').href = link;
-            document.getElementById('shareLink').textContent = link;
-            document.getElementById('shareLinkContainer').style.display = 'block';
-        }
-    }
+// ===== تب‌ها =====
+(function(){const btns=document.querySelectorAll('.tab-btn');const contents=document.querySelectorAll('.tab-content');btns.forEach(btn=>{btn.addEventListener('click',function(){const grade=this.dataset.grade;btns.forEach(b=>b.classList.remove('active'));contents.forEach(c=>c.classList.remove('active'));this.classList.add('active');document.getElementById('grade'+grade).classList.add('active')})})})();
 
-    function copyShareLink() {
-        const link = document.getElementById('shareLink').href;
-        navigator.clipboard.writeText(link).then(() => {
-            showToast('✅ لینک اشتراک‌گذاری کپی شد!');
-        }).catch(() => {
-            const input = document.createElement('input');
-            input.value = link;
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
-            showToast('✅ لینک اشتراک‌گذاری کپی شد!');
-        });
-    }
+// ===== مقداردهی اولیه =====
+(async function init(){teacherId=localStorage.getItem('teacherId')||'';const params=new URLSearchParams(window.location.search);const uuidParam=params.get('uuid');if(uuidParam){await loadFromUUID(uuidParam);document.getElementById('sharedBadge').style.display='inline-block';document.getElementById('loginOverlay').style.display='none';document.getElementById('teacherPanel').classList.add('teacher-panel-hidden')}else if(isLoggedIn){document.getElementById('loginOverlay').style.display='none';document.getElementById('teacherPanel').classList.remove('teacher-panel-hidden');loadData()}else{document.getElementById('loginOverlay').style.display='flex';loadData()}if(currentUUID){document.getElementById('uuidDisplay').textContent=currentUUID;updateShareLink()}})();
 
-    function copyUUID() {
-        if (!currentUUID) {
-            showToast('❌ ابتدا UUID بسازید!', true);
-            return;
-        }
-        navigator.clipboard.writeText(currentUUID).then(() => {
-            showToast('✅ UUID کپی شد!');
-        }).catch(() => {
-            const input = document.createElement('input');
-            input.value = currentUUID;
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
-            showToast('✅ UUID کپی شد!');
-        });
-    }
-
-    async function loadByUUID() {
-        const uuid = document.getElementById('uuidInput').value.trim();
-        if (!uuid) {
-            showToast('❌ لطفاً UUID را وارد کنید', true);
-            return;
-        }
-        await loadFromUUID(uuid);
-    }
-
-    async function loadFromUUID(uuid) {
-        try {
-            const response = await fetch('/api/load?uuid=' + encodeURIComponent(uuid));
-            const result = await response.json();
-            
-            if (result.success) {
-                currentData = result.data;
-                currentUUID = uuid;
-                localStorage.setItem('descriptionsData', JSON.stringify(currentData));
-                localStorage.setItem('currentUUID', uuid);
-                document.getElementById('uuidDisplay').textContent = uuid;
-                updateShareLink();
-                renderAll();
-                document.getElementById('sharedBadge').style.display = 'inline-block';
-                showToast('✅ داده‌ها با موفقیت بارگذاری شد!');
-            } else {
-                showToast('❌ UUID نامعتبر است!', true);
-            }
-        } catch(e) {
-            showToast('❌ خطا در ارتباط با سرور!', true);
-            console.error(e);
-        }
-    }
-
-    // ==================== کپی متن ====================
-    window.copyText = function(btn) {
-        const card = btn.closest('.subject-card');
-        const desc = card.querySelector('.subject-description').textContent.trim();
-        navigator.clipboard.writeText(desc).then(() => {
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> کپی شد';
-            btn.classList.add('copied');
-            showToast('✅ متن توصیف کپی شد!');
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.classList.remove('copied');
-            }, 2000);
-        }).catch(() => {
-            showToast('❌ خطا در کپی', true);
-        });
-    };
-
-    // ==================== دانلود Word ====================
-    function downloadWord(gradeId, fileName) {
-        const items = currentData[gradeId] || [];
-        const originalTitle = document.querySelector('.hero h1').textContent;
-        const designerText = document.querySelector('.designer').textContent;
-        
-        let htmlContent = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + originalTitle + ' - ' + fileName + '</title><style>body{font-family:"Vazirmatn",Tahoma;direction:rtl;padding:40px;}h1{text-align:center;}.designer{text-align:center;margin-bottom:30px;}h2{border-bottom:2px solid #667eea;padding-bottom:10px;margin-top:30px;}.subject-card{margin-bottom:25px;border-right:4px solid #48bb78;padding-right:15px;}.subject-title{font-size:1.3rem;font-weight:bold;}.level-badge{display:inline-block;padding:2px 8px;border-radius:15px;font-size:0.7rem;margin-right:10px;}.level-excellent{background:#c6f6d5;color:#22543d;}.level-good{background:#fefcbf;color:#744210;}.level-acceptable{background:#fed7d7;color:#742a2a;}.level-need{background:#e2e8f0;color:#2d3748;}.subject-description{margin-top:8px;line-height:1.6;text-align:justify;}</style></head><body><h1>' + originalTitle + '</h1><div class="designer">' + designerText + '</div><h2>' + fileName + '</h2>';
-        
-        items.forEach(item => {
-            htmlContent += '<div class="subject-card"><div class="subject-title">' + item.subject + ' <span class="level-badge ' + item.level + '">' + item.levelText + '</span></div><div class="subject-description">' + item.desc + '</div></div>';
-        });
-        
-        htmlContent += '<div class="footer">توصیف عملکرد دورهٔ ابتدائی - ' + fileName + '</div></body></html>';
-        
-        const blob = new Blob([htmlContent], { type: 'application/msword' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.href = url;
-        link.download = fileName + '_توصیف_عملکرد.doc';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        showToast('✅ فایل Word ذخیره شد!');
-    }
-
-    function downloadAllGrades() {
-        const originalTitle = document.querySelector('.hero h1').textContent;
-        const designerText = document.querySelector('.designer').textContent;
-        const gradeNames = ['پایه اول', 'پایه دوم', 'پایه سوم', 'پایه چهارم', 'پایه پنجم', 'پایه ششم'];
-        
-        let htmlContent = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + originalTitle + ' - همه پایه‌ها</title><style>body{font-family:"Vazirmatn",Tahoma;direction:rtl;padding:40px;}h1{text-align:center;}.designer{text-align:center;margin-bottom:30px;}h2{border-bottom:2px solid #667eea;padding-bottom:10px;margin-top:30px;}.subject-card{margin-bottom:25px;border-right:4px solid #48bb78;padding-right:15px;}.subject-title{font-size:1.3rem;font-weight:bold;}.level-badge{display:inline-block;padding:2px 8px;border-radius:15px;font-size:0.7rem;margin-right:10px;}.level-excellent{background:#c6f6d5;color:#22543d;}.level-good{background:#fefcbf;color:#744210;}.level-acceptable{background:#fed7d7;color:#742a2a;}.level-need{background:#e2e8f0;color:#2d3748;}.subject-description{margin-top:8px;line-height:1.6;text-align:justify;}</style></head><body><h1>' + originalTitle + '</h1><div class="designer">' + designerText + '</div>';
-        
-        for (let i = 1; i <= 6; i++) {
-            const items = currentData[i] || [];
-            htmlContent += '<h2>' + gradeNames[i-1] + '</h2>';
-            items.forEach(item => {
-                htmlContent += '<div class="subject-card"><div class="subject-title">' + item.subject + ' <span class="level-badge ' + item.level + '">' + item.levelText + '</span></div><div class="subject-description">' + item.desc + '</div></div>';
-            });
-        }
-        
-        htmlContent += '<div class="footer">توصیف عملکرد دورهٔ ابتدائی - همه پایه‌ها</div></body></html>';
-        
-        const blob = new Blob([htmlContent], { type: 'application/msword' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.href = url;
-        link.download = 'همه_پایه‌ها_توصیف_عملکرد.doc';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        showToast('✅ فایل Word همه پایه‌ها ذخیره شد!');
-    }
-
-    // ==================== Toast ====================
-    function showToast(message, isError = false) {
-        const toast = document.createElement('div');
-        toast.className = 'toast' + (isError ? ' error' : '');
-        toast.innerHTML = message;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
-
-    // ==================== تب‌ها ====================
-    (function() {
-        const btns = document.querySelectorAll('.tab-btn');
-        const contents = document.querySelectorAll('.tab-content');
-        btns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const grade = this.dataset.grade;
-                btns.forEach(b => b.classList.remove('active'));
-                contents.forEach(c => c.classList.remove('active'));
-                this.classList.add('active');
-                document.getElementById('grade' + grade).classList.add('active');
-            });
-        });
-    })();
-
-    // ==================== بارگذاری اولیه ====================
-    // بررسی UUID در URL
-    (async function init() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const uuidParam = urlParams.get('uuid');
-        
-        if (uuidParam) {
-            // حالت اشتراک‌گذاری - بدون نیاز به رمز
-            await loadFromUUID(uuidParam);
-            document.getElementById('sharedBadge').style.display = 'inline-block';
-            // پنل معلم رو مخفی نگه دار
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('teacherPanel').classList.add('teacher-panel-hidden');
-            isSharedMode = true;
-        } else if (isLoggedIn) {
-            // معلم وارد شده
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('teacherPanel').classList.remove('teacher-panel-hidden');
-            loadData();
-        } else {
-            // صفحه عادی - لاگین نمایش داده میشه
-            document.getElementById('loginOverlay').style.display = 'flex';
-            loadData();
-        }
-
-        if (currentUUID) {
-            document.getElementById('uuidDisplay').textContent = currentUUID;
-            updateShareLink();
-        }
-    })();
+document.getElementById('settingsModal').addEventListener('click',function(e){if(e.target===this)closeSettings()});
 </script>
 </body>
 </html>`;
